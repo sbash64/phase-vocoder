@@ -28,10 +28,18 @@ class OverlapExtractTests : public ::testing::Test {
 
 };
 
-TEST_F(OverlapExtractTests, tbd) {
+TEST_F(OverlapExtractTests, nextReturnsNLengthSegment) {
 	int N = 5;
 	int hop = 2;
 	OverlapExtract<int> extract{ N, hop };
 	extract.add({ 1, 2, 3, 4, 5 });
+	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
+}
+
+TEST_F(OverlapExtractTests, nextReturnsNLengthSegmentWithLeftOver) {
+	int N = 5;
+	int hop = 2;
+	OverlapExtract<int> extract{ N, hop };
+	extract.add({ 1, 2, 3, 4, 5, 6 });
 	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
 }
