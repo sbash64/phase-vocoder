@@ -28,7 +28,9 @@ namespace {
 		}
 
 		void assertNextEquals(std::vector<int> expected) {
-			assertEqual(expected, next());
+			auto t = extract.next();
+			std::vector<int> s{ t.begin(), t.end() };
+			assertEqual(expected, s);
 		}
 
 		void assertHasNext() {

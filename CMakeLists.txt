@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 project(PhaseVocoder)
 add_subdirectory(googletest)
+add_subdirectory(GSL)
 add_subdirectory(phase-vocoder)

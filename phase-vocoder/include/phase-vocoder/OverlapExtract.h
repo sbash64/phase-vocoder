@@ -1,5 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPEXTRACT_H
 #define PHASEVOCODER_OVERLAPEXTRACT_H
+
+#include <gsl/gsl>
 #include <vector>
 
 template<typename T>
@@ -11,18 +13,18 @@ class OverlapExtract {
 public:
 	OverlapExtract(int N, int hop) : N{ N }, hop{ hop }, head{ 0 } {}
 
-	void add(std::vector<T> x) {
+	void add(gsl::span<T> x) {
 		signal.insert(signal.end(), x.begin(), x.end());
 	}
 
 	bool hasNext() {
-		return signal.size() >= head + N;
+		return signal.size() - head >= N;
 	}
 
-	std::vector<T> next() {
-		auto head_ = signal.begin() + head;
+	gsl::span<T> next() {
+		T* head_ = signal.data() + head;
 		head += hop;
-		return { head_, head_ + N };
+		return { head_, N };
 	}
 };
 
