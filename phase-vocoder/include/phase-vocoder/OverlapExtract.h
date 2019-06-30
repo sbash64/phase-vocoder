@@ -2,18 +2,6 @@
 #define PHASEVOCODER_OVERLAPEXTRACT_H
 #include <vector>
 
-/*
-#ifdef _WIN32
-	#ifdef PHASEVOCODER_EXPORTS
-		#define PHASEVOCODER_API __declspec(dllexport)
-	#else
-		//#define PHASEVOCODER_API __declspec(dllimport)
-#define PHASEVOCODER_API __declspec(dllexport)
-	#endif
-#else
-	#define PHASEVOCODER_API
-#endif
-*/
 template<typename T>
 class OverlapExtract {
 	std::vector<T> signal;
