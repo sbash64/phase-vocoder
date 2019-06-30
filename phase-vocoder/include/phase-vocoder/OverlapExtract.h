@@ -12,7 +12,7 @@ public:
 	OverlapExtract(int N, int hop) : N{ N }, hop{ hop }, head{ 0 } {}
 
 	void add(std::vector<T> x) {
-		signal = x;
+		signal.insert(signal.end(), x.begin(), x.end());
 	}
 
 	std::vector<T> next() {
