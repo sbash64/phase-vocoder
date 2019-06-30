@@ -16,7 +16,7 @@ public:
 	}
 
 	bool hasNext() {
-		return {};
+		return signal.size() >= head + N;
 	}
 
 	std::vector<T> next() {
