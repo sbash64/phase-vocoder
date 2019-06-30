@@ -9,14 +9,18 @@ namespace {
 			EXPECT_EQ(expected.at(i), actual.at(i));
 	}
 
+	constexpr auto N = 5;
+	constexpr auto hop = 2;
 	class OverlapExtractTests : public ::testing::Test {
 	protected:
-		int N = 5;
-		int hop = 2;
-		OverlapExtract<int> extract{ N, hop };
+		OverlapExtract<int> extract;
+		std::vector<int> buffer;
+
+		OverlapExtractTests() : buffer(N), extract{ N, hop } {}
 
 		auto next() {
-			return extract.next();
+			std::vector<int> out(N);
+			extract.next(out);
 		}
 
 		auto hasNext() {
@@ -24,13 +28,14 @@ namespace {
 		}
 
 		void add(std::vector<int> x) {
-			extract.add(x);
+			buffer = x;
+			extract.add(buffer);
 		}
 
 		void assertNextEquals(std::vector<int> expected) {
-			auto t = extract.next();
-			std::vector<int> s{ t.begin(), t.end() };
-			assertEqual(expected, s);
+			std::vector<int> out(N);
+			extract.next(out);
+			assertEqual(expected, out);
 		}
 
 		void assertHasNext() {
