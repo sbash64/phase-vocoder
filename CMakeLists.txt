@@ -1,6 +1,4 @@
 cmake_minimum_required(VERSION 3.5)
-project(phase-vocoder)
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+project(PhaseVocoder)
 add_subdirectory(googletest)
-
 add_subdirectory(phase-vocoder)
