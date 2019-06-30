@@ -3,15 +3,16 @@
 template<typename T>
 class OverlapExtract {
 	std::vector<T> signal;
+	int N;
 public:
-	OverlapExtract(int N, int hop) {}
+	OverlapExtract(int N, int hop) : N{ N } {}
 
 	void add(std::vector<T> x) {
 		signal = x;
 	}
 
 	std::vector<T> next() {
-		return signal;
+		return { signal.begin(), signal.begin() + N };
 	}
 };
 
