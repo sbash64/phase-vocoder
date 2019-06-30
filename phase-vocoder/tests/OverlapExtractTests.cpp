@@ -23,37 +23,43 @@ public:
 #include <gtest/gtest.h>
 
 template<typename T>
-void assertEqual(std::vector<T> actual, std::vector<T> expected) {
-	EXPECT_EQ(actual.size(), expected.size());
-	for (std::size_t i = 0; i < actual.size(); ++i)
-		EXPECT_EQ(actual.at(i), expected.at(i));
+void assertEqual(std::vector<T> expected, std::vector<T> actual) {
+	EXPECT_EQ(expected.size(), actual.size());
+	for (std::size_t i = 0; i < expected.size(); ++i)
+		EXPECT_EQ(expected.at(i), actual.at(i));
 }
 
 class OverlapExtractTests : public ::testing::Test {
+protected:
+	int N = 5;
+	int hop = 2;
+	OverlapExtract<int> extract{ N, hop };
 
+	auto next() {
+		return extract.next();
+	}
+
+	void add(std::vector<int> x) {
+		extract.add(x);
+	}
+
+	void assertNextEquals(std::vector<int> expected) {
+		assertEqual(expected, next());
+	}
 };
 
 TEST_F(OverlapExtractTests, nextReturnsNLengthSegment) {
-	int N = 5;
-	int hop = 2;
-	OverlapExtract<int> extract{ N, hop };
-	extract.add({ 1, 2, 3, 4, 5 });
-	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
+	add({ 1, 2, 3, 4, 5 });
+	assertNextEquals({ 1, 2, 3, 4, 5 });
 }
 
 TEST_F(OverlapExtractTests, nextReturnsNLengthSegmentWithLeftOver) {
-	int N = 5;
-	int hop = 2;
-	OverlapExtract<int> extract{ N, hop };
-	extract.add({ 1, 2, 3, 4, 5, 6 });
-	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
+	add({ 1, 2, 3, 4, 5, 6 });
+	assertNextEquals({ 1, 2, 3, 4, 5 });
 }
 
 TEST_F(OverlapExtractTests, nextReturnsSecondNLengthSegmentOneHopAway) {
-	int N = 5;
-	int hop = 2;
-	OverlapExtract<int> extract{ N, hop };
-	extract.add({ 1, 2, 3, 4, 5, 6, 7 });
-	extract.next();
-	assertEqual({ 3, 4, 5, 6, 7 }, extract.next());
+	add({ 1, 2, 3, 4, 5, 6, 7 });
+	next();
+	assertNextEquals({ 3, 4, 5, 6, 7 });
 }
