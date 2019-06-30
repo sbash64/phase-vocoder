@@ -5,7 +5,7 @@ class OverlapExtract {
 	std::vector<T> signal;
 	int N;
 public:
-	OverlapExtract(int N, int hop) : N{ N } {}
+	OverlapExtract(int N, int ) : N{ N } {}
 
 	void add(std::vector<T> x) {
 		signal = x;
@@ -43,4 +43,13 @@ TEST_F(OverlapExtractTests, nextReturnsNLengthSegmentWithLeftOver) {
 	OverlapExtract<int> extract{ N, hop };
 	extract.add({ 1, 2, 3, 4, 5, 6 });
 	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
+}
+
+TEST_F(OverlapExtractTests, nextReturnsSecondNLengthSegmentOneHopAway) {
+	int N = 5;
+	int hop = 2;
+	OverlapExtract<int> extract{ N, hop };
+	extract.add({ 1, 2, 3, 4, 5, 6, 7 });
+	extract.next();
+	assertEqual({ 3, 4, 5, 6, 7 }, extract.next());
 }
