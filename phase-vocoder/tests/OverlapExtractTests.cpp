@@ -18,6 +18,10 @@ protected:
 		return extract.next();
 	}
 
+	auto hasNext() {
+		return extract.hasNext();
+	}
+
 	void add(std::vector<int> x) {
 		extract.add(x);
 	}
@@ -51,7 +55,7 @@ TEST_F(OverlapExtractTests, addAddsToExisting) {
 
 TEST_F(OverlapExtractTests, hasNextIfNLengthSegmentAvailable) {
 	add({ 1, 2, 3, 4, 5 });
-	EXPECT_TRUE(extract.hasNext());
+	EXPECT_TRUE(hasNext());
 	next();
-	EXPECT_FALSE(extract.hasNext());
+	EXPECT_FALSE(hasNext());
 }
