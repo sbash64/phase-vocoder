@@ -28,7 +28,7 @@ class OverlapExtractTests : public ::testing::Test {
 TEST_F(OverlapExtractTests, tbd) {
 	int N = 5;
 	int hop = 2;
-	OverlapExtract extract{ N, hop };
+	OverlapExtract<int> extract{ N, hop };
 	extract.add({ 1, 2, 3, 4, 5 });
 	assertEqual({ 1, 2, 3, 4, 5 }, extract.next());
 }
