@@ -3,7 +3,6 @@ set(
         "src/OverlapExtract.cpp"
 		"include/phase-vocoder/OverlapExtract.h"
 )
-
 add_library(phase-vocoder ${SOURCES})
 target_include_directories(phase-vocoder PUBLIC include)
 if (MSVC)

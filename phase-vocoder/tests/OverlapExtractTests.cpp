@@ -42,3 +42,9 @@ TEST_F(OverlapExtractTests, nextReturnsSecondNLengthSegmentOneHopAway) {
 	next();
 	assertNextEquals({ 3, 4, 5, 6, 7 });
 }
+
+TEST_F(OverlapExtractTests, addAddsToExisting) {
+	add({ 1, 2, 3 });
+	add({ 4, 5 });
+	assertNextEquals({ 1, 2, 3, 4, 5 });
+}
