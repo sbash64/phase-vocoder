@@ -15,6 +15,10 @@ public:
 		signal.insert(signal.end(), x.begin(), x.end());
 	}
 
+	bool hasNext() {
+		return {};
+	}
+
 	std::vector<T> next() {
 		auto head_ = signal.begin() + head;
 		head += hop;

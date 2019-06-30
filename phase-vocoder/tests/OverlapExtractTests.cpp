@@ -48,3 +48,10 @@ TEST_F(OverlapExtractTests, addAddsToExisting) {
 	add({ 4, 5 });
 	assertNextEquals({ 1, 2, 3, 4, 5 });
 }
+
+TEST_F(OverlapExtractTests, hasNextIfNLengthSegmentAvailable) {
+	add({ 1, 2, 3, 4, 5 });
+	EXPECT_TRUE(extract.hasNext());
+	next();
+	EXPECT_FALSE(extract.hasNext());
+}
