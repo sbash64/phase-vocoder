@@ -59,3 +59,12 @@ TEST_F(OverlapExtractTests, hasNextIfNLengthSegmentAvailable) {
 	next();
 	EXPECT_FALSE(hasNext());
 }
+
+TEST_F(OverlapExtractTests, hasNextWhenNLengthSegmentAvailable) {
+	add({ 1, 2 });
+	EXPECT_FALSE(hasNext());
+	add({ 3, 4 });
+	EXPECT_FALSE(hasNext());
+	add({ 5 });
+	EXPECT_TRUE(hasNext());
+}
