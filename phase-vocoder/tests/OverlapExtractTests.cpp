@@ -18,24 +18,13 @@ namespace {
 
 		OverlapExtractTests() : buffer(N), extract{ N, hop } {}
 
-		auto next() {
-			std::vector<int> out(N);
-			extract.next(out);
-		}
-
-		auto hasNext() {
-			return extract.hasNext();
-		}
-
-		void add(std::vector<int> x) {
-			buffer = x;
-			extract.add(buffer);
-		}
-
-		void assertNextEquals(std::vector<int> expected) {
-			std::vector<int> out(N);
-			extract.next(out);
-			assertEqual(expected, out);
+		void assertSegments(std::vector<int> x, std::vector<std::vector<int>> segments) {
+			add(std::move(x));
+			for (auto segment : segments) {
+				assertHasNext();
+				assertNextEquals(std::move(segment));
+			}
+			assertDoesNotHaveNext();
 		}
 
 		void assertHasNext() {
@@ -46,14 +35,19 @@ namespace {
 			EXPECT_FALSE(hasNext());
 		}
 
-		void add2(std::vector<int> x) {
-			add(x);
+		bool hasNext() {
+			return extract.hasNext();
 		}
 
-		void assertSegments(std::vector<int> x, std::vector<std::vector<int>> segments) {
-			add(x);
-			for (size_t i = 0; i < segments.size(); ++i)
-				assertNextEquals(segments.at(i));
+		void add(std::vector<int> x) {
+			buffer = std::move(x);
+			extract.add(buffer);
+		}
+
+		void assertNextEquals(std::vector<int> expected) {
+			std::vector<int> out(N);
+			extract.next(out);
+			assertEqual(std::move(expected), std::move(out));
 		}
 	};
 
@@ -64,28 +58,28 @@ namespace {
 		);
 	}
 
-	TEST_F(OverlapExtractTests, nextReturnsNLengthSegment) {
+	TEST_F(OverlapExtractTests, returnsOneNLengthSegment) {
 		assertSegments(
 			{ 1, 2, 3, 4, 5 },
 			{ { 1, 2, 3, 4, 5 } }
 		);
 	}
 
-	TEST_F(OverlapExtractTests, nextReturnsNLengthSegmentWithLeftOver) {
+	TEST_F(OverlapExtractTests, returnsOneNLengthSegmentDespiteLeftOver) {
 		assertSegments(
 			{ 1, 2, 3, 4, 5, 6 },
 			{ { 1, 2, 3, 4, 5 } }
 		);
 	}
 
-	TEST_F(OverlapExtractTests, nextReturnsSecondNLengthSegmentOneHopAway) {
+	TEST_F(OverlapExtractTests, returnsTwoNLengthSegments) {
 		assertSegments(
 			{ 1, 2, 3, 4, 5, 6, 7 },
 			{ { 1, 2, 3, 4, 5 }, { 3, 4, 5, 6, 7 } }
 		);
 	}
 
-	TEST_F(OverlapExtractTests, addAddsToExisting) {
+	TEST_F(OverlapExtractTests, addsToExisting) {
 		assertSegments(
 			{ 1, 2, 3 },
 			{ }
@@ -94,21 +88,5 @@ namespace {
 			{ 4, 5 },
 			{ { 1, 2, 3, 4, 5 } }
 		);
-	}
-
-	TEST_F(OverlapExtractTests, hasNextIfNLengthSegmentAvailable) {
-		add({ 1, 2, 3, 4, 5 });
-		assertHasNext();
-		next();
-		assertDoesNotHaveNext();
-	}
-
-	TEST_F(OverlapExtractTests, hasNextWhenNLengthSegmentAvailable) {
-		add({ 1, 2 });
-		assertDoesNotHaveNext();
-		add({ 3, 4 });
-		assertDoesNotHaveNext();
-		add({ 5 });
-		assertHasNext();
 	}
 }
