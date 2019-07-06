@@ -45,7 +45,21 @@ namespace {
 		void assertDoesNotHaveNext() {
 			EXPECT_FALSE(hasNext());
 		}
+
+		void add2(std::vector<int> x) {
+			add(x);
+		}
+
+		void assertSegments(std::vector<std::vector<int>> segments) {
+			for (size_t i = 0; i < segments.size(); ++i)
+				assertNextEquals(segments.at(i));
+		}
 	};
+
+	TEST_F(OverlapExtractTests, returnsEachNLengthSegmentWithHopSpacing) {
+		add2({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
+		assertSegments({ { 1, 2, 3, 4, 5 }, { 3, 4, 5, 6, 7 }, { 5, 6, 7, 8, 9 } });
+	}
 
 	TEST_F(OverlapExtractTests, nextReturnsNLengthSegment) {
 		add({ 1, 2, 3, 4, 5 });
