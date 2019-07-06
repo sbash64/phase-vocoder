@@ -50,37 +50,50 @@ namespace {
 			add(x);
 		}
 
-		void assertSegments(std::vector<std::vector<int>> segments) {
+		void assertSegments(std::vector<int> x, std::vector<std::vector<int>> segments) {
+			add(x);
 			for (size_t i = 0; i < segments.size(); ++i)
 				assertNextEquals(segments.at(i));
 		}
 	};
 
 	TEST_F(OverlapExtractTests, returnsEachNLengthSegmentWithHopSpacing) {
-		add2({ 1, 2, 3, 4, 5, 6, 7, 8, 9 });
-		assertSegments({ { 1, 2, 3, 4, 5 }, { 3, 4, 5, 6, 7 }, { 5, 6, 7, 8, 9 } });
+		assertSegments(
+			{ 1, 2, 3, 4, 5, 6, 7, 8, 9 } , 
+			{ { 1, 2, 3, 4, 5 }, { 3, 4, 5, 6, 7 }, { 5, 6, 7, 8, 9 } }
+		);
 	}
 
 	TEST_F(OverlapExtractTests, nextReturnsNLengthSegment) {
-		add({ 1, 2, 3, 4, 5 });
-		assertNextEquals({ 1, 2, 3, 4, 5 });
+		assertSegments(
+			{ 1, 2, 3, 4, 5 },
+			{ { 1, 2, 3, 4, 5 } }
+		);
 	}
 
 	TEST_F(OverlapExtractTests, nextReturnsNLengthSegmentWithLeftOver) {
-		add({ 1, 2, 3, 4, 5, 6 });
-		assertNextEquals({ 1, 2, 3, 4, 5 });
+		assertSegments(
+			{ 1, 2, 3, 4, 5, 6 },
+			{ { 1, 2, 3, 4, 5 } }
+		);
 	}
 
 	TEST_F(OverlapExtractTests, nextReturnsSecondNLengthSegmentOneHopAway) {
-		add({ 1, 2, 3, 4, 5, 6, 7 });
-		next();
-		assertNextEquals({ 3, 4, 5, 6, 7 });
+		assertSegments(
+			{ 1, 2, 3, 4, 5, 6, 7 },
+			{ { 1, 2, 3, 4, 5 }, { 3, 4, 5, 6, 7 } }
+		);
 	}
 
 	TEST_F(OverlapExtractTests, addAddsToExisting) {
-		add({ 1, 2, 3 });
-		add({ 4, 5 });
-		assertNextEquals({ 1, 2, 3, 4, 5 });
+		assertSegments(
+			{ 1, 2, 3 },
+			{ }
+		);
+		assertSegments(
+			{ 4, 5 },
+			{ { 1, 2, 3, 4, 5 } }
+		);
 	}
 
 	TEST_F(OverlapExtractTests, hasNextIfNLengthSegmentAvailable) {
