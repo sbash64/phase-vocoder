@@ -2,9 +2,11 @@
 #include <vector>
 #include <complex>
 
+template<typename T>
 class InterpolateFrames {
-	std::vector<std::complex<double>> previous;
-	std::vector<std::complex<double>> current;
+	using complex_type = std::complex<T>;
+	std::vector<complex_type> previous;
+	std::vector<complex_type> current;
 	int numerator;
 	int P;
 	int Q;
@@ -18,21 +20,21 @@ public:
 	{
 	}
 
-	void add(gsl::span<std::complex<double>> x) {
+	void add(gsl::span<complex_type> x) {
 		std::copy(x.begin(), x.end(), current.begin());
 		numerator += P;
 	}
 
 	bool hasNext() { return numerator != 0; }
 
-	void next(gsl::span<std::complex<double>> x) {
+	void next(gsl::span<complex_type> x) {
 		std::transform(
 			previous.begin(),
 			previous.end(),
 			current.begin(),
 			x.begin(),
-			[&](std::complex<double> a, std::complex<double> b) {
-				double denominator = Q;
+			[&](complex_type a, complex_type b) {
+				T denominator = Q;
 				auto ratio = numerator / denominator;
 				auto magnitude = std::abs(a) * (1 - ratio) + std::abs(b) * ratio;
 				auto phase = std::arg(b) - std::arg(a);
@@ -49,16 +51,22 @@ public:
 #include <gtest/gtest.h>
 
 namespace {
-	bool normDifferenceBelowTolerance(std::complex<double> a, std::complex<double> b, double e) {
+	template<typename T>
+	bool normDifferenceBelowTolerance(std::complex<T> a, std::complex<T> b, T e) {
 		return std::norm(a - b) < e;
 	}
 
-	void assertEqual(std::complex<double> a, std::complex<double> b, double e) {
-		EXPECT_PRED3(normDifferenceBelowTolerance, a, b, e);
+	template<typename T>
+	void assertEqual(std::complex<T> a, std::complex<T> b, T e) {
+		EXPECT_PRED3(normDifferenceBelowTolerance<T>, a, b, e);
 	}
 
 	template<typename T>
-	void assertEqual(std::vector<std::complex<T>> expected, std::vector<std::complex<T>> actual, double tolerance) {
+	void assertEqual(
+		std::vector<std::complex<T>> expected, 
+		std::vector<std::complex<T>> actual, 
+		T tolerance
+	) {
 		EXPECT_EQ(expected.size(), actual.size());
 		for (std::size_t i = 0; i < expected.size(); ++i)
 			assertEqual(expected.at(i), actual.at(i), tolerance);
@@ -75,7 +83,7 @@ namespace {
 		int P = 1;
 		int Q = 2;
 		int N = 3;
-		InterpolateFrames interpolate{ P, Q, N };
+		InterpolateFrames<double> interpolate{ P, Q, N };
 	protected:
 		void assertInterpolatedFrames(
 			std::vector<std::complex<double>> x, 
@@ -111,18 +119,6 @@ namespace {
 			interpolate.next(out);
 			assertEqual(std::move(expected), std::move(out), tolerance);
 		}
-
-		double magnitude(std::complex<double> x) {
-			return std::abs(x);
-		}
-
-		std::complex<double> toComplex(double magnitude, double radians) {
-			return std::polar(magnitude, radians);
-		}
-
-		double phase(std::complex<double> x) {
-			return std::arg(x);
-		}
 	};
 
 	TEST_F(InterpolateFramesTests, tbd) {
@@ -130,16 +126,8 @@ namespace {
 		assertInterpolatedFrames(
 			{1.0 + 2i, 3.0 + 4i, 5.0 + 6i},
 			{
-				{
-					0.5 + 1i,
-					1.5 + 2i,
-					2.5 + 3i
-				},
-				{
-					1.0 + 2i,
-					3.0 + 4i,
-					5.0 + 6i
-				}
+				{ 0.5 + 1i, 1.5 + 2i, 2.5 + 3i},
+				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i}
 			},
 			1e-15
 		);
