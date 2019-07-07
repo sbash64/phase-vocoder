@@ -1,14 +1,8 @@
+#include "assert-utility.h"
 #include <phase-vocoder/OverlapExtract.h>
 #include <gtest/gtest.h>
 
 namespace {
-	template<typename T>
-	void assertEqual(std::vector<T> expected, std::vector<T> actual) {
-		EXPECT_EQ(expected.size(), actual.size());
-		for (std::size_t i = 0; i < expected.size(); ++i)
-			EXPECT_EQ(expected.at(i), actual.at(i));
-	}
-
 	constexpr auto N = 5;
 	constexpr auto hop = 2;
 	class OverlapExtractTests : public ::testing::Test {

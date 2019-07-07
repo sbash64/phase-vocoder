@@ -1,84 +1,8 @@
-#include <gsl/gsl>
-#include <vector>
-#include <complex>
-
-template<typename T>
-class InterpolateFrames {
-	using complex_type = std::complex<T>;
-	std::vector<complex_type> previous;
-	std::vector<complex_type> current;
-	int numerator;
-	int P;
-	int Q;
-public:
-	InterpolateFrames(int P, int Q, int N) : 
-		previous(N), 
-		current(N),
-		numerator{ 0 },
-		P{ P },
-		Q{ Q }
-	{
-	}
-
-	void add(gsl::span<complex_type> x) {
-		std::copy(x.begin(), x.end(), current.begin());
-		numerator += P;
-	}
-
-	bool hasNext() { return numerator != 0; }
-
-	void next(gsl::span<complex_type> x) {
-		std::transform(
-			previous.begin(),
-			previous.end(),
-			current.begin(),
-			x.begin(),
-			[&](complex_type a, complex_type b) {
-				T denominator = Q;
-				auto ratio = numerator / denominator;
-				auto magnitude = std::abs(a) * (1 - ratio) + std::abs(b) * ratio;
-				auto phase = std::arg(b) - std::arg(a);
-				return std::polar(magnitude, phase);
-			}
-		);
-		if (numerator == Q)
-			numerator -= Q;
-		else
-			numerator += P;
-	}
-};
-
+#include "assert-utility.h"
+#include <phase-vocoder/InterpolateFrames.h>
 #include <gtest/gtest.h>
 
 namespace {
-	template<typename T>
-	bool normDifferenceBelowTolerance(std::complex<T> a, std::complex<T> b, T e) {
-		return std::norm(a - b) < e;
-	}
-
-	template<typename T>
-	void assertEqual(std::complex<T> a, std::complex<T> b, T e) {
-		EXPECT_PRED3(normDifferenceBelowTolerance<T>, a, b, e);
-	}
-
-	template<typename T>
-	void assertEqual(
-		std::vector<std::complex<T>> expected, 
-		std::vector<std::complex<T>> actual, 
-		T tolerance
-	) {
-		EXPECT_EQ(expected.size(), actual.size());
-		for (std::size_t i = 0; i < expected.size(); ++i)
-			assertEqual(expected.at(i), actual.at(i), tolerance);
-	}
-
-	template<typename T>
-	void assertEqual(std::vector<T> expected, std::vector<T> actual) {
-		EXPECT_EQ(expected.size(), actual.size());
-		for (std::size_t i = 0; i < expected.size(); ++i)
-			EXPECT_EQ(expected.at(i), actual.at(i));
-	}
-
 	class InterpolateFramesTests : public ::testing::Test {
 		int P = 1;
 		int Q = 2;
