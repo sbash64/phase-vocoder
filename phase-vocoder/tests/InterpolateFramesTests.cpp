@@ -26,7 +26,7 @@ namespace {
 			x.begin(),
 			x.end(),
 			x.begin(),
-			[&](std::complex<double> a) { return doublePhase(a); }
+			[](std::complex<double> a) { return doublePhase(a); }
 		);
 		return x;
 	}
@@ -39,8 +39,49 @@ namespace {
 		return phase(a) + phase(b);
 	}
 
-	std::complex<double> averagedMagnitudeWithSummedPhase(std::complex<double> a, std::complex<double> b) {
+	std::complex<double> averageMagnitudesAndSumPhases(std::complex<double> a, std::complex<double> b) {
 		return complex(averageMagnitude(a, b), summedPhase(a, b));
+	}
+
+	std::vector<std::complex<double>> averageMagnitudesAndSumPhases(
+		std::vector<std::complex<double>> a,
+		std::vector<std::complex<double>> b
+	) {
+		std::vector<std::complex<double>> out;
+		std::transform(
+			a.begin(),
+			a.end(),
+			b.begin(),
+			std::back_inserter(out),
+			[](std::complex<double> a_, std::complex<double> b_) { 
+				return averageMagnitudesAndSumPhases(a_, b_); 
+			}
+		);
+		return out;
+	}
+
+	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+		std::complex<double> a, 
+		std::complex<double> b
+	) {
+		return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, phase(b));
+	}
+
+	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+		std::vector<std::complex<double>> a,
+		std::vector<std::complex<double>> b
+	) {
+		std::vector<std::complex<double>> out;
+		std::transform(
+			a.begin(),
+			a.end(),
+			b.begin(),
+			std::back_inserter(out),
+			[](std::complex<double> a_, std::complex<double> b_) {
+				return twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(a_, b_);
+			}
+		);
+		return out;
 	}
 
 	class InterpolateFramesFacade {
@@ -130,11 +171,10 @@ namespace {
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
-				{
-					averagedMagnitudeWithSummedPhase(1.0 + 2i, 7.0 + 8i),
-					averagedMagnitudeWithSummedPhase(3.0 + 4i, 9.0 + 10i),
-					averagedMagnitudeWithSummedPhase(5.0 + 6i, 11.0 + 12i)
-				},
+				averageMagnitudesAndSumPhases(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }, 
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				),
 				doublePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
 			},
 			1e-15
@@ -171,11 +211,10 @@ namespace {
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
-				{
-					complex(2 * magnitude(1.0 + 2i) / 3 + magnitude(7.0 + 8i) / 3, phase(7.0 + 8i)),
-					complex(2 * magnitude(3.0 + 4i) / 3 + magnitude(9.0 + 10i) / 3, phase(9.0 + 10i)),
-					complex(2 * magnitude(5.0 + 6i) / 3 + magnitude(11.0 + 12i) / 3, phase(11.0 + 12i))
-				},
+				twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				),
 				{
 					complex(magnitude(7.0 + 8i), 2*phase(7.0 + 8i) - phase(1.0 + 2i)),
 					complex(magnitude(9.0 + 10i), 2*phase(9.0 + 10i) - phase(3.0 + 4i)),
