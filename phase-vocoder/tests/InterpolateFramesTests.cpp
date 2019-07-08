@@ -5,7 +5,7 @@
 namespace {
 	using namespace std::complex_literals;
 
-	class InterpolateFramesTests : public ::testing::Test {
+	class InterpolateFramesP1Q2Tests : public ::testing::Test {
 		int P = 1;
 		int Q = 2;
 		int N = 3;
@@ -95,7 +95,7 @@ namespace {
 		}
 	};
 
-	TEST_F(InterpolateFramesTests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+	TEST_F(InterpolateFramesP1Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
 		assertInterpolatedFrames(
 			{1.0 + 2i, 3.0 + 4i, 5.0 + 6i},
 			{
@@ -106,7 +106,7 @@ namespace {
 		);
 	}
 
-	TEST_F(InterpolateFramesTests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+	TEST_F(InterpolateFramesP1Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
 		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
@@ -117,6 +117,62 @@ namespace {
 					averagedMagnitudeWithSummedPhase(5.0 + 6i, 11.0 + 12i)
 				},
 				doublePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
+			},
+			1e-15
+		);
+	}
+
+	class InterpolateFramesP2Q3Tests : public ::testing::Test {
+		int P = 2;
+		int Q = 3;
+		int N = 3;
+		InterpolateFrames<double> interpolate{ P, Q, N };
+	protected:
+		void assertInterpolatedFrames(
+			std::vector<std::complex<double>> x,
+			std::vector<std::vector<std::complex<double>>> frames,
+			double tolerance
+		) {
+			add(std::move(x));
+			for (auto frame : frames) {
+				assertHasNext();
+				assertNextEquals(std::move(frame), tolerance);
+			}
+			assertDoesNotHaveNext();
+		}
+
+		void assertHasNext() {
+			EXPECT_TRUE(hasNext());
+		}
+
+		void assertDoesNotHaveNext() {
+			EXPECT_FALSE(hasNext());
+		}
+
+		bool hasNext() {
+			return interpolate.hasNext();
+		}
+
+		void add(std::vector<std::complex<double>> x) {
+			interpolate.add(x);
+		}
+
+		std::vector<std::complex<double>> next() {
+			std::vector<std::complex<double>> out(N);
+			interpolate.next(out);
+			return out;
+		}
+
+		void assertNextEquals(std::vector<std::complex<double>> expected, double tolerance) {
+			assertEqual(std::move(expected), next(), tolerance);
+		}
+	};
+
+	TEST_F(InterpolateFramesP2Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+		assertInterpolatedFrames(
+			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+			{
+				{ 2/3.0 + 4i/3.0, 2.0 + 8i/3.0, 10/3.0 + 4i }
 			},
 			1e-15
 		);
