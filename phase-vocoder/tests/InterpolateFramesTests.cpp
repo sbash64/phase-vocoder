@@ -5,14 +5,52 @@
 namespace {
 	using namespace std::complex_literals;
 
-	class InterpolateFramesP1Q2Tests : public ::testing::Test {
-		int P = 1;
-		int Q = 2;
-		int N = 3;
-		InterpolateFrames<double> interpolate{ P, Q, N };
-	protected:
+	double magnitude(std::complex<double> x) {
+		return std::abs(x);
+	}
+
+	double phase(std::complex<double> x) {
+		return std::arg(x);
+	}
+
+	std::complex<double> complex(double magnitude, double radians) {
+		return std::polar(magnitude, radians);
+	}
+
+	std::complex<double> doublePhase(std::complex<double> x) {
+		return x * std::exp(phase(x) * 1i);
+	}
+
+	std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
+		std::transform(
+			x.begin(),
+			x.end(),
+			x.begin(),
+			[&](std::complex<double> a) { return doublePhase(a); }
+		);
+		return x;
+	}
+
+	double averageMagnitude(std::complex<double> a, std::complex<double> b) {
+		return (magnitude(a) + magnitude(b)) / 2;
+	}
+
+	double summedPhase(std::complex<double> a, std::complex<double> b) {
+		return phase(a) + phase(b);
+	}
+
+	std::complex<double> averagedMagnitudeWithSummedPhase(std::complex<double> a, std::complex<double> b) {
+		return complex(averageMagnitude(a, b), summedPhase(a, b));
+	}
+
+	class InterpolateFramesFacade {
+		InterpolateFrames<double> interpolate;
+		int N;
+	public:
+		InterpolateFramesFacade(int P, int Q, int N) : interpolate{ P, Q, N }, N{ N } {}
+
 		void assertInterpolatedFrames(
-			std::vector<std::complex<double>> x, 
+			std::vector<std::complex<double>> x,
 			std::vector<std::vector<std::complex<double>>> frames,
 			double tolerance
 		) {
@@ -55,43 +93,24 @@ namespace {
 		void assertNextEquals(std::vector<std::complex<double>> expected, double tolerance) {
 			assertEqual(std::move(expected), next(), tolerance);
 		}
+	};
 
-		double magnitude(std::complex<double> x) {
-			return std::abs(x);
+	class InterpolateFramesP1Q2Tests : public ::testing::Test {
+		int P = 1;
+		int Q = 2;
+		int N = 3;
+		InterpolateFramesFacade interpolate{ P, Q, N };
+	protected:
+		void assertInterpolatedFrames(
+			std::vector<std::complex<double>> x, 
+			std::vector<std::vector<std::complex<double>>> frames,
+			double tolerance
+		) {
+			interpolate.assertInterpolatedFrames(x, frames, tolerance);
 		}
 
-		double phase(std::complex<double> x) {
-			return std::arg(x);
-		}
-
-		std::complex<double> complex(double magnitude, double radians) {
-			return std::polar(magnitude, radians);
-		}
-
-		std::complex<double> doublePhase(std::complex<double> x) {
-			return x * std::exp(phase(x) * 1i);
-		}
-
-		std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
-			std::transform(
-				x.begin(),
-				x.end(),
-				x.begin(),
-				[&](std::complex<double> a) { return doublePhase(a); }
-			);
-			return x;
-		}
-
-		double averageMagnitude(std::complex<double> a, std::complex<double> b) {
-			return (magnitude(a) + magnitude(b)) / 2;
-		}
-
-		double summedPhase(std::complex<double> a, std::complex<double> b) {
-			return phase(a) + phase(b);
-		}
-
-		std::complex<double> averagedMagnitudeWithSummedPhase(std::complex<double> a, std::complex<double> b) {
-			return complex(averageMagnitude(a, b), summedPhase(a, b));
+		void consumeAdd(std::vector<std::complex<double>> x) {
+			interpolate.consumeAdd(x);
 		}
 	};
 
@@ -126,45 +145,18 @@ namespace {
 		int P = 2;
 		int Q = 3;
 		int N = 3;
-		InterpolateFrames<double> interpolate{ P, Q, N };
+		InterpolateFramesFacade interpolate{ P, Q, N };
 	protected:
 		void assertInterpolatedFrames(
 			std::vector<std::complex<double>> x,
 			std::vector<std::vector<std::complex<double>>> frames,
 			double tolerance
 		) {
-			add(std::move(x));
-			for (auto frame : frames) {
-				assertHasNext();
-				assertNextEquals(std::move(frame), tolerance);
-			}
-			assertDoesNotHaveNext();
+			interpolate.assertInterpolatedFrames(x, frames, tolerance);
 		}
 
-		void assertHasNext() {
-			EXPECT_TRUE(hasNext());
-		}
-
-		void assertDoesNotHaveNext() {
-			EXPECT_FALSE(hasNext());
-		}
-
-		bool hasNext() {
-			return interpolate.hasNext();
-		}
-
-		void add(std::vector<std::complex<double>> x) {
-			interpolate.add(x);
-		}
-
-		std::vector<std::complex<double>> next() {
-			std::vector<std::complex<double>> out(N);
-			interpolate.next(out);
-			return out;
-		}
-
-		void assertNextEquals(std::vector<std::complex<double>> expected, double tolerance) {
-			assertEqual(std::move(expected), next(), tolerance);
+		void consumeAdd(std::vector<std::complex<double>> x) {
+			interpolate.consumeAdd(x);
 		}
 	};
 
