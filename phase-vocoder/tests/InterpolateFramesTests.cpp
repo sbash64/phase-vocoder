@@ -43,9 +43,10 @@ namespace {
 		return complex(averageMagnitude(a, b), summedPhase(a, b));
 	}
 
-	std::vector<std::complex<double>> averageMagnitudesAndSumPhases(
+	std::vector<std::complex<double>> transform(
 		std::vector<std::complex<double>> a,
-		std::vector<std::complex<double>> b
+		std::vector<std::complex<double>> b,
+		std::function<std::complex<double>(std::complex<double>, std::complex<double>)> f
 	) {
 		std::vector<std::complex<double>> out;
 		std::transform(
@@ -53,11 +54,22 @@ namespace {
 			a.end(),
 			b.begin(),
 			std::back_inserter(out),
+			f
+		);
+		return out;
+	}
+
+	std::vector<std::complex<double>> averageMagnitudesAndSumPhases(
+		std::vector<std::complex<double>> a,
+		std::vector<std::complex<double>> b
+	) {
+		return transform(
+			a, 
+			b,
 			[](std::complex<double> a_, std::complex<double> b_) { 
 				return averageMagnitudesAndSumPhases(a_, b_); 
 			}
 		);
-		return out;
 	}
 
 	std::complex<double> magnitudeSecondAndDoublePhaseSecondMinusFirst(
@@ -78,34 +90,26 @@ namespace {
 		std::vector<std::complex<double>> a,
 		std::vector<std::complex<double>> b
 	) {
-		std::vector<std::complex<double>> out;
-		std::transform(
-			a.begin(),
-			a.end(),
-			b.begin(),
-			std::back_inserter(out),
+		return transform(
+			a,
+			b,
 			[](std::complex<double> a_, std::complex<double> b_) {
 				return twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(a_, b_);
 			}
 		);
-		return out;
 	}
 
 	std::vector<std::complex<double>> magnitudeSecondAndDoublePhaseSecondMinusFirst(
 		std::vector<std::complex<double>> a,
 		std::vector<std::complex<double>> b
 	) {
-		std::vector<std::complex<double>> out;
-		std::transform(
-			a.begin(),
-			a.end(),
-			b.begin(),
-			std::back_inserter(out),
+		return transform(
+			a,
+			b,
 			[](std::complex<double> a_, std::complex<double> b_) {
 				return magnitudeSecondAndDoublePhaseSecondMinusFirst(a_, b_);
 			}
 		);
-		return out;
 	}
 
 	class InterpolateFramesFacade {
