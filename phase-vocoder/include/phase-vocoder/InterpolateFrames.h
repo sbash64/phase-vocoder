@@ -31,39 +31,20 @@ public:
 
 	void add(gsl::span<complex_type> x) {
 		std::copy(x.begin(), x.end(), current.begin());
+		transformFrames(
+			phaseAdvance.begin(),
+			[&](complex_type a, complex_type b) {
+				return phase(b) - phase(a);
+			}
+		);
 		numerator += P;
 	}
 
 	bool hasNext() { return numerator != 0; }
 
 	void next(gsl::span<complex_type> x) {
-		std::transform(
-			previous.begin(),
-			previous.end(),
-			current.begin(),
-			phaseAdvance.begin(),
-			[&](complex_type a, complex_type b) {
-				return std::arg(b) - std::arg(a);
-			}
-		);
-		std::transform(
-			previous.begin(),
-			previous.end(),
-			current.begin(),
-			resampledMagnitude.begin(),
-			[&](complex_type a, complex_type b) {
-				T denominator = Q;
-				auto ratio = numerator / denominator;
-				return std::abs(a) * (1 - ratio) + std::abs(b) * ratio;
-			}
-		);
-		std::transform(
-			phaseAdvance.begin(),
-			phaseAdvance.end(),
-			accumulatedPhase.begin(),
-			accumulatedPhase.begin(),
-			std::plus<T>{}
-		);
+		resampleMagnitude();
+		accumulatePhase();
 		std::transform(
 			resampledMagnitude.begin(),
 			resampledMagnitude.end(),
@@ -79,6 +60,49 @@ public:
 		}
 		else
 			numerator += P;
+	}
+
+private:
+	T phase(complex_type x) {
+		return std::arg(x);
+	}
+
+	T magnitude(complex_type x) {
+		return std::abs(x);
+	}
+
+	void transformFrames(
+		typename std::vector<T>::iterator it, 
+		std::function<T(complex_type, complex_type)> f
+	) {
+		std::transform(
+			previous.begin(),
+			previous.end(),
+			current.begin(),
+			it,
+			f
+		);
+	}
+
+	void accumulatePhase() {
+		std::transform(
+			phaseAdvance.begin(),
+			phaseAdvance.end(),
+			accumulatedPhase.begin(),
+			accumulatedPhase.begin(),
+			std::plus<T>{}
+		);
+	}
+
+	void resampleMagnitude() {
+		transformFrames(
+			resampledMagnitude.begin(),
+			[&](complex_type a, complex_type b) {
+				T denominator = Q;
+				auto ratio = numerator / denominator;
+				return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
+			}
+		);
 	}
 };
 
