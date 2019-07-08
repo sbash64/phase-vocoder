@@ -8,8 +8,9 @@
 template<typename T>
 class InterpolateFrames {
 	using complex_type = std::complex<T>;
-	std::vector<complex_type> previous;
-	std::vector<complex_type> current;
+	using frame_type = std::vector<complex_type>;
+	frame_type previousFrame;
+	frame_type currentFrame;
 	std::vector<T> accumulatedPhase;
 	std::vector<T> phaseAdvance;
 	std::vector<T> resampledMagnitude;
@@ -19,8 +20,8 @@ class InterpolateFrames {
 	bool hasNext_{};
 public:
 	InterpolateFrames(int P, int Q, int N) :
-		previous(N),
-		current(N),
+		previousFrame(N),
+		currentFrame(N),
 		accumulatedPhase(N),
 		phaseAdvance(N),
 		resampledMagnitude(N),
@@ -31,10 +32,10 @@ public:
 	}
 
 	void add(gsl::span<complex_type> x) {
-		previous = current;
-		std::copy(x.begin(), x.end(), current.begin());
+		copy(currentFrame, previousFrame);
+		copy(x, currentFrame);
 		transformFrames(
-			phaseAdvance.begin(),
+			phaseAdvance,
 			[&](complex_type a, complex_type b) {
 				return phase(b) - phase(a);
 			}
@@ -64,6 +65,10 @@ public:
 	}
 
 private:
+	void copy(gsl::span<complex_type> source, std::vector<complex_type>& destination) {
+		std::copy(source.begin(), source.end(), destination.begin());
+	}
+
 	T phase(complex_type x) {
 		return std::arg(x);
 	}
@@ -73,14 +78,14 @@ private:
 	}
 
 	void transformFrames(
-		typename std::vector<T>::iterator it, 
+		std::vector<T> &out, 
 		std::function<T(complex_type, complex_type)> f
 	) {
 		std::transform(
-			previous.begin(),
-			previous.end(),
-			current.begin(),
-			it,
+			previousFrame.begin(),
+			previousFrame.end(),
+			currentFrame.begin(),
+			out.begin(),
 			f
 		);
 	}
@@ -97,7 +102,7 @@ private:
 
 	void resampleMagnitude() {
 		transformFrames(
-			resampledMagnitude.begin(),
+			resampledMagnitude,
 			[&](complex_type a, complex_type b) {
 				T denominator = Q;
 				auto ratio = numerator / denominator;
