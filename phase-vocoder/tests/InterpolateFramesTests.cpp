@@ -168,5 +168,21 @@ namespace {
 			},
 			1e-15
 		);
+		assertInterpolatedFrames(
+			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+			{
+				{
+					complex(2 * magnitude(1.0 + 2i) / 3 + magnitude(7.0 + 8i) / 3, phase(7.0 + 8i)),
+					complex(2 * magnitude(3.0 + 4i) / 3 + magnitude(9.0 + 10i) / 3, phase(9.0 + 10i)),
+					complex(2 * magnitude(5.0 + 6i) / 3 + magnitude(11.0 + 12i) / 3, phase(11.0 + 12i))
+				},
+				{
+					complex(magnitude(7.0 + 8i), 2*phase(7.0 + 8i) - phase(1.0 + 2i)),
+					complex(magnitude(9.0 + 10i), 2*phase(9.0 + 10i) - phase(3.0 + 4i)),
+					complex(magnitude(11.0 + 12i), 2*phase(11.0 + 12i) - phase(5.0 + 6i))
+				}
+			},
+			1e-15
+		);
 	}
 }
