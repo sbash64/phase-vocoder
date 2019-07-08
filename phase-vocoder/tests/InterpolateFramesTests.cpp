@@ -60,6 +60,13 @@ namespace {
 		return out;
 	}
 
+	std::complex<double> magnitudeSecondAndDoublePhaseSecondMinusFirst(
+		std::complex<double> a, 
+		std::complex<double> b
+	) {
+		return complex(magnitude(b), 2 * phase(b) - phase(a));
+	}
+
 	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
 		std::complex<double> a, 
 		std::complex<double> b
@@ -79,6 +86,23 @@ namespace {
 			std::back_inserter(out),
 			[](std::complex<double> a_, std::complex<double> b_) {
 				return twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(a_, b_);
+			}
+		);
+		return out;
+	}
+
+	std::vector<std::complex<double>> magnitudeSecondAndDoublePhaseSecondMinusFirst(
+		std::vector<std::complex<double>> a,
+		std::vector<std::complex<double>> b
+	) {
+		std::vector<std::complex<double>> out;
+		std::transform(
+			a.begin(),
+			a.end(),
+			b.begin(),
+			std::back_inserter(out),
+			[](std::complex<double> a_, std::complex<double> b_) {
+				return magnitudeSecondAndDoublePhaseSecondMinusFirst(a_, b_);
 			}
 		);
 		return out;
@@ -215,11 +239,10 @@ namespace {
 					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 				),
-				{
-					complex(magnitude(7.0 + 8i), 2*phase(7.0 + 8i) - phase(1.0 + 2i)),
-					complex(magnitude(9.0 + 10i), 2*phase(9.0 + 10i) - phase(3.0 + 4i)),
-					complex(magnitude(11.0 + 12i), 2*phase(11.0 + 12i) - phase(5.0 + 6i))
-				}
+				magnitudeSecondAndDoublePhaseSecondMinusFirst(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				)
 			},
 			1e-15
 		);
