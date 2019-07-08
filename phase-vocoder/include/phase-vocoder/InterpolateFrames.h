@@ -62,7 +62,7 @@ public:
 			phaseAdvance.end(),
 			accumulatedPhase.begin(),
 			accumulatedPhase.begin(),
-			std::plus<double>{}
+			std::plus<T>{}
 		);
 		std::transform(
 			resampledMagnitude.begin(),
