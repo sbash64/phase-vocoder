@@ -40,7 +40,7 @@ namespace {
 			interpolate.add(x);
 		}
 
-		void addConsume(std::vector<std::complex<double>> x) {
+		void consumeAdd(std::vector<std::complex<double>> x) {
 			add(x);
 			while (hasNext())
 				next();
@@ -64,20 +64,20 @@ namespace {
 			return std::arg(x);
 		}
 
-		std::complex<double> toComplex(double magnitude, double radians) {
+		std::complex<double> complex(double magnitude, double radians) {
 			return std::polar(magnitude, radians);
 		}
 
-		std::complex<double> doubledPhase(std::complex<double> x) {
+		std::complex<double> doublePhase(std::complex<double> x) {
 			return x * std::exp(phase(x) * 1i);
 		}
 
-		std::vector<std::complex<double>> doubledPhase(std::vector<std::complex<double>> x) {
+		std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
 			std::transform(
 				x.begin(),
 				x.end(),
 				x.begin(),
-				[&](std::complex<double> a) { return doubledPhase(a); }
+				[&](std::complex<double> a) { return doublePhase(a); }
 			);
 			return x;
 		}
@@ -89,6 +89,10 @@ namespace {
 		double summedPhase(std::complex<double> a, std::complex<double> b) {
 			return phase(a) + phase(b);
 		}
+
+		std::complex<double> averagedMagnitudeWithSummedPhase(std::complex<double> a, std::complex<double> b) {
+			return complex(averageMagnitude(a, b), summedPhase(a, b));
+		}
 	};
 
 	TEST_F(InterpolateFramesTests, interpolatesComplexMagnitudesAndAdvancesPhase) {
@@ -96,23 +100,23 @@ namespace {
 			{1.0 + 2i, 3.0 + 4i, 5.0 + 6i},
 			{
 				{ 0.5 + 1i, 1.5 + 2i, 2.5 + 3i},
-				doubledPhase({1.0 + 2i, 3.0 + 4i, 5.0 + 6i})
+				doublePhase({1.0 + 2i, 3.0 + 4i, 5.0 + 6i})
 			},
 			1e-15
 		);
 	}
 
 	TEST_F(InterpolateFramesTests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
-		addConsume({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
 				{
-					toComplex(averageMagnitude(1.0 + 2i, 7.0 + 8i), summedPhase(7.0 + 8i, 1.0 + 2i)),
-					toComplex(averageMagnitude(3.0 + 4i, 9.0 + 10i), summedPhase(9.0 + 10i, 3.0 + 4i)),
-					toComplex(averageMagnitude(5.0 + 6i, 11.0 + 12i), summedPhase(11.0 + 12i, 5.0 + 6i)),
+					averagedMagnitudeWithSummedPhase(1.0 + 2i, 7.0 + 8i),
+					averagedMagnitudeWithSummedPhase(3.0 + 4i, 9.0 + 10i),
+					averagedMagnitudeWithSummedPhase(5.0 + 6i, 11.0 + 12i)
 				},
-				doubledPhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
+				doublePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
 			},
 			1e-15
 		);
