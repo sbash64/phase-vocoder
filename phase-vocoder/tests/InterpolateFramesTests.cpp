@@ -97,14 +97,14 @@ namespace {
 		return complex(magnitude(b), 2 * phase(b) - phase(a));
 	}
 
-	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+	std::complex<double> twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
 		const std::complex<double> &a, 
 		const std::complex<double> &b
 	) {
 		return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, phase(b));
 	}
 
-	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+	std::complex<double> twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 		const std::complex<double>& a,
 		const std::complex<double>& b
 	) {
@@ -118,11 +118,11 @@ namespace {
 		return complex(magnitude(a) / 3 + 2 * magnitude(b) / 3, phase(a) + 2 * phase(b));
 	}
 
-	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+	std::vector<std::complex<double>> twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
 		std::vector<std::complex<double>> a,
 		const std::vector<std::complex<double>> &b
 	) {
-		return transform(std::move(a), b, twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond);
+		return transform(std::move(a), b, twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond);
 	}
 
 	std::vector<std::complex<double>> magnitudeSecondAndDoublePhaseSecondMinusFirst(
@@ -132,11 +132,11 @@ namespace {
 		return transform(std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
 	}
 
-	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+	std::vector<std::complex<double>> twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 		std::vector<std::complex<double>> a,
 		const std::vector<std::complex<double>>& b
 	) {
-		return transform(std::move(a), b, twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond);
+		return transform(std::move(a), b, twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond);
 	}
 
 	std::vector<std::complex<double>> oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
@@ -293,7 +293,7 @@ namespace {
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
-				twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
+				twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
 					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 				),
@@ -342,7 +342,7 @@ namespace {
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
-				twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+				twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 				),
