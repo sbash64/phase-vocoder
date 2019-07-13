@@ -355,4 +355,31 @@ namespace {
 			1e-15
 		);
 	}
+
+	class InterpolateFramesP2Q1Tests : public ::testing::Test {
+		int P = 2;
+		int Q = 1;
+		int N = 3;
+		InterpolateFramesFacade interpolate{ P, Q, N };
+	protected:
+		void assertInterpolatedFrames(
+			const std::vector<std::complex<double>>& x,
+			const std::vector<std::vector<std::complex<double>>>& frames,
+			double tolerance
+		) {
+			::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+		}
+
+		void consumeAdd(const std::vector<std::complex<double>>& x) {
+			::consumeAdd(interpolate, x);
+		}
+	};
+
+	TEST_F(InterpolateFramesP2Q1Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+		assertInterpolatedFrames(
+			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+			{},
+			1e-15
+		);
+	}
 }

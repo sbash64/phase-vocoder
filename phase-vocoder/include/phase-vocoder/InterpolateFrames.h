@@ -40,7 +40,12 @@ public:
 				return phase(b) - phase(a);
 			}
 		);
-		hasNext_ = true;
+		if (numerator > Q) {
+			numerator -= Q;
+			hasNext_ = false;
+		}
+		else
+			hasNext_ = true;
 	}
 
 	bool hasNext() { return hasNext_; }
