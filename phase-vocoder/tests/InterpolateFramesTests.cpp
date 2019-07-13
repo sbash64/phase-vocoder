@@ -232,10 +232,14 @@ namespace {
 		assertInterpolatedFrames(
 			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 			{
-				{ 2/3.0 + 4i/3.0, 2.0 + 8i/3.0, 10/3.0 + 4i }
+				{ 2 / 3.0 + 4i / 3.0, 2.0 + 8i / 3.0, 10 / 3.0 + 4i }
 			},
 			1e-15
 		);
+	}
+
+	TEST_F(InterpolateFramesP2Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 		assertInterpolatedFrames(
 			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 			{
