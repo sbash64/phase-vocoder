@@ -21,12 +21,26 @@ namespace {
 		return x * std::exp(phase(x) * 1i);
 	}
 
+	std::complex<double> triplePhase(std::complex<double> x) {
+		return x * std::exp(phase(x) * 2i);
+	}
+
 	std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
 		std::transform(
 			x.begin(),
 			x.end(),
 			x.begin(),
 			[](std::complex<double> a) { return doublePhase(a); }
+		);
+		return x;
+	}
+
+	std::vector<std::complex<double>> triplePhase(std::vector<std::complex<double>> x) {
+		std::transform(
+			x.begin(),
+			x.end(),
+			x.begin(),
+			[](std::complex<double> a) { return triplePhase(a); }
 		);
 		return x;
 	}
@@ -251,6 +265,37 @@ namespace {
 					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 				)
+			},
+			1e-15
+		);
+	}
+
+	class InterpolateFramesP1Q3Tests : public ::testing::Test {
+		int P = 1;
+		int Q = 3;
+		int N = 3;
+		InterpolateFramesFacade interpolate{ P, Q, N };
+	protected:
+		void assertInterpolatedFrames(
+			std::vector<std::complex<double>> x,
+			std::vector<std::vector<std::complex<double>>> frames,
+			double tolerance
+		) {
+			interpolate.assertInterpolatedFrames(x, frames, tolerance);
+		}
+
+		void consumeAdd(std::vector<std::complex<double>> x) {
+			interpolate.consumeAdd(x);
+		}
+	};
+
+	TEST_F(InterpolateFramesP1Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+		assertInterpolatedFrames(
+			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+			{
+				{ 1/3.0 + 2i/3.0, 1.0 + 4i/3.0, 5/3.0 + 2i },
+				doublePhase({ 2/3.0 + 4i/3.0, 2.0 + 8i/3.0, 10/3.0 + 4i }),
+				triplePhase({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i })
 			},
 			1e-15
 		);

@@ -25,7 +25,7 @@ public:
 		accumulatedPhase(N),
 		phaseAdvance(N),
 		resampledMagnitude(N),
-		numerator{ Q - 1 },
+		numerator{ P },
 		P{ P },
 		Q{ Q }
 	{
@@ -90,16 +90,6 @@ private:
 		);
 	}
 
-	void accumulatePhase() {
-		std::transform(
-			phaseAdvance.begin(),
-			phaseAdvance.end(),
-			accumulatedPhase.begin(),
-			accumulatedPhase.begin(),
-			std::plus<T>{}
-		);
-	}
-
 	void resampleMagnitude() {
 		transformFrames(
 			resampledMagnitude,
@@ -108,6 +98,16 @@ private:
 				auto ratio = numerator / denominator;
 				return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
 			}
+		);
+	}
+
+	void accumulatePhase() {
+		std::transform(
+			phaseAdvance.begin(),
+			phaseAdvance.end(),
+			accumulatedPhase.begin(),
+			accumulatedPhase.begin(),
+			std::plus<T>{}
 		);
 	}
 };
