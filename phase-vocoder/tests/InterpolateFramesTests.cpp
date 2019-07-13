@@ -118,6 +118,13 @@ namespace {
 		return complex(magnitude(a) / 3 + 2 * magnitude(b) / 3, phase(a) + 2 * phase(b));
 	}
 
+	std::complex<double> halfMagnitudeEachAndPhaseSecond(
+		const std::complex<double>& a,
+		const std::complex<double>& b
+	) {
+		return complex(magnitude(a) / 2 + magnitude(b) / 2, phase(b));
+	}
+	
 	std::vector<std::complex<double>> twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
 		std::vector<std::complex<double>> a,
 		const std::vector<std::complex<double>> &b
@@ -146,6 +153,13 @@ namespace {
 		return transform(std::move(a), b, oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond);
 	}
 
+	std::vector<std::complex<double>> halfMagnitudeEachAndPhaseSecond(
+		std::vector<std::complex<double>> a,
+		const std::vector<std::complex<double>>& b
+	) {
+		return transform(std::move(a), b, halfMagnitudeEachAndPhaseSecond);
+	}
+	
 	class InterpolateFramesFacade {
 		InterpolateFrames<double> interpolate;
 		int N;
@@ -406,6 +420,20 @@ namespace {
 		assertInterpolatedFrames(
 			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 			{},
+			1e-15
+		);
+	}
+
+	TEST_F(InterpolateFramesP3Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+		assertInterpolatedFrames(
+			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+			{
+				halfMagnitudeEachAndPhaseSecond(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				)
+			},
 			1e-15
 		);
 	}

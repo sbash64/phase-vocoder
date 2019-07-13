@@ -41,6 +41,7 @@ public:
 			}
 		);
 		if (numerator > Q) {
+			accumulatePhase();
 			numerator -= Q;
 			hasNext_ = false;
 		}
