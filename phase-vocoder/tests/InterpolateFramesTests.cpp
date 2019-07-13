@@ -104,6 +104,20 @@ namespace {
 		return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, phase(b));
 	}
 
+	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+		const std::complex<double>& a,
+		const std::complex<double>& b
+	) {
+		return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, 2 * phase(a) + phase(b));
+	}
+
+	std::complex<double> oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+		const std::complex<double>& a,
+		const std::complex<double>& b
+	) {
+		return complex(magnitude(a) / 3 + 2 * magnitude(b) / 3, phase(a) + 2 * phase(b));
+	}
+
 	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
 		std::vector<std::complex<double>> a,
 		const std::vector<std::complex<double>> &b
@@ -116,6 +130,20 @@ namespace {
 		const std::vector<std::complex<double>> &b
 	) {
 		return transform(std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
+	}
+
+	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+		std::vector<std::complex<double>> a,
+		const std::vector<std::complex<double>>& b
+	) {
+		return transform(std::move(a), b, twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond);
+	}
+
+	std::vector<std::complex<double>> oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+		std::vector<std::complex<double>> a,
+		const std::vector<std::complex<double>>& b
+	) {
+		return transform(std::move(a), b, oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond);
 	}
 
 	class InterpolateFramesFacade {
@@ -304,6 +332,25 @@ namespace {
 				{ 1/3.0 + 2i/3.0, 1.0 + 4i/3.0, 5/3.0 + 2i },
 				doublePhase({ 2/3.0 + 4i/3.0, 2.0 + 8i/3.0, 10/3.0 + 4i }),
 				triplePhase({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i })
+			},
+			1e-15
+		);
+	}
+
+	TEST_F(InterpolateFramesP1Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+		assertInterpolatedFrames(
+			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+			{
+				twoThirdsMagnitudeOfFirstOneThirdOfSecondAndDoublePhaseFirstPlusSecond(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				),
+				oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+					{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+					{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				),
+				triplePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
 			},
 			1e-15
 		);
