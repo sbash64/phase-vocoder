@@ -17,8 +17,8 @@ void assertEqual(std::complex<T> a, std::complex<T> b, T e) {
 
 template<typename T>
 void assertEqual(
-	std::vector<std::complex<T>> expected,
-	std::vector<std::complex<T>> actual,
+	const std::vector<std::complex<T>> &expected,
+	const std::vector<std::complex<T>> &actual,
 	T tolerance
 ) {
 	EXPECT_EQ(expected.size(), actual.size());
@@ -27,7 +27,7 @@ void assertEqual(
 }
 
 template<typename T>
-void assertEqual(std::vector<T> expected, std::vector<T> actual) {
+void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
 	EXPECT_EQ(expected.size(), actual.size());
 	for (std::size_t i = 0; i < expected.size(); ++i)
 		EXPECT_EQ(expected.at(i), actual.at(i));

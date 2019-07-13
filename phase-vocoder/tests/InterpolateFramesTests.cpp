@@ -75,7 +75,10 @@ namespace {
 			a.end(),
 			b.begin(),
 			a.begin(),
-			[=](const std::complex<double> &a_, const std::complex<double> &b_) { return (*f)(a_, b_); }
+			[=](
+				const std::complex<double> &a_, 
+				const std::complex<double> &b_
+			) { return (*f)(a_, b_); }
 		);
 		return a;
 	}
