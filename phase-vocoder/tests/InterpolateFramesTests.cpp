@@ -5,11 +5,11 @@
 namespace {
 	using namespace std::complex_literals;
 
-	double magnitude(std::complex<double> x) {
+	double magnitude(const std::complex<double> &x) {
 		return std::abs(x);
 	}
 
-	double phase(std::complex<double> x) {
+	double phase(const std::complex<double> &x) {
 		return std::arg(x);
 	}
 
@@ -17,106 +17,102 @@ namespace {
 		return std::polar(magnitude, radians);
 	}
 
-	std::complex<double> exp(std::complex<double> x) {
+	std::complex<double> exp(const std::complex<double> &x) {
 		return std::exp(x);
 	}
 
-	std::complex<double> doublePhase(std::complex<double> x) {
+	std::complex<double> doublePhase(const std::complex<double> &x) {
 		return x * exp(phase(x) * 1i);
 	}
 
-	std::complex<double> triplePhase(std::complex<double> x) {
+	std::complex<double> triplePhase(const std::complex<double> &x) {
 		return x * exp(phase(x) * 2i);
 	}
 
 	std::vector<std::complex<double>> transform(
 		std::vector<std::complex<double>> a,
-		std::complex<double>(*f)(std::complex<double>)
+		std::complex<double>(*f)(const std::complex<double> &)
 	) {
 		std::transform(
 			a.begin(),
 			a.end(),
 			a.begin(),
-			[=](std::complex<double> a_) { return (*f)(a_); }
+			[=](const std::complex<double> &a_) { return (*f)(a_); }
 		);
 		return a;
 	}
 
 	std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
-		return transform(x, doublePhase);
+		return transform(std::move(x), doublePhase);
 	}
 
 	std::vector<std::complex<double>> triplePhase(std::vector<std::complex<double>> x) {
-		return transform(x, triplePhase);
+		return transform(std::move(x), triplePhase);
 	}
 
-	double averageMagnitude(std::complex<double> a, std::complex<double> b) {
+	double averageMagnitude(const std::complex<double> &a, const std::complex<double> &b) {
 		return (magnitude(a) + magnitude(b)) / 2;
 	}
 
-	double summedPhase(std::complex<double> a, std::complex<double> b) {
+	double summedPhase(const std::complex<double> &a, const std::complex<double> &b) {
 		return phase(a) + phase(b);
 	}
 
-	std::complex<double> averageMagnitudesAndSumPhases(std::complex<double> a, std::complex<double> b) {
+	std::complex<double> averageMagnitudesAndSumPhases(
+		const std::complex<double> &a, 
+		const std::complex<double> &b
+	) {
 		return complex(averageMagnitude(a, b), summedPhase(a, b));
 	}
 
 	std::vector<std::complex<double>> transform(
 		std::vector<std::complex<double>> a,
-		std::vector<std::complex<double>> b,
-		std::complex<double>(*f)(std::complex<double>, std::complex<double>)
+		const std::vector<std::complex<double>> &b,
+		std::complex<double>(*f)(const std::complex<double> &, const std::complex<double> &)
 	) {
-		std::vector<std::complex<double>> out;
 		std::transform(
 			a.begin(),
 			a.end(),
 			b.begin(),
-			std::back_inserter(out),
-			[=](std::complex<double> a_, std::complex<double> b_) { return (*f)(a_, b_); }
+			a.begin(),
+			[=](const std::complex<double> &a_, const std::complex<double> &b_) { return (*f)(a_, b_); }
 		);
-		return out;
+		return a;
 	}
 
 	std::vector<std::complex<double>> averageMagnitudesAndSumPhases(
 		std::vector<std::complex<double>> a,
-		std::vector<std::complex<double>> b
+		const std::vector<std::complex<double>> &b
 	) {
-		return transform(a, b, averageMagnitudesAndSumPhases);
+		return transform(std::move(a), b, averageMagnitudesAndSumPhases);
 	}
 
 	std::complex<double> magnitudeSecondAndDoublePhaseSecondMinusFirst(
-		std::complex<double> a, 
-		std::complex<double> b
+		const std::complex<double> &a, 
+		const std::complex<double> &b
 	) {
 		return complex(magnitude(b), 2 * phase(b) - phase(a));
 	}
 
 	std::complex<double> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
-		std::complex<double> a, 
-		std::complex<double> b
+		const std::complex<double> &a, 
+		const std::complex<double> &b
 	) {
 		return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, phase(b));
 	}
 
 	std::vector<std::complex<double>> twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond(
 		std::vector<std::complex<double>> a,
-		std::vector<std::complex<double>> b
+		const std::vector<std::complex<double>> &b
 	) {
-		return transform(a, b, twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond);
+		return transform(std::move(a), b, twoThirdsMagnitudeOfFirstOneThirdOfSecondAndPhaseSecond);
 	}
 
 	std::vector<std::complex<double>> magnitudeSecondAndDoublePhaseSecondMinusFirst(
 		std::vector<std::complex<double>> a,
-		std::vector<std::complex<double>> b
+		const std::vector<std::complex<double>> &b
 	) {
-		return transform(
-			a,
-			b,
-			[](std::complex<double> a_, std::complex<double> b_) {
-				return magnitudeSecondAndDoublePhaseSecondMinusFirst(a_, b_);
-			}
-		);
+		return transform(std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
 	}
 
 	class InterpolateFramesFacade {
