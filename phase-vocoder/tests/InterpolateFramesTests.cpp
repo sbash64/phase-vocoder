@@ -125,14 +125,14 @@ namespace {
 		InterpolateFramesFacade(int P, int Q, int N) : interpolate{ P, Q, N }, N{ N } {}
 
 		void assertInterpolatedFrames(
-			std::vector<std::complex<double>> x,
-			std::vector<std::vector<std::complex<double>>> frames,
+			const std::vector<std::complex<double>> &x,
+			const std::vector<std::vector<std::complex<double>>> &frames,
 			double tolerance
 		) {
-			add(std::move(x));
+			add(x);
 			for (auto frame : frames) {
 				assertHasNext();
-				assertNextEquals(std::move(frame), tolerance);
+				assertNextEquals(frame, tolerance);
 			}
 			assertDoesNotHaveNext();
 		}
@@ -149,11 +149,11 @@ namespace {
 			return interpolate.hasNext();
 		}
 
-		void add(std::vector<std::complex<double>> x) {
+		void add(const std::vector<std::complex<double>> &x) {
 			interpolate.add(x);
 		}
 
-		void consumeAdd(std::vector<std::complex<double>> x) {
+		void consumeAdd(const std::vector<std::complex<double>> &x) {
 			add(x);
 			while (hasNext())
 				next();
@@ -165,10 +165,26 @@ namespace {
 			return out;
 		}
 
-		void assertNextEquals(std::vector<std::complex<double>> expected, double tolerance) {
-			assertEqual(std::move(expected), next(), tolerance);
+		void assertNextEquals(const std::vector<std::complex<double>> &expected, double tolerance) {
+			assertEqual(expected, next(), tolerance);
 		}
 	};
+
+	void consumeAdd(
+		InterpolateFramesFacade &interpolate,
+		const std::vector<std::complex<double>>& x
+	) {
+		interpolate.consumeAdd(x);
+	}
+
+	void assertInterpolatedFrames(
+		InterpolateFramesFacade& interpolate,
+		const std::vector<std::complex<double>>& x,
+		const std::vector<std::vector<std::complex<double>>>& frames,
+		double tolerance
+	) {
+		interpolate.assertInterpolatedFrames(x, frames, tolerance);
+	}
 
 	class InterpolateFramesP1Q2Tests : public ::testing::Test {
 		int P = 1;
@@ -177,15 +193,15 @@ namespace {
 		InterpolateFramesFacade interpolate{ P, Q, N };
 	protected:
 		void assertInterpolatedFrames(
-			std::vector<std::complex<double>> x, 
-			std::vector<std::vector<std::complex<double>>> frames,
+			const std::vector<std::complex<double>> &x, 
+			const std::vector<std::vector<std::complex<double>>> &frames,
 			double tolerance
 		) {
-			interpolate.assertInterpolatedFrames(x, frames, tolerance);
+			::assertInterpolatedFrames(interpolate, x, frames, tolerance);
 		}
 
-		void consumeAdd(std::vector<std::complex<double>> x) {
-			interpolate.consumeAdd(x);
+		void consumeAdd(const std::vector<std::complex<double>> &x) {
+			::consumeAdd(interpolate, x);
 		}
 	};
 
@@ -222,15 +238,15 @@ namespace {
 		InterpolateFramesFacade interpolate{ P, Q, N };
 	protected:
 		void assertInterpolatedFrames(
-			std::vector<std::complex<double>> x,
-			std::vector<std::vector<std::complex<double>>> frames,
+			const std::vector<std::complex<double>>& x,
+			const std::vector<std::vector<std::complex<double>>>& frames,
 			double tolerance
 		) {
-			interpolate.assertInterpolatedFrames(x, frames, tolerance);
+			::assertInterpolatedFrames(interpolate, x, frames, tolerance);
 		}
 
-		void consumeAdd(std::vector<std::complex<double>> x) {
-			interpolate.consumeAdd(x);
+		void consumeAdd(const std::vector<std::complex<double>>& x) {
+			::consumeAdd(interpolate, x);
 		}
 	};
 
@@ -269,15 +285,15 @@ namespace {
 		InterpolateFramesFacade interpolate{ P, Q, N };
 	protected:
 		void assertInterpolatedFrames(
-			std::vector<std::complex<double>> x,
-			std::vector<std::vector<std::complex<double>>> frames,
+			const std::vector<std::complex<double>>& x,
+			const std::vector<std::vector<std::complex<double>>>& frames,
 			double tolerance
 		) {
-			interpolate.assertInterpolatedFrames(x, frames, tolerance);
+			::assertInterpolatedFrames(interpolate, x, frames, tolerance);
 		}
 
-		void consumeAdd(std::vector<std::complex<double>> x) {
-			interpolate.consumeAdd(x);
+		void consumeAdd(const std::vector<std::complex<double>>& x) {
+			::consumeAdd(interpolate, x);
 		}
 	};
 

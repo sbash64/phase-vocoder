@@ -31,7 +31,7 @@ public:
 	{
 	}
 
-	void add(gsl::span<complex_type> x) {
+	void add(gsl::span<const complex_type> x) {
 		copy(currentFrame, previousFrame);
 		copy(x, currentFrame);
 		transformFrames(
@@ -65,7 +65,7 @@ public:
 	}
 
 private:
-	void copy(gsl::span<complex_type> source, std::vector<complex_type>& destination) {
+	void copy(gsl::span<const complex_type> source, std::vector<complex_type>& destination) {
 		std::copy(source.begin(), source.end(), destination.begin());
 	}
 
