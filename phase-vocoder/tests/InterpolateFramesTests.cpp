@@ -397,6 +397,17 @@ namespace {
 		);
 	}
 
+	TEST_F(InterpolateFramesP2Q1Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+		consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+		assertInterpolatedFrames(
+			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+			{
+				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+			},
+			1e-15
+		);
+	}
+
 	class InterpolateFramesP3Q2Tests : public ::testing::Test {
 		int P = 3;
 		int Q = 2;
