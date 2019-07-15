@@ -36,9 +36,7 @@ public:
 		copy(x, currentFrame);
 		transformFrames(
 			phaseAdvance,
-			[&](complex_type a, complex_type b) {
-				return phase(b) - phase(a);
-			}
+			&InterpolateFrames::phaseDifference
 		);
 		if (numerator > Q) {
 			accumulatePhase();
@@ -71,39 +69,45 @@ public:
 	}
 
 private:
+	T phaseDifference(complex_type a, complex_type b) {
+		return phase(b) - phase(a);
+	}
+
 	void copy(gsl::span<const complex_type> source, std::vector<complex_type>& destination) {
 		std::copy(source.begin(), source.end(), destination.begin());
 	}
 
-	T phase(complex_type x) {
+	T phase(const complex_type &x) {
 		return std::arg(x);
 	}
 
-	T magnitude(complex_type x) {
+	T magnitude(const complex_type &x) {
 		return std::abs(x);
 	}
 
 	void transformFrames(
 		std::vector<T> &out, 
-		std::function<T(complex_type, complex_type)> f
+		T(InterpolateFrames::*f)(complex_type, complex_type)
 	) {
 		std::transform(
 			previousFrame.begin(),
 			previousFrame.end(),
 			currentFrame.begin(),
 			out.begin(),
-			f
+			[&](complex_type a, complex_type b) { return (this->*f)(a, b); }
 		);
+	}
+
+	T resampleMagnitude_(complex_type a, complex_type b) {
+		T denominator = Q;
+		auto ratio = numerator / denominator;
+		return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
 	}
 
 	void resampleMagnitude() {
 		transformFrames(
 			resampledMagnitude,
-			[&](complex_type a, complex_type b) {
-				T denominator = Q;
-				auto ratio = numerator / denominator;
-				return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
-			}
+			&InterpolateFrames::resampleMagnitude_
 		);
 	}
 
