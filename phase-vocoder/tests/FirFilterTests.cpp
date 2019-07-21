@@ -8,10 +8,14 @@ public:
 	FirFilter(std::vector<T> b) : b{ std::move(b) } {}
 
 	void filter(gsl::span<T> x) {
-		for (auto i = x.size() - 1; i >= 0; --i) {
+		for (auto i{ x.size() - 1 }; i >= 0; --i) {
 			T accumulate{ 0 };
-			for (int j = 0; j <= std::min(gsl::narrow<size_t>(i), b.size() - 1); ++j)
-				accumulate += b[j] * x[i - j];
+			for (auto j{ 0 }; j <= b.size() - 1; ++j) {
+				auto delayed = i - j < 0
+					? 0
+					: x[i - j];
+				accumulate += b[j] * delayed;
+			}
 			x[i] = accumulate;
 		}
 	}
