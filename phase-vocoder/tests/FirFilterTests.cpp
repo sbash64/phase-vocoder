@@ -59,6 +59,6 @@ namespace {
 
 	TEST_F(FirFilterTests, simpleConvolution) {
 		setCoefficients({ 1, 2, 3 });
-		assertFilteredOutput({ 4, 5, 6 }, { 1*4, 1*5 + 4*2, 1*6 + 2*5 + 3*4 });
+		assertFilteredOutput({ 4, 5, 6 }, { 1*4, 1*5. + 2*4., 1*6. + 2*5. + 3*4. });
 	}
 }
