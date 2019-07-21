@@ -19,13 +19,12 @@ namespace {
 	protected:
 		void assertFilteredOutput(
 			std::vector<double> b, 
-			const std::vector<double>& x, 
+			std::vector<double> x, 
 			const std::vector<double>& y
 		) {
 			FirFilter<double> filter{ std::move(b) };
-			std::vector<double> output{ x };
-			filter.filter(output);
-			assertEqual(y, output);
+			filter.filter(x);
+			assertEqual(y, x);
 		}
 	};
 
