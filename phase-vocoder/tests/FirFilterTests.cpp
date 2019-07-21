@@ -12,14 +12,13 @@ public:
 		delayLine(this->b.size())
 	{}
 	void filter(gsl::span<T> x) {
-		for (auto i{ 0 }; i < x.size(); ++i) {
-			delayLine.front() = x[i];
+		for (auto &x_ : x) {
+			delayLine.front() = x_;
 			T accumulate{ 0 };
-			for (auto j{ 0 }; j <= b.size() - 1; ++j) {
+			for (auto j{ 0 }; j < b.size(); ++j)
 				accumulate += b[j] * delayLine[j];
-			}
+			x_ = accumulate;
 			std::rotate(delayLine.rbegin(), delayLine.rbegin() + 1, delayLine.rend());
-			x[i] = accumulate;
 		}
 	}
 };
