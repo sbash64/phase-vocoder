@@ -32,4 +32,9 @@ namespace {
 		std::vector<double> b = { 1 };
 		assertFilteredOutput(b, {}, {});
 	}
+
+	TEST_F(FirFilterTests, identityYieldsSame) {
+		std::vector<double> b = { 1 };
+		assertFilteredOutput(b, {2, 3, 4}, {2, 3, 4});
+	}
 }
