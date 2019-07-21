@@ -1,21 +1,24 @@
 #include <gsl/gsl>
 #include <vector>
+#include <algorithm>
 
 template<typename T>
 class FirFilter {
 	std::vector<T> b;
+	std::vector<T> delayLine;
 public:
-	FirFilter(std::vector<T> b) : b{ std::move(b) } {}
-
+	FirFilter(std::vector<T> b) : 
+		b{ std::move(b) },
+		delayLine(this->b.size())
+	{}
 	void filter(gsl::span<T> x) {
-		for (auto i{ x.size() - 1 }; i >= 0; --i) {
+		for (auto i{ 0 }; i < x.size(); ++i) {
+			delayLine.front() = x[i];
 			T accumulate{ 0 };
 			for (auto j{ 0 }; j <= b.size() - 1; ++j) {
-				auto delayed = i - j < 0
-					? 0
-					: x[i - j];
-				accumulate += b[j] * delayed;
+				accumulate += b[j] * delayLine[j];
 			}
+			std::rotate(delayLine.rbegin(), delayLine.rbegin() + 1, delayLine.rend());
 			x[i] = accumulate;
 		}
 	}
@@ -36,6 +39,17 @@ namespace {
 			FirFilter<double> filter{ b };
 			filter.filter(x);
 			assertEqual(y, x);
+		}
+
+		void assertFilteredOutputs(
+			std::vector<std::vector<double>> x,
+			const std::vector<std::vector<double>>& y
+		) {
+			FirFilter<double> filter{ b };
+			for (size_t i{ 0 }; i < y.size(); ++i) {
+				filter.filter(x[i]);
+				assertEqual(y[i], x[i]);
+			}
 		}
 
 		void setCoefficients(std::vector<double> b_) {
@@ -60,5 +74,21 @@ namespace {
 	TEST_F(FirFilterTests, simpleConvolution) {
 		setCoefficients({ 1, 2, 3 });
 		assertFilteredOutput({ 4, 5, 6 }, { 1*4, 1*5. + 2*4., 1*6. + 2*5. + 3*4. });
+	}
+
+	TEST_F(FirFilterTests, simpleConvolutionInSteps) {
+		setCoefficients({ 1, 2, 3 });
+		assertFilteredOutputs(
+			{ 
+				{4}, 
+				{5}, 
+				{6}
+			},
+			{
+				{ 1*4 }, 
+				{ 1*5. + 2*4. }, 
+				{ 1*6. + 2*5. + 3*4. }
+			}
+		);
 	}
 }
