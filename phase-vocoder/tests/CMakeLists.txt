@@ -2,6 +2,7 @@ set(
     TESTS
         "OverlapExtractTests.cpp"
 		"InterpolateFramesTests.cpp"
+		"FirFilterTests.cpp"
 )
 add_executable(tests ${TESTS})
 if (MSVC)
