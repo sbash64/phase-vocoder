@@ -3,11 +3,13 @@
 
 template<typename T>
 class FirFilter {
+	std::vector<T> b;
 public:
-	FirFilter(std::vector<T> b) {}
+	FirFilter(std::vector<T> b) : b{ std::move(b) } {}
 
 	void filter(gsl::span<T> x) {
-		x;
+		for (auto &x_ : x)
+			x_ *= b.front();
 	}
 };
 
@@ -40,5 +42,10 @@ namespace {
 	TEST_F(FirFilterTests, identityYieldsSame) {
 		setCoefficients({ 1 });
 		assertFilteredOutput({2, 3, 4}, {2, 3, 4});
+	}
+
+	TEST_F(FirFilterTests, doubleYieldsDouble) {
+		setCoefficients({ 2 });
+		assertFilteredOutput({ 3, 4, 5 }, { 6, 8, 10 });
 	}
 }
