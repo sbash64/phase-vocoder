@@ -1,10 +1,10 @@
 pipeline {
-    agent any
+    agent { dockerfile true }
 
     stages {
         stage ('Build') {
             steps {
- 	        cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
+                cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
 	    }
         }
 
