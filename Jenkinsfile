@@ -6,13 +6,15 @@ node('master') {
     def stages = [:]
 
     for (int i = 0; i < docker_files.size(); i++) {
+        if (i == 0)
+            continue
         def docker_file = docker_files[i]
         def docker_image = docker.build(compilers[i], docker_file)
-        stages[i] = get_stages(docker_image)
+        stages[docker_file] = get_stages(docker_image)
         
     }
 
-    parallel stages[1]
+    parallel stages
 }
 
 
