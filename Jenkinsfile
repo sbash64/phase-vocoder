@@ -5,7 +5,7 @@ node('master') {
 
     for (int i = 0; i < docker_files.size(); i++) {
         def docker_file = docker_files[i]
-        docker_image = docker.build(docker_file)
+        docker_image = docker.build("test-image", docker_file)
         stages[docker_file] = get_stages(docker_image)
     }
 
