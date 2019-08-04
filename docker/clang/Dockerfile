@@ -4,3 +4,4 @@ RUN apt-get -y install clang wget
 RUN wget -qO- "https://cmake.org/files/v3.15/cmake-3.15.1-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /usr/local
 RUN export CC=/usr/bin/clang
 RUN export CXX=/usr/bin/clang++
+RUN clang++ --version
