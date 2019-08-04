@@ -12,7 +12,7 @@ node('master') {
         
     }
 
-    stages[1]
+    parallel stages[1]
 }
 
 
