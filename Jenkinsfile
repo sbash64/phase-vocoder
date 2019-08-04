@@ -1,4 +1,4 @@
-def docker_files = ["./docker/gcc", "./docker/gcc"]
+def docker_files = ["./docker/gcc", "./docker/clang"]
 def compilers = ["gcc", "clang"]
 node('master') {
     checkout scm
