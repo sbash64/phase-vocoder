@@ -1,6 +1,8 @@
 def docker_files = ["./docker/gcc/Dockerfile", "./docker/clang/Dockerfile"]
 
 node('master') {
+    checkout scm
+    
     def stages = [:]
 
     for (int i = 0; i < docker_files.size(); i++) {
