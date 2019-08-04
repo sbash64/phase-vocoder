@@ -1,1 +1,1 @@
-FROM conanio/clang8
+FROM conanio/clang60
