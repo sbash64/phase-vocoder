@@ -14,13 +14,12 @@ node('master') {
 
 def job(docker_file) {
     return {
-        agent { 
-            dockerfile { 
-                filename docker_file
-            } 
-        }
-
         stages {
+            agent { 
+                dockerfile { 
+                    filename docker_file
+                } 
+            }
             stage ('Build') {
                 steps {
                     cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
