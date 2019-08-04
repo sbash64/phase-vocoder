@@ -10,7 +10,7 @@ namespace {
 		OverlapExtract<int> extract;
 		std::vector<int> buffer;
 
-		OverlapExtractTests() : buffer(N), extract{ N, hop } {}
+		OverlapExtractTests() : extract{ N, hop }, buffer(N)  {}
 
 		void assertSegments(std::vector<int> x, std::vector<std::vector<int>> segments) {
 			add(std::move(x));

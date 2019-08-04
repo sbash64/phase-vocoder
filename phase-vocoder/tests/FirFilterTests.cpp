@@ -15,7 +15,7 @@ public:
 		for (auto &x_ : x) {
 			delayLine.front() = x_;
 			T accumulate{ 0 };
-			for (auto j{ 0 }; j < b.size(); ++j)
+			for (typename std::vector<T>::size_type j{ 0 }; j < b.size(); ++j)
 				accumulate += b[j] * delayLine[j];
 			x_ = accumulate;
 			std::rotate(delayLine.rbegin(), delayLine.rbegin() + 1, delayLine.rend());

@@ -12,7 +12,7 @@ class OverlapExtract {
 	int hop;
 	int N;
 public:
-	OverlapExtract(int N, int hop) : N{ N }, hop{ hop }, head{ 0 }, cached_(N) {}
+	OverlapExtract(int N, int hop) : cached_(N), head{ 0 }, hop{ hop }, N{ N } {}
 
 	void add(gsl::span<T> x) {
 		auto toFill = std::min(N - head, x.size());
