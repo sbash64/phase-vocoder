@@ -1,25 +1,21 @@
 def docker_files = ["./docker/gcc/Dockerfile", "./docker/clang/Dockerfile"]
 
 node('master') {
-    def jobs = [:]
+    def stages = [:]
 
     for (int i = 0; i < docker_files.size(); i++) {
         def docker_file = docker_files[i]
-        jobs[docker_file] = job(docker_file)
+        docker_image = docker.build(docker_file)
+        stages[docker_file] = get_stages(docker_image)
     }
 
-    parallel jobs
+    parallel stages
 }
 
 
-def job(docker_file) {
-    return {
-        stages {
-            agent { 
-                dockerfile { 
-                    filename docker_file
-                } 
-            }
+def get_stages(docker_image) {
+    stages = {
+        docker_image.inside {
             stage ('Build') {
                 steps {
                     cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
@@ -33,4 +29,5 @@ def job(docker_file) {
             }
         }
     }
+    return stages
 }
