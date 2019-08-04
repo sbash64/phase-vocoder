@@ -9,6 +9,7 @@ node('master') {
         def docker_file = docker_files[i]
         def docker_image = docker.build(compilers[i], docker_file)
         stages[docker_file] = get_stages(docker_image)
+        break
     }
 
     parallel stages
