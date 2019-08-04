@@ -1,0 +1,1 @@
+FROM conanio/clang8
