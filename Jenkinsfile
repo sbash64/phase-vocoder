@@ -1,7 +1,7 @@
 def compilers = ["gcc", "clang"]
 
 def jobs = compilers.collectEntries {
-    ["$(it)" : job(it)]
+    ["${it}" : job(it)]
 }
 
 parallel jobs
