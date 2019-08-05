@@ -1,34 +1,23 @@
-def docker_files = ["./docker/gcc", "./docker/clang"]
 def compilers = ["gcc", "clang"]
-node('master') {
-    checkout scm
 
-    def stages = [:]
-
-    for (int i = 0; i < docker_files.size(); i++) {
-        if (i == 0)
-            continue
-        def docker_file = docker_files[i]
-        def docker_image = docker.build(compilers[i], docker_file)
-        stages[docker_file] = get_stages(docker_image)
-        
-    }
-
-    parallel stages
+def stepsForParallel = compilers.collectEntries {
+    ["echoing ${it}" : transformIntoStage(it)]
 }
 
+parallel stepsForParallel
 
-def get_stages(docker_image) {
-    stages = {
-        docker_image.inside {
-            stage ('Build') {
-                    cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
-            }
 
-            stage ('Test') {
-                    ctest installation: 'InSearchPath', workingDir: 'build'
+def transformIntoStage(compiler) {
+    return {
+        node {
+            checkout scm
+
+            def docker_image = docker.build("my-" + compiler, "./docker/" + compiler)
+            
+            docker_image.inside {
+                cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
+                ctest installation: 'InSearchPath', workingDir: 'build'
             }
         }
     }
-    return stages
 }
