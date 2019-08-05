@@ -25,16 +25,16 @@ def docker_image(compiler) {
 }
 
 def build(directory) {
-    cmakeBuild 
-        buildDir: directory, 
-        cleanBuild: true, 
-        cmakeArgs: '-DENABLE_TESTS=ON', 
-        installation: 'InSearchPath', 
+    cmakeBuild \
+        buildDir: directory, \ 
+        cleanBuild: true, \
+        cmakeArgs: '-DENABLE_TESTS=ON', \ 
+        installation: 'InSearchPath', \
         steps: [[withCmake: true]]
 }
 
 def test(directory) {
-    ctest 
-        installation: 'InSearchPath', 
+    ctest \
+        installation: 'InSearchPath', \ 
         workingDir: directory
 }
