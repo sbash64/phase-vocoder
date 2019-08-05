@@ -11,12 +11,23 @@ def job(compiler) {
         node {
             checkout scm
 
-            def docker_image = docker.build(compiler, "./docker/" + compiler)
-            
-            docker_image.inside {
-                cmakeBuild buildDir: 'build', cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
-                ctest installation: 'InSearchPath', workingDir: 'build'
+            docker_image(compiler).inside {
+                def directory = 'build'
+                build(directory)
+                test(directory)
             }
         }
     }
+}
+
+def docker_image(compiler) {
+    return docker.build(compiler, "./docker/" + compiler)
+}
+
+def build(directory) {
+    cmakeBuild buildDir: directory, cleanBuild: true, cmakeArgs: '-DENABLE_TESTS=ON', installation: 'InSearchPath', steps: [[withCmake: true]]
+}
+
+def test(directory) {
+    ctest installation: 'InSearchPath', workingDir: directory
 }
