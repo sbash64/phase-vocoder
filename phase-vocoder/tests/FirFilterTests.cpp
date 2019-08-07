@@ -11,7 +11,7 @@ namespace {
 			std::vector<double> x, 
 			const std::vector<double>& y
 		) {
-			FirFilter<double> filter{ b };
+			phase_vocoder::FirFilter<double> filter{ b };
 			filter.filter(x);
 			assertEqual(y, x);
 		}
@@ -20,7 +20,7 @@ namespace {
 			std::vector<std::vector<double>> x,
 			const std::vector<std::vector<double>>& y
 		) {
-			FirFilter<double> filter{ b };
+			phase_vocoder::FirFilter<double> filter{ b };
 			for (size_t i{ 0 }; i < y.size(); ++i) {
 				filter.filter(x[i]);
 				assertEqual(y[i], x[i]);
