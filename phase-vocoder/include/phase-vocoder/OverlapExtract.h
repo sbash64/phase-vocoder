@@ -7,17 +7,17 @@
 namespace phase_vocoder {
 	template<typename T>
 	class OverlapExtract {
-		std::vector<T> cached_;
+		std::vector<T> cached;
 		gsl::span<T> signal;
 		typename gsl::span<T>::index_type head;
 		int hop;
 		int N;
 	public:
-		OverlapExtract(int N, int hop) : cached_(N), head{ 0 }, hop{ hop }, N{ N } {}
+		OverlapExtract(int N, int hop) : cached(N), head{ 0 }, hop{ hop }, N{ N } {}
 
 		void add(gsl::span<T> x) {
 			auto toFill = std::min(N - head, x.size());
-			std::copy(x.begin(), x.begin() + toFill, cached_.begin() + head);
+			std::copy(x.begin(), x.begin() + toFill, cached.begin() + head);
 			signal = x.last(x.size() - toFill);
 			head += toFill;
 		}
@@ -27,12 +27,12 @@ namespace phase_vocoder {
 		}
 
 		void next(gsl::span<T> out) {
-			std::copy(cached_.begin(), cached_.end(), out.begin());
-			for (std::size_t i = 0; i < cached_.size() - hop; ++i)
-				cached_.at(i) = cached_.at(i + hop);
+			std::copy(cached.begin(), cached.end(), out.begin());
+			for (std::size_t i = 0; i < cached.size() - hop; ++i)
+				cached.at(i) = cached.at(i + hop);
 			head = N - hop;
 			auto toFill = std::min(N - head, signal.size());
-			std::copy(signal.begin(), signal.begin() + toFill, cached_.begin() + head);
+			std::copy(signal.begin(), signal.begin() + toFill, cached.begin() + head);
 			signal = signal.last(signal.size() - toFill);
 			head += toFill;
 		}

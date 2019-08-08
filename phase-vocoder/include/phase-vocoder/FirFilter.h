@@ -15,6 +15,7 @@ namespace phase_vocoder {
             b{ std::move(b) },
             delayLine(this->b.size())
         {}
+        
         void filter(gsl::span<T> x) {
             for (auto &x_ : x) {
                 delayLine.front() = x_;
