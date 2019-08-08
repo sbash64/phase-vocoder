@@ -1,29 +1,5 @@
-#include <gsl/gsl>
-#include <vector>
-#include <algorithm>
-
-template<typename T>
-class FirFilter {
-	std::vector<T> b;
-	std::vector<T> delayLine;
-public:
-	FirFilter(std::vector<T> b) : 
-		b{ std::move(b) },
-		delayLine(this->b.size())
-	{}
-	void filter(gsl::span<T> x) {
-		for (auto &x_ : x) {
-			delayLine.front() = x_;
-			T accumulate{ 0 };
-			for (typename std::vector<T>::size_type j{ 0 }; j < b.size(); ++j)
-				accumulate += b[j] * delayLine[j];
-			x_ = accumulate;
-			std::rotate(delayLine.rbegin(), delayLine.rbegin() + 1, delayLine.rend());
-		}
-	}
-};
-
 #include "assert-utility.h"
+#include <phase-vocoder/FirFilter.h>
 #include <gtest/gtest.h>
 
 namespace {
@@ -35,7 +11,7 @@ namespace {
 			std::vector<double> x, 
 			const std::vector<double>& y
 		) {
-			FirFilter<double> filter{ b };
+			phase_vocoder::FirFilter<double> filter{ b };
 			filter.filter(x);
 			assertEqual(y, x);
 		}
@@ -44,7 +20,7 @@ namespace {
 			std::vector<std::vector<double>> x,
 			const std::vector<std::vector<double>>& y
 		) {
-			FirFilter<double> filter{ b };
+			phase_vocoder::FirFilter<double> filter{ b };
 			for (size_t i{ 0 }; i < y.size(); ++i) {
 				filter.filter(x[i]);
 				assertEqual(y[i], x[i]);
@@ -87,6 +63,29 @@ namespace {
 				{ 1*4 }, 
 				{ 1*5. + 2*4. }, 
 				{ 1*6. + 2*5. + 3*4. }
+			}
+		);
+	}
+
+	TEST_F(FirFilterTests, changingSteps) {
+		setCoefficients({ 1, 2, 3, 4 });
+		assertFilteredOutputs(
+			{ 
+				{10}, 
+				{11, 12}, 
+				{13, 14, 15}
+			},
+			{
+				{ 1*10 }, 
+				{ 
+					1*11. + 2*10., 
+					1*12. + 2*11. + 3*10. 
+				}, 
+				{ 
+					1*13. + 2*12. + 3*11. + 4*10.,  
+					1*14. + 2*13. + 3*12. + 4*11., 
+					1*15. + 2*14. + 3*13. + 4*12.
+				}
 			}
 		);
 	}

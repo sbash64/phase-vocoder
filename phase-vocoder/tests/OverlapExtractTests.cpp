@@ -7,7 +7,7 @@ namespace {
 	constexpr auto hop = 2;
 	class OverlapExtractTests : public ::testing::Test {
 	protected:
-		OverlapExtract<int> extract;
+		phase_vocoder::OverlapExtract<int> extract;
 		std::vector<int> buffer;
 
 		OverlapExtractTests() : extract{ N, hop }, buffer(N)  {}

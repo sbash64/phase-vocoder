@@ -161,7 +161,7 @@ namespace {
 	}
 	
 	class InterpolateFramesFacade {
-		InterpolateFrames<double> interpolate;
+		phase_vocoder::InterpolateFrames<double> interpolate;
 		int N;
 	public:
 		InterpolateFramesFacade(int P, int Q, int N) : interpolate{ P, Q, N }, N{ N } {}
