@@ -4,3 +4,6 @@
 [submodule "GSL"]
 	path = GSL
 	url = https://github.com/microsoft/GSL
+[submodule "fftw3"]
+	path = fftw3
+	url = https://github.com/fftw/fftw3
