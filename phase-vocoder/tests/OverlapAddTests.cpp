@@ -9,10 +9,18 @@ namespace phase_vocoder {
         virtual void dft(gsl::span<double>, gsl::span<std::complex<double>>) = 0;
     };
 
+    constexpr size_t nearestPowerTwo(size_t n) {
+        size_t result{};
+        while (n >>= 1)
+            ++result;
+        return 1 << (result + 1);
+    }
+
     template<typename T>
     class OverlapAdd {
     public:
         OverlapAdd(FourierTransformer &transformer, std::vector<T> b) {
+            b.resize(nearestPowerTwo(b.size()));
             transformer.dft(b, {});
         };
     };
@@ -39,10 +47,10 @@ namespace {
     class OverlapAddTests : public ::testing::Test {
     };
 
-    TEST_F(OverlapAddTests, constructorTransformsTaps) {
+    TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestPowerTwo) {
         FourierTransformerStub fourierTransformer;
         std::vector<double> b = { 1, 2, 3 };
         phase_vocoder::OverlapAdd<double> overlapAdd{fourierTransformer, b};
-        assertEqual({1, 2, 3}, fourierTransformer.dftReal());
+        assertEqual({1, 2, 3, 0}, fourierTransformer.dftReal());
     }
 }
