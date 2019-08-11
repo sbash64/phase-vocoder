@@ -56,6 +56,8 @@ namespace phase_vocoder {
         }
 
         void filter_(gsl::span<T> x) {
+            for (auto &x : realBuffer)
+                x = 0;
             std::copy(x.begin(), x.end(), realBuffer.begin());
             dft(realBuffer, complexBuffer);
             std::transform(
@@ -198,6 +200,15 @@ namespace {
         assertDftRealEquals({5, 6, 0, 0}, 1);
         assertDftRealEquals({7, 8, 0, 0}, 2);
         assertDftRealEquals({9, 10, 0, 0}, 3);
+    }
+
+    TEST_F(OverlapAddTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN2) {
+        setTapCount(4 - 1);
+        auto overlapAdd = construct();
+        x = { 5, 6, 7 };
+        filter(overlapAdd);
+        assertDftRealEquals({5, 6, 0, 0}, 1);
+        assertDftRealEquals({7, 0, 0, 0}, 2);
     }
 
     TEST_F(OverlapAddTests, filterPassesTransformProductToInverseTransform) {
