@@ -11,48 +11,60 @@ namespace phase_vocoder {
         virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
     };
 
-    constexpr size_t nearestGreaterEqualPowerTwo(size_t n) {
-        size_t result{};
-        --n;
+    constexpr size_t nearestGreaterPowerTwo(size_t n) {
+        size_t power{1};
         while (n >>= 1)
-            ++result;
-        return 1 << (result + 1);
+            ++power;
+        return 1 << power;
     }
 
     template<typename T>
     class OverlapAdd {
         FourierTransformer &transformer;
-        std::vector<std::complex<T>> dftComplex;
+        std::vector<std::complex<T>> complexBuffer;
         std::vector<std::complex<T>> H;
-        std::vector<T> dftReal;
+        std::vector<T> realBuffer;
+        std::vector<T> overlap;
         size_t N;
         size_t M;
     public:
         OverlapAdd(FourierTransformer &transformer, std::vector<T> b) : 
             transformer{transformer},
-            N{nearestGreaterEqualPowerTwo(b.size())},
+            N{nearestGreaterPowerTwo(b.size())},
             M{b.size()}
         {
             b.resize(N);
-            dftReal.resize(N);
+            realBuffer.resize(N);
             H.resize(N);
-            dftComplex.resize(N);
+            overlap.resize(N);
+            complexBuffer.resize(N);
             dft(b, H);
         };
 
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
-            std::copy(x.begin(), x.begin() + L, dftReal.begin());
-            dft(dftReal, dftComplex);
-            std::transform(
-                dftComplex.begin(),
-                dftComplex.end(),
-                H.begin(),
-                dftComplex.begin(),
-                std::multiplies<>{}
-            );
-            transformer.idft(dftComplex, dftReal);
-            std::copy(dftReal.begin(), dftReal.begin() + L, x.begin());
+            for (size_t j{0}; j < x.size()/L; ++j) {
+                std::copy(x.begin(), x.begin() + L, realBuffer.begin());
+                dft(realBuffer, complexBuffer);
+                std::transform(
+                    complexBuffer.begin(),
+                    complexBuffer.end(),
+                    H.begin(),
+                    complexBuffer.begin(),
+                    std::multiplies<>{}
+                );
+                transformer.idft(complexBuffer, realBuffer);
+                std::transform(
+                    overlap.begin(),
+                    overlap.end(),
+                    realBuffer.begin(),
+                    overlap.begin(),
+                    std::plus<>{}
+                );
+                std::copy(overlap.begin(), overlap.begin() + L, x.begin() + j*L);
+                for (size_t i{0}; i < N - L; ++i)
+                    overlap.at(i) = overlap.at(i+L);
+            }
         }
 
     private:
@@ -146,7 +158,7 @@ namespace {
         }
 
         void assertXEquals(const std::vector<double> &x_) {
-            assertEqual(x, x_);
+            assertEqual(x_, x);
         }
 
         void resizeX(size_t n) {
@@ -186,5 +198,15 @@ namespace {
         setIdftReal({4, 5, 6, 7});
         filter(overlapAdd);
         assertXEquals({ 4, 5 });
+    }
+
+    TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform2) {
+        setTapCount(3);
+        setDftComplex({ 0, 0, 0, 0 });
+        auto overlapAdd = construct();
+        resizeX(4);
+        setIdftReal({5, 6, 7, 8});
+        filter(overlapAdd);
+        assertXEquals({ 5, 6, 5+7, 6+8 });
     }
 }
