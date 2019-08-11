@@ -50,21 +50,31 @@ namespace {
     };
 
     class OverlapAddTests : public ::testing::Test {
+    protected:
+        FourierTransformerStub fourierTransformer;
+        std::vector<double> b;
+
+
+        phase_vocoder::OverlapAdd<double> construct() {
+            return {fourierTransformer, b};
+        }
+
+        void assertDftRealEquals(const std::vector<double> &x) {
+            assertEqual(x, fourierTransformer.dftReal());
+        }
     };
 
     TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestPowerTwo) {
-        FourierTransformerStub fourierTransformer;
-        std::vector<double> b = { 1, 2, 3 };
-        phase_vocoder::OverlapAdd<double> overlapAdd{fourierTransformer, b};
-        assertEqual({1, 2, 3, 0}, fourierTransformer.dftReal());
+        b = { 1, 2, 3 };
+        construct();
+        assertDftRealEquals({ 1, 2, 3, 0 });
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransform) {
-        FourierTransformerStub fourierTransformer;
-        std::vector<double> b = { 1, 2, 3 };
-        phase_vocoder::OverlapAdd<double> overlapAdd{fourierTransformer, b};
+        b = { 1, 2, 3 };
+        auto overlapAdd = construct();
         std::vector<double> x = { 4, 5, 6 };
         overlapAdd.filter(x);
-        assertEqual({ 4, 5 }, fourierTransformer.dftReal());
+        assertDftRealEquals({ 4, 5 });
     }
 }
