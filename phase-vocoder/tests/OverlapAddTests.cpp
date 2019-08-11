@@ -100,6 +100,7 @@ namespace {
     protected:
         FourierTransformerStub fourierTransformer;
         std::vector<double> b;
+        std::vector<double> x;
 
         phase_vocoder::OverlapAdd<double> construct() {
             return {fourierTransformer, b};
@@ -120,6 +121,10 @@ namespace {
         void setDftComplex(std::vector<std::complex<double>> x) {
             fourierTransformer.setDftComplex(std::move(x));
         }
+
+        void filter(phase_vocoder::OverlapAdd<double> &overlapAdd) {
+            overlapAdd.filter(x);
+        }
     };
 
     TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestPowerTwo) {
@@ -131,8 +136,8 @@ namespace {
     TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransformZeroPaddedToN) {
         setTapCount(3);
         auto overlapAdd = construct();
-        std::vector<double> x = { 4, 5, 6, 7, 8, 9 };
-        overlapAdd.filter(x);
+        x = { 4, 5, 6, 7, 8, 9 };
+        filter(overlapAdd);
         assertDftRealEquals({ 4, 5, 0, 0 });
     }
 
@@ -140,9 +145,9 @@ namespace {
         setTapCount(3);
         setDftComplex({ 4, 5, 6, 7 });
         auto overlapAdd = construct();
-        std::vector<double> x = { 8, 9, 10 };
         setDftComplex({ 11, 12, 13, 14 });
-        overlapAdd.filter(x);
+        x.resize(2);
+        filter(overlapAdd);
         assertIdftComplexEquals({ 4*11, 5*12, 6*13, 7*14 });
     }
 }
