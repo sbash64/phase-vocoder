@@ -43,33 +43,37 @@ namespace phase_vocoder {
 
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
-            for (size_t j{0}; j < x.size()/L; ++j) {
-                std::copy(x.begin() + j*L, x.begin() + (j+1)*L, realBuffer.begin());
-                dft(realBuffer, complexBuffer);
-                std::transform(
-                    complexBuffer.begin(),
-                    complexBuffer.end(),
-                    H.begin(),
-                    complexBuffer.begin(),
-                    std::multiplies<>{}
-                );
-                transformer.idft(complexBuffer, realBuffer);
-                std::transform(
-                    overlap.begin(),
-                    overlap.end(),
-                    realBuffer.begin(),
-                    overlap.begin(),
-                    std::plus<>{}
-                );
-                std::copy(overlap.begin(), overlap.begin() + L, x.begin() + j*L);
-                for (size_t i{0}; i < N - L; ++i)
-                    overlap.at(i) = overlap.at(i+L);
-            }
+            for (size_t j{0}; j < x.size()/L; ++j)
+                filterCompleteBlock(x.subspan(j*L, L));
         }
 
     private:
         void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
             transformer.dft(x, X);
+        }
+
+        void filterCompleteBlock(gsl::span<T> x) {
+            auto L = N - M + 1;
+            std::copy(x.begin(), x.end(), realBuffer.begin());
+            dft(realBuffer, complexBuffer);
+            std::transform(
+                complexBuffer.begin(),
+                complexBuffer.end(),
+                H.begin(),
+                complexBuffer.begin(),
+                std::multiplies<>{}
+            );
+            transformer.idft(complexBuffer, realBuffer);
+            std::transform(
+                overlap.begin(),
+                overlap.end(),
+                realBuffer.begin(),
+                overlap.begin(),
+                std::plus<>{}
+            );
+            std::copy(overlap.begin(), overlap.begin() + L, x.begin());
+            for (size_t i{0}; i < N - L; ++i)
+                overlap.at(i) = overlap.at(i+L);
         }
     };
 }
@@ -170,6 +174,10 @@ namespace {
         void resizeX(size_t n) {
             x.resize(n);
         }
+
+        void assertDftRealEquals(const std::vector<double> &x, size_t n) {
+            assertEqual(x, fourierTransformer.dftReals(n));
+        }
     };
 
     TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestGreaterPowerTwo) {
@@ -183,9 +191,9 @@ namespace {
         auto overlapAdd = construct();
         x = { 4, 5, 6, 7, 8, 9 };
         filter(overlapAdd);
-        assertEqual({4, 5, 0, 0}, fourierTransformer.dftReals(1));
-        assertEqual({6, 7, 0, 0}, fourierTransformer.dftReals(2));
-        assertEqual({8, 9, 0, 0}, fourierTransformer.dftReals(3));
+        assertDftRealEquals({4, 5, 0, 0}, 1);
+        assertDftRealEquals({6, 7, 0, 0}, 2);
+        assertDftRealEquals({8, 9, 0, 0}, 3);
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
