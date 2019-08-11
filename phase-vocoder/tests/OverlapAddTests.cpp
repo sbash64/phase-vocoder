@@ -11,7 +11,7 @@ namespace phase_vocoder {
         virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
     };
 
-    constexpr size_t nearestPowerTwo(size_t n) {
+    constexpr size_t nearestGreaterEqualPowerTwo(size_t n) {
         size_t result{};
         --n;
         while (n >>= 1)
@@ -30,7 +30,7 @@ namespace phase_vocoder {
     public:
         OverlapAdd(FourierTransformer &transformer, std::vector<T> b) : 
             transformer{transformer},
-            N{nearestPowerTwo(b.size())},
+            N{nearestGreaterEqualPowerTwo(b.size())},
             M{b.size()}
         {
             b.resize(N);
@@ -148,9 +148,13 @@ namespace {
         void assertXEquals(const std::vector<double> &x_) {
             assertEqual(x, x_);
         }
+
+        void resizeX(size_t n) {
+            x.resize(n);
+        }
     };
 
-    TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestPowerTwo) {
+    TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestGreaterPowerTwo) {
         b = { 1, 2, 3 };
         construct();
         assertDftRealEquals({ 1, 2, 3, 0 });
@@ -169,7 +173,7 @@ namespace {
         setDftComplex({ 4, 5, 6, 7 });
         auto overlapAdd = construct();
         setDftComplex({ 11, 12, 13, 14 });
-        x.resize(2);
+        resizeX(2);
         filter(overlapAdd);
         assertIdftComplexEquals({ 4*11, 5*12, 6*13, 7*14 });
     }
@@ -178,7 +182,7 @@ namespace {
         setTapCount(3);
         setDftComplex({ 0, 0, 0, 0 });
         auto overlapAdd = construct();
-        x.resize(2);
+        resizeX(2);
         setIdftReal({4, 5, 6, 7});
         filter(overlapAdd);
         assertXEquals({ 4, 5 });
