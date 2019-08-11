@@ -37,13 +37,13 @@ namespace phase_vocoder {
             dftReal.resize(N);
             H.resize(N);
             dftComplex.resize(N);
-            transformer.dft(b, H);
+            dft(b, H);
         };
 
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
             std::copy(x.begin(), x.begin() + L, dftReal.begin());
-            transformer.dft(dftReal, dftComplex);
+            dft(dftReal, dftComplex);
             std::transform(
                 dftComplex.begin(),
                 dftComplex.end(),
@@ -52,6 +52,11 @@ namespace phase_vocoder {
                 std::multiplies<>{}
             );
             transformer.idft(dftComplex, {});
+        }
+
+    private:
+        void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
+            transformer.dft(x, X);
         }
     };
 }
@@ -62,7 +67,7 @@ namespace phase_vocoder {
 namespace {
     class FourierTransformerStub : public phase_vocoder::FourierTransformer {
         std::vector<double> dftReal_;
-        std::vector<double> dftComplex_;
+        std::vector<std::complex<double>> dftComplex_;
         std::vector<std::complex<double>> idftComplex_;
     public:
         auto dftReal() const {
@@ -77,11 +82,10 @@ namespace {
             dftReal_.clear();
             for (auto x_ : x)
                 dftReal_.push_back(x_);
-            for (size_t i{0}; i < dftComplex_.size(); ++i)
-                y.at(i) = dftComplex_.at(i);
+            std::copy(dftComplex_.begin(), dftComplex_.end(), y.begin());
         }
 
-        void setDftComplex(std::vector<double> x) {
+        void setDftComplex(std::vector<std::complex<double>> x) {
             dftComplex_ = std::move(x);
         }
         
@@ -97,7 +101,6 @@ namespace {
         FourierTransformerStub fourierTransformer;
         std::vector<double> b;
 
-
         phase_vocoder::OverlapAdd<double> construct() {
             return {fourierTransformer, b};
         }
@@ -112,6 +115,10 @@ namespace {
 
         void setTapCount(size_t n) {
             b.resize(n);
+        }
+
+        void setDftComplex(std::vector<std::complex<double>> x) {
+            fourierTransformer.setDftComplex(std::move(x));
         }
     };
 
@@ -131,10 +138,10 @@ namespace {
 
     TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
         setTapCount(3);
-        fourierTransformer.setDftComplex({ 4, 5, 6, 7 });
+        setDftComplex({ 4, 5, 6, 7 });
         auto overlapAdd = construct();
         std::vector<double> x = { 8, 9, 10 };
-        fourierTransformer.setDftComplex({ 11, 12, 13, 14 });
+        setDftComplex({ 11, 12, 13, 14 });
         overlapAdd.filter(x);
         assertIdftComplexEquals({ 4*11, 5*12, 6*13, 7*14 });
     }
