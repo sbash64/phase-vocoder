@@ -1,5 +1,4 @@
 #include "assert-utility.h"
-#include <phase-vocoder/FirFilter.h>
 #include <phase-vocoder/OverlapAdd.h>
 #include <fftw3.h>
 #include <gtest/gtest.h>
@@ -84,7 +83,6 @@ namespace {
 			std::vector<std::vector<double>> x,
 			const std::vector<std::vector<double>>& y
 		) {
-			phase_vocoder::FirFilter<double> filter{ b };
 			FftwTransformer transformer{phase_vocoder::nearestGreaterPowerTwo(b.size())};
 			phase_vocoder::OverlapAdd<double> overlapAdd{transformer, b};
 			for (size_t i{ 0 }; i < y.size(); ++i) {
