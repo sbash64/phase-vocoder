@@ -187,37 +187,37 @@ namespace {
     }
 
     TEST_F(OverlapAddTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
-        setTapCount(3);
+        setTapCount(4 - 1);
         auto overlapAdd = construct();
-        x = { 4, 5, 6, 7, 8, 9 };
+        x = { 5, 6, 7, 8, 9, 10 };
         filter(overlapAdd);
-        assertDftRealEquals({4, 5, 0, 0}, 1);
-        assertDftRealEquals({6, 7, 0, 0}, 2);
-        assertDftRealEquals({8, 9, 0, 0}, 3);
+        assertDftRealEquals({5, 6, 0, 0}, 1);
+        assertDftRealEquals({7, 8, 0, 0}, 2);
+        assertDftRealEquals({9, 10, 0, 0}, 3);
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
-        setTapCount(3);
-        setDftComplex({ 4, 5, 6, 7 });
+        setTapCount(4 - 1);
+        setDftComplex({ 5, 6, 7, 8 });
         auto overlapAdd = construct();
         setDftComplex({ 11, 12, 13, 14 });
         resizeX(2);
         filter(overlapAdd);
-        assertIdftComplexEquals({ 4*11, 5*12, 6*13, 7*14 });
+        assertIdftComplexEquals({ 5*11, 6*12, 7*13, 8*14 });
     }
 
     TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform) {
-        setTapCount(3);
+        setTapCount(4 - 1);
         setDftComplex({ 0, 0, 0, 0 });
         auto overlapAdd = construct();
         resizeX(2);
-        setIdftReal({4, 5, 6, 7});
+        setIdftReal({5, 6, 7, 8});
         filter(overlapAdd);
-        assertXEquals({ 4, 5 });
+        assertXEquals({ 5, 6 });
     }
 
     TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform2) {
-        setTapCount(3);
+        setTapCount(4 - 1);
         setDftComplex({ 0, 0, 0, 0 });
         auto overlapAdd = construct();
         resizeX(4);
