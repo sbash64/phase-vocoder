@@ -44,7 +44,7 @@ namespace phase_vocoder {
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
             for (size_t j{0}; j < x.size()/L; ++j) {
-                std::copy(x.begin(), x.begin() + L, realBuffer.begin());
+                std::copy(x.begin() + j*L, x.begin() + (j+1)*L, realBuffer.begin());
                 dft(realBuffer, complexBuffer);
                 std::transform(
                     complexBuffer.begin(),
@@ -80,12 +80,17 @@ namespace phase_vocoder {
 namespace {
     class FourierTransformerStub : public phase_vocoder::FourierTransformer {
         std::vector<double> dftReal_;
+        std::vector<std::vector<double>> dftReals_;
         std::vector<double> idftReal_;
         std::vector<std::complex<double>> dftComplex_;
         std::vector<std::complex<double>> idftComplex_;
     public:
         auto dftReal() const {
             return dftReal_;
+        }
+
+        auto dftReals(size_t n) const {
+            return dftReals_.at(n);
         }
 
         auto idftComplex() const {
@@ -107,6 +112,7 @@ namespace {
         void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
             copy(x, dftReal_);
             copy(dftComplex_, y);
+            dftReals_.push_back(dftReal_);
         }
 
         void setDftComplex(std::vector<std::complex<double>> x) {
@@ -172,12 +178,14 @@ namespace {
         assertDftRealEquals({ 1, 2, 3, 0 });
     }
 
-    TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransformZeroPaddedToN) {
+    TEST_F(OverlapAddTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
         setTapCount(3);
         auto overlapAdd = construct();
         x = { 4, 5, 6, 7, 8, 9 };
         filter(overlapAdd);
-        assertDftRealEquals({ 4, 5, 0, 0 });
+        assertEqual({4, 5, 0, 0}, fourierTransformer.dftReals(1));
+        assertEqual({6, 7, 0, 0}, fourierTransformer.dftReals(2));
+        assertEqual({8, 9, 0, 0}, fourierTransformer.dftReals(3));
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
