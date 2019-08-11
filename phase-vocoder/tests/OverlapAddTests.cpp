@@ -45,10 +45,9 @@ namespace phase_vocoder {
 
         void filter(gsl::span<T> x) {
             for (size_t j{0}; j < x.size()/L; ++j)
-                filterCompleteBlock(x.subspan(j*L, L));
-            auto left = x.size()%L;
-            if (left)
-                filterCompleteBlock(x.last(left));
+                filter_(x.subspan(j*L, L));
+            if (auto left = x.size()%L)
+                filter_(x.last(left));
         }
 
     private:
@@ -56,7 +55,7 @@ namespace phase_vocoder {
             transformer.dft(x, X);
         }
 
-        void filterCompleteBlock(gsl::span<T> x) {
+        void filter_(gsl::span<T> x) {
             std::copy(x.begin(), x.end(), realBuffer.begin());
             dft(realBuffer, complexBuffer);
             std::transform(
@@ -77,6 +76,8 @@ namespace phase_vocoder {
             std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
             for (size_t i{0}; i < N - x.size(); ++i)
                 overlap.at(i) = overlap.at(i+x.size());
+            for (size_t i{N - x.size()}; i < N; ++i)
+                overlap.at(i) = 0;
         }
     };
 }
@@ -250,5 +251,18 @@ namespace {
         setIdftReal({5, 6, 7, 8});
         filter(overlapAdd);
         assertXEquals({ 5, 6, 5+7 });
+    }
+
+    TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform5) {
+        setTapCount(4 - 1);
+        setDftComplex({ 0, 0, 0, 0 });
+        auto overlapAdd = construct();
+        resizeX(3);
+        setIdftReal({5, 6, 7, 8});
+        filter(overlapAdd);
+        assertXEquals({ 5, 6, 5+7 });
+        setIdftReal({9, 10, 11, 12});
+        filter(overlapAdd);
+        assertXEquals({ 6+8+9, 7+10, 8+11+9 });
     }
 }
