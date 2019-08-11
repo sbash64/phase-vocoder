@@ -51,7 +51,8 @@ namespace phase_vocoder {
                 dftComplex.begin(),
                 std::multiplies<>{}
             );
-            transformer.idft(dftComplex, {});
+            transformer.idft(dftComplex, dftReal);
+            std::copy(dftReal.begin(), dftReal.begin() + L, x.begin());
         }
 
     private:
@@ -67,6 +68,7 @@ namespace phase_vocoder {
 namespace {
     class FourierTransformerStub : public phase_vocoder::FourierTransformer {
         std::vector<double> dftReal_;
+        std::vector<double> idftReal_;
         std::vector<std::complex<double>> dftComplex_;
         std::vector<std::complex<double>> idftComplex_;
     public:
@@ -88,11 +90,16 @@ namespace {
         void setDftComplex(std::vector<std::complex<double>> x) {
             dftComplex_ = std::move(x);
         }
+
+        void setIdftReal(std::vector<double> x) {
+            idftReal_ = std::move(x);
+        }
         
-        void idft(gsl::span<std::complex<double>> x, gsl::span<double>) override {
+        void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
             idftComplex_.clear();
             for (auto x_ : x)
                 idftComplex_.push_back(x_);
+            std::copy(idftReal_.begin(), idftReal_.end(), y.begin());
         }
     };
 
@@ -122,8 +129,16 @@ namespace {
             fourierTransformer.setDftComplex(std::move(x));
         }
 
+        void setIdftReal(std::vector<double> x) {
+            fourierTransformer.setIdftReal(std::move(x));
+        }
+
         void filter(phase_vocoder::OverlapAdd<double> &overlapAdd) {
             overlapAdd.filter(x);
+        }
+
+        void assertXEquals(const std::vector<double> &x_) {
+            assertEqual(x, x_);
         }
     };
 
@@ -149,5 +164,15 @@ namespace {
         x.resize(2);
         filter(overlapAdd);
         assertIdftComplexEquals({ 4*11, 5*12, 6*13, 7*14 });
+    }
+
+    TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform) {
+        setTapCount(3);
+        setDftComplex({ 0, 0, 0, 0 });
+        auto overlapAdd = construct();
+        x.resize(2);
+        setIdftReal({4, 5, 6, 7});
+        filter(overlapAdd);
+        assertXEquals({ 4, 5 });
     }
 }
