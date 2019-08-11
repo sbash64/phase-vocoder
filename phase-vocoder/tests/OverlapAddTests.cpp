@@ -27,12 +27,14 @@ namespace phase_vocoder {
         std::vector<T> overlap;
         size_t N;
         size_t M;
+        size_t L;
     public:
         OverlapAdd(FourierTransformer &transformer, std::vector<T> b) : 
             transformer{transformer},
             N{nearestGreaterPowerTwo(b.size())},
             M{b.size()}
         {
+            L = N - M + 1;
             b.resize(N);
             realBuffer.resize(N);
             H.resize(N);
@@ -42,7 +44,6 @@ namespace phase_vocoder {
         };
 
         void filter(gsl::span<T> x) {
-            auto L = N - M + 1;
             for (size_t j{0}; j < x.size()/L; ++j)
                 filterCompleteBlock(x.subspan(j*L, L));
         }
@@ -53,7 +54,6 @@ namespace phase_vocoder {
         }
 
         void filterCompleteBlock(gsl::span<T> x) {
-            auto L = N - M + 1;
             std::copy(x.begin(), x.end(), realBuffer.begin());
             dft(realBuffer, complexBuffer);
             std::transform(
