@@ -12,6 +12,7 @@ namespace phase_vocoder {
 
     constexpr size_t nearestPowerTwo(size_t n) {
         size_t result{};
+        --n;
         while (n >>= 1)
             ++result;
         return 1 << (result + 1);
@@ -103,6 +104,10 @@ namespace {
         void assertIdftComplexEquals(const std::vector<std::complex<double>> &x) {
             assertEqual(x, fourierTransformer.idftComplex());
         }
+
+        void setTapCount(size_t n) {
+            b.resize(n);
+        }
     };
 
     TEST_F(OverlapAddTests, constructorTransformsTapsZeroPaddedToNearestPowerTwo) {
@@ -112,15 +117,15 @@ namespace {
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransformZeroPaddedToN) {
-        b = { 1, 2, 3 };
+        setTapCount(3);
         auto overlapAdd = construct();
-        std::vector<double> x = { 4, 5, 6 };
+        std::vector<double> x = { 4, 5, 6, 7, 8, 9 };
         overlapAdd.filter(x);
         assertDftRealEquals({ 4, 5, 0, 0 });
     }
 
     TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
-        b = { 1, 2, 3 };
+        setTapCount(3);
         fourierTransformer.setDftComplex({ 4, 5, 6, 7 });
         auto overlapAdd = construct();
         std::vector<double> x = { 8, 9, 10 };
