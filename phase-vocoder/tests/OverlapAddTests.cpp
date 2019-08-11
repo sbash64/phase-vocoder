@@ -56,8 +56,7 @@ namespace phase_vocoder {
         }
 
         void filter_(gsl::span<T> x) {
-            for (auto &x : realBuffer)
-                x = 0;
+            std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
             std::copy(x.begin(), x.end(), realBuffer.begin());
             dft(realBuffer, complexBuffer);
             std::transform(
@@ -78,8 +77,7 @@ namespace phase_vocoder {
             std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
             for (size_t i{0}; i < N - x.size(); ++i)
                 overlap.at(i) = overlap.at(i+x.size());
-            for (size_t i{N - x.size()}; i < N; ++i)
-                overlap.at(i) = 0;
+            std::fill(overlap.rbegin(), overlap.rbegin() + x.size(), 0);
         }
     };
 }
