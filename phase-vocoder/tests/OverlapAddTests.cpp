@@ -196,7 +196,7 @@ namespace {
         assertDftRealEquals({9, 10, 0, 0}, 3);
     }
 
-    TEST_F(OverlapAddTests, filterPassesFirstTransformProductToInverseTransform) {
+    TEST_F(OverlapAddTests, filterPassesTransformProductToInverseTransform) {
         setTapCount(4 - 1);
         setDftComplex({ 5, 6, 7, 8 });
         auto overlapAdd = construct();
@@ -224,5 +224,18 @@ namespace {
         setIdftReal({5, 6, 7, 8});
         filter(overlapAdd);
         assertXEquals({ 5, 6, 5+7, 6+8 });
+    }
+
+    TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform3) {
+        setTapCount(4 - 1);
+        setDftComplex({ 0, 0, 0, 0 });
+        auto overlapAdd = construct();
+        resizeX(2);
+        setIdftReal({5, 6, 7, 8});
+        filter(overlapAdd);
+        assertXEquals({ 5, 6 });
+        setIdftReal({9, 10, 11, 12});
+        filter(overlapAdd);
+        assertXEquals({ 9+7, 10+8 });
     }
 }
