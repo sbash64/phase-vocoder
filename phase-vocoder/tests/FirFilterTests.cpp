@@ -1,8 +1,71 @@
 #include "assert-utility.h"
 #include <phase-vocoder/FirFilter.h>
+#include <phase-vocoder/OverlapAdd.h>
+#include <fftw3.h>
 #include <gtest/gtest.h>
 
 namespace {
+	class FftwTransformer : public phase_vocoder::FourierTransformer {
+        std::vector<std::complex<double>> dftComplex_;
+        std::vector<std::complex<double>> idftComplex_;
+        std::vector<double> dftReal_;
+        std::vector<double> idftReal_;
+		fftw_plan dftPlan;
+		fftw_plan idftPlan;
+		size_t N;
+	public:
+		explicit FftwTransformer(size_t N) : 
+			dftComplex_(N),
+			idftComplex_(N),
+			dftReal_(N),
+			idftReal_(N),
+			dftPlan{fftw_plan_dft_r2c_1d(
+				N, 
+				dftReal_.data(), 
+				reinterpret_cast<fftw_complex *>(dftComplex_.data()),
+                FFTW_ESTIMATE
+			)},
+			idftPlan{fftw_plan_dft_c2r_1d(
+				N, 
+				reinterpret_cast<fftw_complex *>(idftComplex_.data()),
+				idftReal_.data(), 
+                FFTW_ESTIMATE
+			)},
+			N{N}
+		{
+
+		}
+
+		~FftwTransformer() {
+			fftw_destroy_plan(dftPlan);
+			fftw_destroy_plan(idftPlan);
+		}
+
+        template<typename T>
+        void copy(gsl::span<T> x, std::vector<T> &y) {
+            std::copy(x.begin(), x.end(), y.begin());
+        }
+
+        template<typename T>
+        void copy(const std::vector<T> &x, gsl::span<T> y) {
+            std::copy(x.begin(), x.end(), y.begin());
+        }
+
+        void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
+            copy(x, dftReal_);
+			fftw_execute(dftPlan);
+            copy(dftComplex_, y);
+        }
+        
+        void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
+            copy(x, idftComplex_);
+			fftw_execute(idftPlan);
+            copy(idftReal_, y);
+			for (auto &y_ : y)
+				y_ /= N;
+        }
+	};
+
 	class FirFilterTests : public ::testing::Test {
 	protected:
 		std::vector<double> b{ 0 };
@@ -11,8 +74,9 @@ namespace {
 			std::vector<double> x, 
 			const std::vector<double>& y
 		) {
-			phase_vocoder::FirFilter<double> filter{ b };
-			filter.filter(x);
+			FftwTransformer transformer{phase_vocoder::nearestGreaterPowerTwo(b.size())};
+			phase_vocoder::OverlapAdd<double> overlapAdd{transformer, b};
+			overlapAdd.filter(x);
 			assertEqual(y, x);
 		}
 
@@ -21,9 +85,11 @@ namespace {
 			const std::vector<std::vector<double>>& y
 		) {
 			phase_vocoder::FirFilter<double> filter{ b };
+			FftwTransformer transformer{phase_vocoder::nearestGreaterPowerTwo(b.size())};
+			phase_vocoder::OverlapAdd<double> overlapAdd{transformer, b};
 			for (size_t i{ 0 }; i < y.size(); ++i) {
-				filter.filter(x[i]);
-				assertEqual(y[i], x[i]);
+				overlapAdd.filter(x[i]);
+				assertEqual(y[i], x[i], 1e-14);
 			}
 		}
 
