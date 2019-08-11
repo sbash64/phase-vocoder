@@ -80,7 +80,7 @@ namespace {
             dftComplex_ = std::move(x);
         }
         
-        void idft(gsl::span<std::complex<double>> x, gsl::span<double>) {
+        void idft(gsl::span<std::complex<double>> x, gsl::span<double>) override {
             idftComplex_.clear();
             for (auto x_ : x)
                 idftComplex_.push_back(x_);
