@@ -80,11 +80,21 @@ namespace {
             return idftComplex_;
         }
 
-        void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
-            dftReal_.clear();
+        template<typename T>
+        void copy(gsl::span<T> x, std::vector<T> &y) {
+            y.clear();
             for (auto x_ : x)
-                dftReal_.push_back(x_);
-            std::copy(dftComplex_.begin(), dftComplex_.end(), y.begin());
+                y.push_back(x_);
+        }
+
+        template<typename T>
+        void copy(const std::vector<T> &x, gsl::span<T> y) {
+            std::copy(x.begin(), x.end(), y.begin());
+        }
+
+        void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
+            copy(x, dftReal_);
+            copy(dftComplex_, y);
         }
 
         void setDftComplex(std::vector<std::complex<double>> x) {
@@ -96,10 +106,8 @@ namespace {
         }
         
         void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
-            idftComplex_.clear();
-            for (auto x_ : x)
-                idftComplex_.push_back(x_);
-            std::copy(idftReal_.begin(), idftReal_.end(), y.begin());
+            copy(x, idftComplex_);
+            copy(idftReal_, y);
         }
     };
 
