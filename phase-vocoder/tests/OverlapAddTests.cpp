@@ -1,6 +1,7 @@
 #include <gsl/gsl>
 #include <vector>
 #include <complex>
+#include <algorithm>
 
 namespace phase_vocoder {
     class FourierTransformer {
@@ -41,11 +42,15 @@ namespace phase_vocoder {
 
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
-            for (size_t i{0}; i < L; ++i)
-                dftReal.at(i) = x.at(i);
+            std::copy(x.begin(), x.begin() + L, dftReal.begin());
             transformer.dft(dftReal, dftComplex);
-            for (size_t i{0}; i < N; ++i)
-                dftComplex.at(i) *= H.at(i);
+            std::transform(
+                dftComplex.begin(),
+                dftComplex.end(),
+                H.begin(),
+                dftComplex.begin(),
+                std::multiplies<>{}
+            );
             transformer.idft(dftComplex, {});
         }
     };
