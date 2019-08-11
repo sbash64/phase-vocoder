@@ -19,6 +19,7 @@ namespace phase_vocoder {
     template<typename T>
     class OverlapAdd {
         FourierTransformer &transformer;
+        std::vector<T> dftReal;
         size_t N;
         size_t M;
     public:
@@ -28,12 +29,15 @@ namespace phase_vocoder {
             M{b.size()}
         {
             b.resize(N);
+            dftReal.resize(N);
             transformer.dft(b, {});
         };
 
         void filter(gsl::span<T> x) {
             auto L = N - M + 1;
-            transformer.dft(x.first(L), {});
+            for (size_t i{0}; i < L; ++i)
+                dftReal.at(i) = x.at(i);
+            transformer.dft(dftReal, {});
         }
     };
 }
@@ -77,11 +81,11 @@ namespace {
         assertDftRealEquals({ 1, 2, 3, 0 });
     }
 
-    TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransform) {
+    TEST_F(OverlapAddTests, filterPassesFirstBlockLSamplesToTransformZeroPaddedToN) {
         b = { 1, 2, 3 };
         auto overlapAdd = construct();
         std::vector<double> x = { 4, 5, 6 };
         overlapAdd.filter(x);
-        assertDftRealEquals({ 4, 5 });
+        assertDftRealEquals({ 4, 5, 0, 0 });
     }
 }
