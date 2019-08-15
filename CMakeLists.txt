@@ -9,20 +9,21 @@ if(NOT FFTW_LIB)
     # https://cmake.org/pipermail/cmake/2017-May/065490.html
     include(ExternalProject)
 
-    MESSAGE(STATUS "Trying to install fftw...")
+    set(FFTW_PREFIX_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/fftw)
+    set(FFTW_INSTALL_DIRECTORY ${FFTW_PREFIX_DIRECTORY}/install)
 
     ExternalProject_Add(project_fftw
         URL http://www.fftw.org/fftw-3.3.8.tar.gz
-        PREFIX ${CMAKE_CURRENT_BINARY_DIR}/fftw
-        CONFIGURE_COMMAND ${CMAKE_CURRENT_BINARY_DIR}/fftw/src/project_fftw/configure --prefix=${CMAKE_CURRENT_BINARY_DIR}/fftw/install
-        INSTALL_DIR ${CMAKE_CURRENT_BINARY_DIR}/fftw/install
+        PREFIX ${FFTW_PREFIX_DIRECTORY}
+        CONFIGURE_COMMAND ${FFTW_PREFIX_DIRECTORY}/src/project_fftw/configure --prefix=${FFTW_INSTALL_DIRECTORY}
+        INSTALL_DIR ${FFTW_INSTALL_DIRECTORY}
     )
 
     add_library(fftw3 STATIC IMPORTED)
-    set(lib_fftw_name ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
-    set_target_properties(fftw3 PROPERTIES IMPORTED_LOCATION ${CMAKE_CURRENT_BINARY_DIR}/fftw/install/lib/${lib_fftw_name})
+    set(FFTW_LIB_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
+    set_target_properties(fftw3 PROPERTIES IMPORTED_LOCATION ${FFTW_INSTALL_DIRECTORY}/lib/${FFTW_LIB_NAME})
 
-    include_directories(${CMAKE_CURRENT_BINARY_DIR}/fftw/install/include)
+    target_include_directories(fftw3 ${FFTW_INSTALL_DIRECTORY}/include)
 endif()
 add_subdirectory(googletest)
 add_subdirectory(GSL)
