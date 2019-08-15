@@ -23,7 +23,7 @@ if(NOT FFTW_LIB)
     set(FFTW_LIB_NAME ${CMAKE_STATIC_LIBRARY_PREFIX}fftw3${CMAKE_STATIC_LIBRARY_SUFFIX})
     set_target_properties(fftw3 PROPERTIES IMPORTED_LOCATION ${FFTW_INSTALL_DIRECTORY}/lib/${FFTW_LIB_NAME})
 
-    target_include_directories(fftw3 ${FFTW_INSTALL_DIRECTORY}/include)
+    target_include_directories(fftw3 PUBLIC ${FFTW_INSTALL_DIRECTORY}/include)
 endif()
 add_subdirectory(googletest)
 add_subdirectory(GSL)
