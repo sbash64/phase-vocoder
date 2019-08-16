@@ -1,22 +1,5 @@
-#include <gsl/gsl>
-#include <vector>
-
-namespace phase_vocoder {
-template<typename T>
-class Expand {
-    int P;
-public:
-    explicit Expand(int P) : P{P} {}
-
-    void expand(gsl::span<const T> x, gsl::span<T> y) {
-        std::fill(y.begin(), y.end(), 0);
-        for (typename gsl::span<T>::index_type i{0}; i < x.size(); ++i)
-            y.at(i*P) = x.at(i);
-    }
-};
-}
-
 #include "assert-utility.h"
+#include <phase-vocoder/Expand.h>
 #include <gtest/gtest.h>
 
 namespace {
@@ -27,9 +10,9 @@ protected:
         int P,
         const std::vector<double> &y
     ) {
-        phase_vocoder::Expand<double> expand{P};
+        phase_vocoder::Expand expand{P};
         std::vector<double> expanded(x.size() * P, 1);
-        expand.expand(x, expanded);
+        expand.expand<double>(x, expanded);
         assertEqual(y, expanded);
     }
 };
