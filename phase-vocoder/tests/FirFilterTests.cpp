@@ -73,7 +73,7 @@ protected:
 		FftwTransformer transformer{
 			phase_vocoder::nearestGreaterPowerTwo(b.size())
 		};
-		phase_vocoder::OverlapAdd<double> overlapAdd{transformer, b};
+		phase_vocoder::OverlapAddFilter<double> overlapAdd{transformer, b};
 		overlapAdd.filter(x);
 		assertEqual(y, x);
 	}
@@ -85,7 +85,7 @@ protected:
 		FftwTransformer transformer{
 			phase_vocoder::nearestGreaterPowerTwo(b.size())
 		};
-		phase_vocoder::OverlapAdd<double> overlapAdd{transformer, b};
+		phase_vocoder::OverlapAddFilter<double> overlapAdd{transformer, b};
 		for (size_t i{ 0 }; i < y.size(); ++i) {
 			overlapAdd.filter(x[i]);
 			assertEqual(y[i], x[i], 1e-14);

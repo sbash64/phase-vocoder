@@ -23,7 +23,7 @@ constexpr size_t nearestGreaterPowerTwo(size_t n) {
 }
 
 template<typename T>
-class OverlapAdd {
+class OverlapAddFilter {
     FourierTransformer &transformer;
     std::vector<std::complex<T>> complexBuffer;
     std::vector<std::complex<T>> H;
@@ -33,7 +33,7 @@ class OverlapAdd {
     size_t M;
     size_t L;
 public:
-    OverlapAdd(FourierTransformer &transformer, std::vector<T> b) :
+    OverlapAddFilter(FourierTransformer &transformer, std::vector<T> b) :
         transformer{transformer},
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}

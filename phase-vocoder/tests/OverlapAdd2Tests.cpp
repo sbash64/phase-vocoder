@@ -42,7 +42,7 @@ class OverlapAdd2Tests : public ::testing::Test {
     std::vector<double> overlap_;
 protected:
     OverlapAdd2Tests() : overlap_(N) {}
-    
+
     void assertOverlap(
         const std::vector<double> &x,
         const std::vector<double> &y

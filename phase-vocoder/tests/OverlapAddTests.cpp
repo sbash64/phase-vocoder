@@ -60,7 +60,7 @@ protected:
     std::vector<double> b;
     std::vector<double> x;
 
-    phase_vocoder::OverlapAdd<double> construct() {
+    phase_vocoder::OverlapAddFilter<double> construct() {
         return {fourierTransformer, b};
     }
 
@@ -84,7 +84,7 @@ protected:
         fourierTransformer.setIdftReal(std::move(x));
     }
 
-    void filter(phase_vocoder::OverlapAdd<double> &overlapAdd) {
+    void filter(phase_vocoder::OverlapAddFilter<double> &overlapAdd) {
         overlapAdd.filter(x);
     }
 
