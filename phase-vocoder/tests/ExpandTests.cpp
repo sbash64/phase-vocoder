@@ -9,6 +9,7 @@ public:
     Expand(int, int P) : P{P} {}
 
     void expand(gsl::span<const T> x, gsl::span<T> y) {
+        std::fill(y.begin(), y.end(), 0);
         for (typename gsl::span<T>::index_type i{0}; i < x.size(); ++i)
             y.at(i*P) = x.at(i);
     }
@@ -28,7 +29,7 @@ protected:
         std::vector<double> y
     ) {
         phase_vocoder::Expand<double> expand{N, P};
-        std::vector<double> expanded(5 * P);
+        std::vector<double> expanded(5 * P, 1);
         expand.expand(x, expanded);
         assertEqual(y, expanded);
     }
