@@ -1,23 +1,14 @@
-node('master') {
-    stage('gcc build and test') {
+node {
+    docker_cmake_build_with_tests('gcc') {
+    docker_cmake_build_with_tests('clang') {
+}
+
+def docker_cmake_build_with_tests(compiler) {
+    stage(compiler) {
         node {
             checkout_scm()
 
-            docker_image('gcc').inside {
-                dir('build') {
-                    cmake_generate_build_with_tests()
-                    cmake_build()
-                    execute_tests()
-                }
-            }
-        }
-    }
-    
-    stage('clang build and test') {
-        node {
-            checkout_scm()
-
-            docker_image('clang').inside {
+            docker_image(compiler).inside {
                 dir('build') {
                     cmake_generate_build_with_tests()
                     cmake_build()
@@ -38,14 +29,6 @@ def cmake_generate_build_with_tests() {
 
 def cmake_generate_build(flags) {
     execute_command_line('cmake ' + flags + ' ..')
-}
-
-def cmake_generate_build_with_toolchain(toolchain) {
-    cmake_generate_build('-DCMAKE_TOOLCHAIN_FILE=../' + toolchain)
-}
-
-def cmake_build_target(target) {
-    cmake_build('--target ' + target)
 }
 
 def cmake_build(flags = '') {
