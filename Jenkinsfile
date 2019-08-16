@@ -1,6 +1,6 @@
 node {
-    docker_cmake_build_with_tests('gcc') {
-    docker_cmake_build_with_tests('clang') {
+    docker_cmake_build_with_tests('gcc')
+    docker_cmake_build_with_tests('clang')
 }
 
 def docker_cmake_build_with_tests(compiler) {
