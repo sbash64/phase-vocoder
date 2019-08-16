@@ -1,20 +1,5 @@
-#include <gsl/gsl>
-
-namespace phase_vocoder {
-class Decimate {
-    int Q;
-public:
-    explicit Decimate(int Q) : Q{Q} {}
-
-    template<typename T>
-    void decimate(gsl::span<const T> x, gsl::span<T> y) {
-        for (typename gsl::span<T>::index_type i{0}; i < y.size(); ++i)
-            y.at(i) = x.at(i*Q);
-    }
-};
-}
-
 #include "assert-utility.h"
+#include <phase-vocoder/Decimate.h>
 #include <gtest/gtest.h>
 
 namespace {
@@ -32,7 +17,7 @@ protected:
     }
 };
 
-TEST_F(DecimateTests, tbd) {
+TEST_F(DecimateTests, extractsEveryQthElement) {
     assertDecimated(
         { 1, 0, 0, 2, 0, 0, 3, 0, 0, 4, 0, 0, 5, 0, 0 },
         3,
