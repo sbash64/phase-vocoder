@@ -3,7 +3,7 @@ add_executable(
 	OverlapExtractTests.cpp
 	InterpolateFramesTests.cpp
 	FirFilterTests.cpp
-	OverlapAddTests.cpp
+	OverlapAddFilterTests.cpp
 	OverlapAdd2Tests.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_17)
