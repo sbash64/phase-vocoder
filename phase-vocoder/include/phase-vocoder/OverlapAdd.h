@@ -3,85 +3,35 @@
 
 #include <gsl/gsl>
 #include <vector>
-#include <complex>
-#include <algorithm>
 #include <functional>
+#include <algorithm>
 
 namespace phase_vocoder {
-class FourierTransformer {
-public:
-    virtual ~FourierTransformer() = default;
-    virtual void dft(gsl::span<double>, gsl::span<std::complex<double>>) = 0;
-    virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
-};
-
-constexpr size_t nearestGreaterPowerTwo(size_t n) {
-    size_t power{1};
-    while (n >>= 1)
-        ++power;
-    return 1 << power;
-}
-
 template<typename T>
 class OverlapAdd {
-    FourierTransformer &transformer;
-    std::vector<std::complex<T>> complexBuffer;
-    std::vector<std::complex<T>> H;
-    std::vector<T> realBuffer;
-    std::vector<T> overlap;
-    size_t N;
-    size_t M;
-    size_t L;
+    std::vector<T> overlap_;
+    std::vector<T> next_;
+    int hop;
 public:
-    OverlapAdd(FourierTransformer &transformer, std::vector<T> b) :
-        transformer{transformer},
-        N{nearestGreaterPowerTwo(b.size())},
-        M{b.size()}
-    {
-        L = N - M + 1;
-        b.resize(N);
-        realBuffer.resize(N);
-        H.resize(N);
-        overlap.resize(N);
-        complexBuffer.resize(N);
-        dft(b, H);
-    }
+    OverlapAdd(int N, int hop) : overlap_(N), next_(hop), hop{hop} {}
 
-    void filter(gsl::span<T> x) {
-        for (size_t j{0}; j < x.size()/L; ++j)
-            filter_(x.subspan(j*L, L));
-        if (auto left = x.size()%L)
-            filter_(x.last(left));
-    }
-
-private:
-    void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
-        transformer.dft(x, X);
-    }
-
-    void filter_(gsl::span<T> x) {
-        std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
-        std::copy(x.begin(), x.end(), realBuffer.begin());
-        dft(realBuffer, complexBuffer);
+    void add(gsl::span<const T> x) {
+        std::copy(x.rbegin(), x.rbegin() + hop, next_.rbegin());
+        auto begin_ = overlap_.begin() + hop;
         std::transform(
-            complexBuffer.begin(),
-            complexBuffer.end(),
-            H.begin(),
-            complexBuffer.begin(),
-            std::multiplies<>{}
-        );
-        transformer.idft(complexBuffer, realBuffer);
-        std::transform(
-            overlap.begin(),
-            overlap.end(),
-            realBuffer.begin(),
-            overlap.begin(),
+            begin_,
+            overlap_.end(),
+            x.begin(),
+            begin_,
             std::plus<>{}
         );
-        std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
-        for (size_t i{0}; i < N - x.size(); ++i)
-            overlap.at(i) = overlap.at(i+x.size());
-        std::fill(overlap.rbegin(), overlap.rbegin() + x.size(), 0);
+    }
+
+    void next(gsl::span<T> y) {
+        std::copy(overlap_.begin(), overlap_.end(), y.begin());
+        for (size_t i{0}; i < overlap_.size() - hop; ++i)
+            overlap_.at(i) = overlap_.at(i+hop);
+        std::copy(next_.rbegin(), next_.rend(), overlap_.rbegin());
     }
 };
 }
