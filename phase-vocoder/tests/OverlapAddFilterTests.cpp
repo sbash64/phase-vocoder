@@ -54,7 +54,7 @@ public:
     }
 };
 
-class OverlapAddTests : public ::testing::Test {
+class OverlapAddFilterTests : public ::testing::Test {
 protected:
     FourierTransformerStub fourierTransformer;
     std::vector<double> b;
@@ -102,7 +102,7 @@ protected:
 };
 
 TEST_F(
-    OverlapAddTests,
+    OverlapAddFilterTests,
     constructorTransformsTapsZeroPaddedToNearestGreaterPowerTwo
 ) {
     b = { 1, 2, 3 };
@@ -110,7 +110,7 @@ TEST_F(
     assertDftRealEquals({ 1, 2, 3, 0 });
 }
 
-TEST_F(OverlapAddTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
+TEST_F(OverlapAddFilterTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
     setTapCount(4 - 1);
     auto overlapAdd = construct();
     x = { 5, 6, 7, 8, 9, 10 };
@@ -121,7 +121,7 @@ TEST_F(OverlapAddTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
 }
 
 TEST_F(
-    OverlapAddTests,
+    OverlapAddFilterTests,
     filterPassesEachBlockLSamplesToTransformZeroPaddedToN2
 ) {
     setTapCount(4 - 1);
@@ -132,7 +132,7 @@ TEST_F(
     assertDftRealEquals({7, 0, 0, 0}, 2);
 }
 
-TEST_F(OverlapAddTests, filterPassesTransformProductToInverseTransform) {
+TEST_F(OverlapAddFilterTests, filterPassesTransformProductToInverseTransform) {
     setTapCount(4 - 1);
     setDftComplex({ 5, 6, 7, 8 });
     auto overlapAdd = construct();
@@ -142,7 +142,7 @@ TEST_F(OverlapAddTests, filterPassesTransformProductToInverseTransform) {
     assertIdftComplexEquals({ 5*11, 6*12, 7*13, 8*14 });
 }
 
-TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform) {
+TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -152,7 +152,7 @@ TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform) {
     assertXEquals({ 5, 6 });
 }
 
-TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform2) {
+TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform2) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -162,7 +162,7 @@ TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform2) {
     assertXEquals({ 5, 6, 5+7, 6+8 });
 }
 
-TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform3) {
+TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform3) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -175,7 +175,7 @@ TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform3) {
     assertXEquals({ 9+7, 10+8 });
 }
 
-TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform4) {
+TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform4) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -185,7 +185,7 @@ TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform4) {
     assertXEquals({ 5, 6, 5+7 });
 }
 
-TEST_F(OverlapAddTests, filterOverlapAddsInverseTransform5) {
+TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform5) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
