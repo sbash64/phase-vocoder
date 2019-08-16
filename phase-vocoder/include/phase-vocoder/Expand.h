@@ -2,7 +2,6 @@
 #define PHASEVOCODER_EXPAND_H
 
 #include <gsl/gsl>
-#include <vector>
 
 namespace phase_vocoder {
 class Expand {
