@@ -8,15 +8,16 @@ class OverlapAdd2 {
     std::vector<T> next_;
     int hop;
 public:
-    explicit OverlapAdd2(int N, int hop) : overlap_(N), next_(N), hop{hop} {}
+    OverlapAdd2(int N, int hop) : overlap_(N), next_(N), hop{hop} {}
 
     void add(gsl::span<const T> x) {
         std::copy(x.begin(), x.end(), next_.begin());
+        auto begin_ = overlap_.begin() + hop;
         std::transform(
-            overlap_.begin() + hop,
+            begin_,
             overlap_.end(),
             x.begin(),
-            overlap_.begin() + hop,
+            begin_,
             std::plus<>{}
         );
     }
@@ -35,9 +36,12 @@ constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapAdd2Tests : public ::testing::Test {
 protected:
-    void assertOverlap(std::vector<double> x, const std::vector<double> &y) {
+    void assertOverlap(
+        const std::vector<double> &x,
+        const std::vector<double> &y
+    ) {
         phase_vocoder::OverlapAdd2<double> overlapAdd(N, hop);
-        overlapAdd.add(std::move(x));
+        overlapAdd.add(x);
         std::vector<double> overlap_(N);
         overlapAdd.overlap(overlap_);
         assertEqual(y, overlap_);
