@@ -42,24 +42,34 @@ std::vector<std::complex<double>> transform(
 	return a;
 }
 
-std::vector<std::complex<double>> doublePhase(std::vector<std::complex<double>> x) {
+std::vector<std::complex<double>> doublePhase(
+	std::vector<std::complex<double>> x
+) {
 	return transform(std::move(x), doublePhase);
 }
 
-std::vector<std::complex<double>> triplePhase(std::vector<std::complex<double>> x) {
+std::vector<std::complex<double>> triplePhase(
+	std::vector<std::complex<double>> x
+) {
 	return transform(std::move(x), triplePhase);
 }
 
-double averageMagnitude(const std::complex<double> &a, const std::complex<double> &b) {
+double averageMagnitude(
+	const std::complex<double> &a,
+	const std::complex<double> &b
+) {
 	return (magnitude(a) + magnitude(b)) / 2;
 }
 
-double summedPhase(const std::complex<double> &a, const std::complex<double> &b) {
+double summedPhase(
+	const std::complex<double> &a,
+	const std::complex<double> &b
+) {
 	return phase(a) + phase(b);
 }
 
 std::complex<double> averageMagnitudesAndSumPhases(
-	const std::complex<double> &a, 
+	const std::complex<double> &a,
 	const std::complex<double> &b
 ) {
 	return complex(averageMagnitude(a, b), summedPhase(a, b));
@@ -68,7 +78,10 @@ std::complex<double> averageMagnitudesAndSumPhases(
 std::vector<std::complex<double>> transform(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>> &b,
-	std::complex<double>(*f)(const std::complex<double> &, const std::complex<double> &)
+	std::complex<double>(*f)(
+		const std::complex<double> &,
+		const std::complex<double> &
+	)
 ) {
 	std::transform(
 		a.begin(),
@@ -76,7 +89,7 @@ std::vector<std::complex<double>> transform(
 		b.begin(),
 		a.begin(),
 		[=](
-			const std::complex<double> &a_, 
+			const std::complex<double> &a_,
 			const std::complex<double> &b_
 		) { return (*f)(a_, b_); }
 	);
@@ -91,31 +104,39 @@ std::vector<std::complex<double>> averageMagnitudesAndSumPhases(
 }
 
 std::complex<double> magnitudeSecondAndDoublePhaseSecondMinusFirst(
-	const std::complex<double> &a, 
+	const std::complex<double> &a,
 	const std::complex<double> &b
 ) {
 	return complex(magnitude(b), 2 * phase(b) - phase(a));
 }
 
 std::complex<double> twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
-	const std::complex<double> &a, 
+	const std::complex<double> &a,
 	const std::complex<double> &b
 ) {
 	return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, phase(b));
 }
 
-std::complex<double> twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
+std::complex<double>
+twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 	const std::complex<double>& a,
 	const std::complex<double>& b
 ) {
-	return complex(2 * magnitude(a) / 3 + magnitude(b) / 3, 2 * phase(a) + phase(b));
+	return complex(
+		2 * magnitude(a) / 3 + magnitude(b) / 3,
+		2 * phase(a) + phase(b)
+	);
 }
 
-std::complex<double> oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+std::complex<double>
+oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	const std::complex<double>& a,
 	const std::complex<double>& b
 ) {
-	return complex(magnitude(a) / 3 + 2 * magnitude(b) / 3, phase(a) + 2 * phase(b));
+	return complex(
+		magnitude(a) / 3 + 2 * magnitude(b) / 3,
+		phase(a) + 2 * phase(b)
+	);
 }
 
 std::complex<double> halfMagnitudeEachAndPhaseSecond(
@@ -125,32 +146,51 @@ std::complex<double> halfMagnitudeEachAndPhaseSecond(
 	return complex(magnitude(a) / 2 + magnitude(b) / 2, phase(b));
 }
 
-std::vector<std::complex<double>> twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
+std::vector<std::complex<double>>
+twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>> &b
 ) {
-	return transform(std::move(a), b, twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond);
+	return transform(
+		std::move(a),
+		b,
+		twoThirdsMagnitudeFirstPlusOneThirdSecondAndPhaseSecond
+	);
 }
 
 std::vector<std::complex<double>> magnitudeSecondAndDoublePhaseSecondMinusFirst(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>> &b
 ) {
-	return transform(std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
+	return transform(
+		std::move(a),
+		b,
+		magnitudeSecondAndDoublePhaseSecondMinusFirst
+	);
 }
 
-std::vector<std::complex<double>> twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
+std::vector<std::complex<double>>
+twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>>& b
 ) {
-	return transform(std::move(a), b, twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond);
+	return transform(
+		std::move(a),
+		b,
+		twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond
+	);
 }
 
-std::vector<std::complex<double>> oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+std::vector<std::complex<double>>
+oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>>& b
 ) {
-	return transform(std::move(a), b, oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond);
+	return transform(
+		std::move(a),
+		b,
+		oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond
+	);
 }
 
 std::vector<std::complex<double>> halfMagnitudeEachAndPhaseSecond(
@@ -164,7 +204,9 @@ class InterpolateFramesFacade {
 	phase_vocoder::InterpolateFrames<double> interpolate;
 	int N;
 public:
-	InterpolateFramesFacade(int P, int Q, int N) : interpolate{ P, Q, N }, N{ N } {}
+	InterpolateFramesFacade(int P, int Q, int N) :
+		interpolate{ P, Q, N },
+		N{ N } {}
 
 	void assertInterpolatedFrames(
 		const std::vector<std::complex<double>> &x,
@@ -207,7 +249,10 @@ public:
 		return out;
 	}
 
-	void assertNextEquals(const std::vector<std::complex<double>> &expected, double tolerance) {
+	void assertNextEquals(
+		const std::vector<std::complex<double>> &expected,
+		double tolerance
+	) {
 		assertEqual(expected, next(), tolerance);
 	}
 };
@@ -235,7 +280,7 @@ class InterpolateFramesP1Q2Tests : public ::testing::Test {
 	InterpolateFramesFacade interpolate{ P, Q, N };
 protected:
 	void assertInterpolatedFrames(
-		const std::vector<std::complex<double>> &x, 
+		const std::vector<std::complex<double>> &x,
 		const std::vector<std::vector<std::complex<double>>> &frames,
 		double tolerance
 	) {
@@ -247,7 +292,10 @@ protected:
 	}
 };
 
-TEST_F(InterpolateFramesP1Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+TEST_F(
+	InterpolateFramesP1Q2Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
 	assertInterpolatedFrames(
 		{1.0 + 2i, 3.0 + 4i, 5.0 + 6i},
 		{
@@ -258,13 +306,16 @@ TEST_F(InterpolateFramesP1Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase
 	);
 }
 
-TEST_F(InterpolateFramesP1Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+TEST_F(
+	InterpolateFramesP1Q2Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 		{
 			averageMagnitudesAndSumPhases(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }, 
+				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 			),
 			doublePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
@@ -292,7 +343,10 @@ protected:
 	}
 };
 
-TEST_F(InterpolateFramesP2Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+TEST_F(
+	InterpolateFramesP2Q3Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 		{
@@ -302,7 +356,10 @@ TEST_F(InterpolateFramesP2Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase
 	);
 }
 
-TEST_F(InterpolateFramesP2Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+TEST_F(
+	InterpolateFramesP2Q3Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
@@ -339,7 +396,10 @@ protected:
 	}
 };
 
-TEST_F(InterpolateFramesP1Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+TEST_F(
+	InterpolateFramesP1Q3Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 		{
@@ -351,7 +411,10 @@ TEST_F(InterpolateFramesP1Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase
 	);
 }
 
-TEST_F(InterpolateFramesP1Q3Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+TEST_F(
+	InterpolateFramesP1Q3Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
@@ -389,7 +452,10 @@ protected:
 	}
 };
 
-TEST_F(InterpolateFramesP2Q1Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+TEST_F(
+	InterpolateFramesP2Q1Tests, 
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 		{},
@@ -397,7 +463,10 @@ TEST_F(InterpolateFramesP2Q1Tests, interpolatesComplexMagnitudesAndAdvancesPhase
 	);
 }
 
-TEST_F(InterpolateFramesP2Q1Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+TEST_F(
+	InterpolateFramesP2Q1Tests, 
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
@@ -427,7 +496,10 @@ protected:
 	}
 };
 
-TEST_F(InterpolateFramesP3Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase) {
+TEST_F(
+	InterpolateFramesP3Q2Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 		{},
@@ -435,7 +507,10 @@ TEST_F(InterpolateFramesP3Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase
 	);
 }
 
-TEST_F(InterpolateFramesP3Q2Tests, interpolatesComplexMagnitudesAndAdvancesPhase2) {
+TEST_F(
+	InterpolateFramesP3Q2Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
