@@ -5,6 +5,7 @@ add_executable(
 	FirFilterTests.cpp
 	OverlapAddFilterTests.cpp
 	OverlapAddTests.cpp
+	ExpandTests.cpp
 )
 target_compile_features(tests PRIVATE cxx_std_17)
 set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
