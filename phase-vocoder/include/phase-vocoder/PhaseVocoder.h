@@ -47,10 +47,10 @@ std::vector<T> lowPassFilter(T cutoff, int taps) {
 
 template<typename T>
 class PhaseVocoder {
-    InterpolateFrames interpolateFrames;
-    OverlapExtract overlapExtract;
-    OverlapAddFilter filter;
-    OverlapAdd overlappedOutput;
+    InterpolateFrames<T> interpolateFrames;
+    OverlapExtract<T> overlapExtract;
+    OverlapAddFilter<T> filter;
+    OverlapAdd<T> overlappedOutput;
     Expand expand;
     Decimate decimate;
     std::vector<std::complex<T>> nextFrame;
@@ -68,12 +68,12 @@ public:
         overlappedOutput{N, hop(N)},
         expand{P},
         decimate{Q},
-        nextFrame{N},
-        expanded{hop(N)*P},
-        decimated{hop(N)*P/Q},
+        nextFrame(N),
+        expanded(hop(N)*P),
+        decimated(hop(N)*P/Q),
         inputBuffer(N),
         outputBuffer(hop(N)),
-        window{hannWindow(N)},
+        window{hannWindow<T>(N)},
         transform{factory.make(N)}
     {
         std::vector<T> delayedStart(N - hop(N), 0);
@@ -81,10 +81,10 @@ public:
     }
 
     void vocode(gsl::span<T> x) {
-        extract.add(x);
+        overlapExtract.add(x);
         auto head = x.begin();
-        while (extract.hasNext()) {
-            extract.next(inputBuffer);
+        while (overlapExtract.hasNext()) {
+            overlapExtract.next(inputBuffer);
             applyWindow();
             transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
@@ -94,9 +94,9 @@ public:
                 applyWindow();
                 overlappedOutput.add(inputBuffer);
                 overlappedOutput.next(outputBuffer);
-                expand.expand(outputBuffer, expanded);
+                expand.expand<T>(outputBuffer, expanded);
                 filter.filter(expanded);
-                decimate.decimate(expanded, decimated);
+                decimate.decimate<T>(expanded, decimated);
                 std::copy(decimated.begin(), decimated.end(), head);
                 head += decimated.size();
             }
