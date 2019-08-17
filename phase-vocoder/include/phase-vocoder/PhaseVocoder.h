@@ -20,6 +20,28 @@ std::vector<T> hannWindow(int N) {
 }
 
 template<typename T>
+std::vector<T> lowPassFilter(T cutoff, int taps) {
+    std::vector<T> coefficients(taps);
+    auto pi = std::acos(T{-1});
+    for (size_t i{0}; i < coefficients.size(); ++i) {
+        auto something = (pi * (i - (taps - 1)/2));
+        coefficients.at(i) = something == 0
+            ? T{1}
+            : std::sin(2 * cutoff * something)/something;
+    }
+
+    auto window = hannWindow<T>(taps);
+    std::transform(
+        coefficients.begin(),
+        coefficients.end(),
+        window.begin(),
+        coefficients.begin(),
+        std::multiplies<>{}
+    );
+    return coefficients;
+}
+
+template<typename T>
 class PhaseVocoder {
     InterpolateFrames interpolateFrames;
     OverlapExtract overlapExtract;
@@ -38,7 +60,7 @@ public:
     PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
         interpolateFrames{P, Q, N},
         overlapExtract{N, hop(N)},
-        filter{factory},
+        filter{lowPassFilter(T{1}/std::max(P, Q), 51), factory},
         overlappedOutput{N, hop(N)},
         expand{P},
         decimate{Q},
