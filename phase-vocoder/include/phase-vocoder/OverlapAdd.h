@@ -8,6 +8,12 @@
 
 namespace phase_vocoder {
 template<typename T>
+void shift(gsl::span<T> x, int n) {
+    for (typename gsl::span<T>::index_type i{0}; i < x.size() - n; ++i)
+        x.at(i) = x.at(i+n);
+}
+
+template<typename T>
 class OverlapAdd {
     std::vector<T> buffer;
     int hop;
@@ -28,8 +34,7 @@ public:
     void next(gsl::span<T> y) {
         auto begin_ = buffer.begin();
         std::copy(begin_, begin_ + hop, y.begin());
-        for (size_t i{0}; i < buffer.size() - hop; ++i)
-            buffer.at(i) = buffer.at(i+hop);
+        shift<T>(buffer, hop);
         std::fill(buffer.rbegin(), buffer.rbegin() + hop, 0);
     }
 };
