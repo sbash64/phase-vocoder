@@ -3,6 +3,7 @@
 
 #include <gsl/gsl>
 #include <algorithm>
+#include <functional>
 
 namespace phase_vocoder {
 template<typename T>

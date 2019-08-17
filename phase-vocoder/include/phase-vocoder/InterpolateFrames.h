@@ -1,6 +1,7 @@
 #ifndef PHASEVOCODOER_INTERPOLATEFRAMES_H
 #define PHASEVOCODOER_INTERPOLATEFRAMES_H
 
+#include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>
@@ -118,13 +119,7 @@ private:
 	}
 
 	void accumulatePhase() {
-		std::transform(
-			phaseAdvance.begin(),
-			phaseAdvance.end(),
-			accumulatedPhase.begin(),
-			accumulatedPhase.begin(),
-			std::plus<T>{}
-		);
+		addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
 	}
 };
 }
