@@ -44,4 +44,9 @@ void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
 		EXPECT_EQ(expected.at(i), actual.at(i));
 }
 
+template<typename T>
+void assertEqual(T expected, T actual) {
+	EXPECT_EQ(expected, actual);
+}
+
 #endif

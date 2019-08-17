@@ -6,6 +6,7 @@
 #include <complex>
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 namespace phase_vocoder {
 class FourierTransformer {
@@ -13,6 +14,12 @@ public:
     virtual ~FourierTransformer() = default;
     virtual void dft(gsl::span<double>, gsl::span<std::complex<double>>) = 0;
     virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
+
+    class Factory {
+    public:
+        virtual ~Factory() = default;
+        virtual std::shared_ptr<FourierTransformer> make(int N) = 0;
+    };
 };
 
 constexpr size_t nearestGreaterPowerTwo(size_t n) {
@@ -33,11 +40,17 @@ class OverlapAddFilter {
     size_t M;
     size_t L;
 public:
-    OverlapAddFilter(FourierTransformer &transformer, std::vector<T> b) :
+    OverlapAddFilter(
+        FourierTransformer &transformer, 
+        std::vector<T> b,
+        FourierTransformer::Factory *factory = {}
+    ) :
         transformer{transformer},
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}
     {
+        if (factory)
+            factory->make(N);
         L = N - M + 1;
         b.resize(N);
         realBuffer.resize(N);

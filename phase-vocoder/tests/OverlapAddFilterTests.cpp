@@ -52,16 +52,36 @@ public:
         copy(x, idftComplex_);
         copy(idftReal_, y);
     }
+
+    class FactoryStub : public Factory {
+        int N_;
+        std::shared_ptr<FourierTransformer> transform;
+    public:
+        explicit FactoryStub(std::shared_ptr<FourierTransformer> transform) :
+            transform{std::move(transform)} {}
+
+        std::shared_ptr<FourierTransformer> make(int N) override {
+            N_ = N;
+            return transform;
+        }
+
+        auto N() const {
+            return N_;
+        }
+    };
 };
 
 class OverlapAddFilterTests : public ::testing::Test {
 protected:
     FourierTransformerStub fourierTransformer;
+    std::shared_ptr<FourierTransformerStub> fourierTransformer_ =
+        std::make_shared<FourierTransformerStub>();
+    FourierTransformerStub::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
     std::vector<double> x;
 
     phase_vocoder::OverlapAddFilter<double> construct() {
-        return {fourierTransformer, b};
+        return {fourierTransformer, b, &factory};
     }
 
     void assertDftRealEquals(const std::vector<double> &x) {
@@ -100,6 +120,15 @@ protected:
         assertEqual(x, fourierTransformer.dftReals(n));
     }
 };
+
+TEST_F(
+    OverlapAddFilterTests,
+    constructorCreatesTransformWithSizeGreaterThanTapsNearestPowerTwo
+) {
+    b = { 1, 2, 3 };
+    construct();
+    assertEqual(4, factory.N());
+}
 
 TEST_F(
     OverlapAddFilterTests,
