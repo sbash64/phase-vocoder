@@ -41,7 +41,6 @@ class OverlapAddFilter {
     size_t L;
 public:
     OverlapAddFilter(
-        FourierTransformer &, 
         std::vector<T> b,
         FourierTransformer::Factory *factory = {}
     ) :
