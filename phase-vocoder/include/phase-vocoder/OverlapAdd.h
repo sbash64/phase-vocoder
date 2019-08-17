@@ -4,7 +4,6 @@
 #include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
-#include <functional>
 #include <algorithm>
 
 namespace phase_vocoder {
