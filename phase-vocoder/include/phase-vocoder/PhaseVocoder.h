@@ -18,18 +18,20 @@ class PhaseVocoder {
     std::vector<T> expanded;
     std::vector<T> decimated;
     std::vector<T> inputBuffer;
+    std::shared_ptr<FourierTransformer> transform;
 public:
-    PhaseVocoder(int P, int Q, int N) :
+    PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
         interpolateFrames{P, Q, N},
         overlapExtract{N, N/4},
-        filter{},
+        filter{factory},
         overlapAdd{N, N/4},
         expand{P},
         decimate{Q},
         nextFrame{N},
-        expanded{N*P},
-        decimated{N*P/Q},
-        inputBuffer(N)
+        expanded{hop*P},
+        decimated{hop*P/Q},
+        inputBuffer(N),
+        transform{factory.make(N)}
     {}
 
     void vocode(gsl::span<T> x) {
@@ -38,15 +40,15 @@ public:
         while (extract.hasNext()) {
             extract.next(inputBuffer);
             // window
-            transform.dft(inputBuffer, nextFrame);
+            transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
             while (interpolateFrames.hasNext()) {
                 interpolateFrames.next(nextFrame);
-                transform.idft(nextFrame, inputBuffer);
+                transform->idft(nextFrame, inputBuffer);
                 // window
                 overlapAdd.add(inputBuffer);
                 overlapAdd.next(inputBuffer);
-                expand.expand(inputBuffer, expanded);
+                expand.expand({inputBuffer.begin(), hop}, expanded);
                 filter.filter(expanded);
                 decimate.decimate(expanded, decimated);
                 std::copy(decimated.begin(), decimated.end(), head);
