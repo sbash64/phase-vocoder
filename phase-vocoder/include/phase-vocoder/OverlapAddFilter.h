@@ -87,6 +87,8 @@ private:
             std::multiplies<>{}
         );
         transformer.idft(complexBuffer, realBuffer);
+        if (transformer_)
+            transformer_->idft(complexBuffer, realBuffer);
         std::transform(
             overlap.begin(),
             overlap.end(),

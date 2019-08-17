@@ -89,7 +89,7 @@ protected:
     }
 
     void assertIdftComplexEquals(const std::vector<std::complex<double>> &x) {
-        assertEqual(x, fourierTransformer.idftComplex());
+        assertEqual(x, fourierTransformer_->idftComplex());
     }
 
     void setTapCount(size_t n) {
