@@ -1,6 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPADDFILTER_H
 #define PHASEVOCODER_OVERLAPADDFILTER_H
 
+#include "OverlapAdd.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>
@@ -89,9 +90,7 @@ private:
             std::plus<>{}
         );
         std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
-        for (size_t i{0}; i < N - x.size(); ++i)
-            overlap.at(i) = overlap.at(i+x.size());
-        std::fill(overlap.rbegin(), overlap.rbegin() + x.size(), 0);
+        shift<T>(overlap, x.size());
     }
 };
 }

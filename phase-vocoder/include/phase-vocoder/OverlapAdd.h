@@ -11,6 +11,7 @@ template<typename T>
 void shift(gsl::span<T> x, int n) {
     for (typename gsl::span<T>::index_type i{0}; i < x.size() - n; ++i)
         x.at(i) = x.at(i+n);
+    std::fill(x.rbegin(), x.rbegin() + n, T{0});
 }
 
 template<typename T>
@@ -35,7 +36,6 @@ public:
         auto begin_ = buffer.begin();
         std::copy(begin_, begin_ + hop, y.begin());
         shift<T>(buffer, hop);
-        std::fill(buffer.rbegin(), buffer.rbegin() + hop, 0);
     }
 };
 }
