@@ -1,6 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPEXTRACT_H
 #define PHASEVOCODER_OVERLAPEXTRACT_H
 
+#include "OverlapAdd.h"
 #include <gsl/gsl>
 #include <vector>
 #include <algorithm>
@@ -29,8 +30,7 @@ public:
 
 	void next(gsl::span<T> out) {
 		std::copy(cached.begin(), cached.end(), out.begin());
-		for (std::size_t i = 0; i < cached.size() - hop; ++i)
-			cached.at(i) = cached.at(i + hop);
+		shift<T>(cached, hop);
 		head = N - hop;
 		auto toFill = std::min(N - head, signal.size());
 		std::copy(signal.begin(), signal.begin() + toFill, cached.begin() + head);
