@@ -44,6 +44,8 @@ public:
                 interpolateFrames.next(nextFrame);
                 transform.idft(nextFrame, inputBuffer);
                 // window
+                overlapAdd.add(inputBuffer);
+                overlapAdd.next(inputBuffer);
                 expand.expand(inputBuffer, expanded);
                 filter.filter(expanded);
                 decimate.decimate(expanded, decimated);
