@@ -97,11 +97,11 @@ protected:
     }
 
     void setDftComplex(std::vector<std::complex<double>> x) {
-        fourierTransformer.setDftComplex(std::move(x));
+        fourierTransformer_->setDftComplex(std::move(x));
     }
 
     void setIdftReal(std::vector<double> x) {
-        fourierTransformer.setIdftReal(std::move(x));
+        fourierTransformer_->setIdftReal(std::move(x));
     }
 
     void filter(phase_vocoder::OverlapAddFilter<double> &overlapAdd) {
@@ -117,7 +117,7 @@ protected:
     }
 
     void assertDftRealEquals(const std::vector<double> &x, size_t n) {
-        assertEqual(x, fourierTransformer.dftReals(n));
+        assertEqual(x, fourierTransformer_->dftReals(n));
     }
 };
 
