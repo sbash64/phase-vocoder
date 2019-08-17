@@ -6,6 +6,7 @@
 #include <complex>
 #include <algorithm>
 #include <functional>
+#include <memory>
 
 namespace phase_vocoder {
 class FourierTransformer {
@@ -13,6 +14,12 @@ public:
     virtual ~FourierTransformer() = default;
     virtual void dft(gsl::span<double>, gsl::span<std::complex<double>>) = 0;
     virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
+
+    class Factory {
+    public:
+        virtual ~Factory() = default;
+        virtual std::shared_ptr<FourierTransformer> make(int N) = 0;
+    };
 };
 
 constexpr size_t nearestGreaterPowerTwo(size_t n) {
@@ -24,20 +31,23 @@ constexpr size_t nearestGreaterPowerTwo(size_t n) {
 
 template<typename T>
 class OverlapAddFilter {
-    FourierTransformer &transformer;
     std::vector<std::complex<T>> complexBuffer;
     std::vector<std::complex<T>> H;
     std::vector<T> realBuffer;
     std::vector<T> overlap;
+    std::shared_ptr<FourierTransformer> transformer_;
     size_t N;
     size_t M;
     size_t L;
 public:
-    OverlapAddFilter(FourierTransformer &transformer, std::vector<T> b) :
-        transformer{transformer},
+    OverlapAddFilter(
+        std::vector<T> b,
+        FourierTransformer::Factory &factory
+    ) :
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}
     {
+        transformer_ = factory.make(N);
         L = N - M + 1;
         b.resize(N);
         realBuffer.resize(N);
@@ -56,7 +66,7 @@ public:
 
 private:
     void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
-        transformer.dft(x, X);
+        transformer_->dft(x, X);
     }
 
     void filter_(gsl::span<T> x) {
@@ -70,7 +80,7 @@ private:
             complexBuffer.begin(),
             std::multiplies<>{}
         );
-        transformer.idft(complexBuffer, realBuffer);
+        transformer_->idft(complexBuffer, realBuffer);
         std::transform(
             overlap.begin(),
             overlap.end(),
