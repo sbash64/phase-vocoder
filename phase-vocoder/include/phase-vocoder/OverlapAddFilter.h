@@ -50,8 +50,7 @@ public:
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}
     {
-        if (factory)
-            transformer_ = factory->make(N);
+        transformer_ = factory->make(N);
         L = N - M + 1;
         b.resize(N);
         realBuffer.resize(N);
@@ -71,8 +70,7 @@ public:
 private:
     void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
         transformer.dft(x, X);
-        if (transformer_)
-            transformer_->dft(x, X);
+        transformer_->dft(x, X);
     }
 
     void filter_(gsl::span<T> x) {
@@ -87,8 +85,7 @@ private:
             std::multiplies<>{}
         );
         transformer.idft(complexBuffer, realBuffer);
-        if (transformer_)
-            transformer_->idft(complexBuffer, realBuffer);
+        transformer_->idft(complexBuffer, realBuffer);
         std::transform(
             overlap.begin(),
             overlap.end(),
