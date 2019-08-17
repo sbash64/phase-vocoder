@@ -24,6 +24,11 @@ void addFirstToSecond(gsl::span<const T> x, gsl::span<T> y) {
         std::plus<>{}
     );
 }
+
+template<typename T>
+void copy(gsl::span<const T> source, gsl::span<T> destination) {
+    std::copy(source.begin(), source.end(), destination.begin());
+}
 }
 
 #endif
