@@ -84,7 +84,7 @@ protected:
 	}
 
 	phase_vocoder::OverlapAddFilter<double> construct() {
-		return {b, &factory};
+		return {b, factory};
 	}
 
 	void assertFilteredOutputs(

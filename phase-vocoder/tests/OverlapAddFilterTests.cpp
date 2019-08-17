@@ -80,7 +80,7 @@ protected:
     std::vector<double> x;
 
     phase_vocoder::OverlapAddFilter<double> construct() {
-        return {b, &factory};
+        return {b, factory};
     }
 
     void assertDftRealEquals(const std::vector<double> &x) {

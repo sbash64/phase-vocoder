@@ -42,12 +42,12 @@ class OverlapAddFilter {
 public:
     OverlapAddFilter(
         std::vector<T> b,
-        FourierTransformer::Factory *factory = {}
+        FourierTransformer::Factory &factory
     ) :
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}
     {
-        transformer_ = factory->make(N);
+        transformer_ = factory.make(N);
         L = N - M + 1;
         b.resize(N);
         realBuffer.resize(N);
