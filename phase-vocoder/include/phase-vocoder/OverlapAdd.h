@@ -28,7 +28,7 @@ public:
     }
 
     void next(gsl::span<T> y) {
-        std::copy(overlap_.begin(), overlap_.end(), y.begin());
+        std::copy(overlap_.begin(), overlap_.begin() + hop, y.begin());
         for (size_t i{0}; i < overlap_.size() - hop; ++i)
             overlap_.at(i) = overlap_.at(i+hop);
         std::copy(next_.rbegin(), next_.rend(), overlap_.rbegin());
