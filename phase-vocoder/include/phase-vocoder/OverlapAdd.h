@@ -9,18 +9,16 @@
 namespace phase_vocoder {
 template<typename T>
 class OverlapAdd {
-    std::vector<T> overlap_;
-    std::vector<T> next_;
+    std::vector<T> buffer;
     int hop;
 public:
-    OverlapAdd(int N, int hop) : overlap_(N), next_(hop), hop{hop} {}
+    OverlapAdd(int N, int hop) : buffer(N), hop{hop} {}
 
     void add(gsl::span<const T> x) {
-        std::copy(x.rbegin(), x.rbegin() + hop, next_.rbegin());
-        auto begin_ = overlap_.begin();
+        auto begin_ = buffer.begin();
         std::transform(
             begin_,
-            overlap_.end(),
+            buffer.end(),
             x.begin(),
             begin_,
             std::plus<>{}
@@ -28,10 +26,11 @@ public:
     }
 
     void next(gsl::span<T> y) {
-        std::copy(overlap_.begin(), overlap_.begin() + hop, y.begin());
-        for (size_t i{0}; i < overlap_.size() - hop; ++i)
-            overlap_.at(i) = overlap_.at(i+hop);
-        std::fill(overlap_.rbegin(), overlap_.rbegin() + hop, 0);
+        auto begin_ = buffer.begin();
+        std::copy(begin_, begin_ + hop, y.begin());
+        for (size_t i{0}; i < buffer.size() - hop; ++i)
+            buffer.at(i) = buffer.at(i+hop);
+        std::fill(buffer.rbegin(), buffer.rbegin() + hop, 0);
     }
 };
 }
