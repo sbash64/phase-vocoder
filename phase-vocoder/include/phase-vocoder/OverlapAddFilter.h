@@ -1,7 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPADDFILTER_H
 #define PHASEVOCODER_OVERLAPADDFILTER_H
 
-#include "OverlapAdd.h"
+#include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>

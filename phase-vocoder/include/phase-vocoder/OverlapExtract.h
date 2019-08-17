@@ -1,7 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPEXTRACT_H
 #define PHASEVOCODER_OVERLAPEXTRACT_H
 
-#include "OverlapAdd.h"
+#include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
 #include <algorithm>
