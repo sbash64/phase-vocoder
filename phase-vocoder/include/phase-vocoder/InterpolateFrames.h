@@ -1,6 +1,7 @@
 #ifndef PHASEVOCODOER_INTERPOLATEFRAMES_H
 #define PHASEVOCODOER_INTERPOLATEFRAMES_H
 
+#include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>
@@ -33,8 +34,8 @@ public:
 		Q{ Q } {}
 
 	void add(gsl::span<const complex_type> x) {
-		copy(currentFrame, previousFrame);
-		copy(x, currentFrame);
+		copy<complex_type>(currentFrame, previousFrame);
+		copy<complex_type>(x, currentFrame);
 		transformFrames(
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
@@ -70,13 +71,6 @@ public:
 	}
 
 private:
-	void copy(
-		gsl::span<const complex_type> source,
-		std::vector<complex_type>& destination
-	) {
-		std::copy(source.begin(), source.end(), destination.begin());
-	}
-
 	T phaseDifference(const complex_type& a, const complex_type& b) {
 		return phase(b) - phase(a);
 	}
@@ -118,13 +112,7 @@ private:
 	}
 
 	void accumulatePhase() {
-		std::transform(
-			phaseAdvance.begin(),
-			phaseAdvance.end(),
-			accumulatedPhase.begin(),
-			accumulatedPhase.begin(),
-			std::plus<T>{}
-		);
+		addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
 	}
 };
 }
