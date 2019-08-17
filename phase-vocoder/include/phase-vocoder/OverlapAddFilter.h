@@ -42,7 +42,7 @@ class OverlapAddFilter {
     size_t L;
 public:
     OverlapAddFilter(
-        std::vector<T> b,
+        const std::vector<T> &b,
         FourierTransformer::Factory &factory
     ) :
         N{nearestGreaterPowerTwo(b.size())},
@@ -50,12 +50,12 @@ public:
     {
         transformer_ = factory.make(N);
         L = N - M + 1;
-        b.resize(N);
         realBuffer.resize(N);
+        copy<T>(b, realBuffer);
         H.resize(N);
         overlap.resize(N);
         complexBuffer.resize(N);
-        dft(b, H);
+        dft(realBuffer, H);
     }
 
     void filter(gsl::span<T> x) {
@@ -72,7 +72,7 @@ private:
 
     void filter_(gsl::span<T> x) {
         std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
-        std::copy(x.begin(), x.end(), realBuffer.begin());
+        copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
             complexBuffer.begin(),
