@@ -73,7 +73,6 @@ public:
 
 class OverlapAddFilterTests : public ::testing::Test {
 protected:
-    FourierTransformerStub fourierTransformer;
     std::shared_ptr<FourierTransformerStub> fourierTransformer_ =
         std::make_shared<FourierTransformerStub>();
     FourierTransformerStub::FactoryStub factory{fourierTransformer_};

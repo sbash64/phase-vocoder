@@ -71,30 +71,27 @@ public:
 
 class FirFilterTests : public ::testing::Test {
 protected:
+	FftwTransformer::FftwFactory factory;
 	std::vector<double> b{ 0 };
 
 	void assertFilteredOutput(
 		std::vector<double> x,
 		const std::vector<double>& y
 	) {
-		FftwTransformer transformer{
-			phase_vocoder::nearestGreaterPowerTwo(b.size())
-		};
-		FftwTransformer::FftwFactory factory;
-		phase_vocoder::OverlapAddFilter<double> overlapAdd{b, &factory};
+		auto overlapAdd = construct();
 		overlapAdd.filter(x);
 		assertEqual(y, x);
+	}
+
+	phase_vocoder::OverlapAddFilter<double> construct() {
+		return {b, &factory};
 	}
 
 	void assertFilteredOutputs(
 		std::vector<std::vector<double>> x,
 		const std::vector<std::vector<double>>& y
 	) {
-		FftwTransformer transformer{
-			phase_vocoder::nearestGreaterPowerTwo(b.size())
-		};
-		FftwTransformer::FftwFactory factory;
-		phase_vocoder::OverlapAddFilter<double> overlapAdd{b, &factory};
+		auto overlapAdd = construct();
 		for (size_t i{ 0 }; i < y.size(); ++i) {
 			overlapAdd.filter(x[i]);
 			assertEqual(y[i], x[i], 1e-14);
