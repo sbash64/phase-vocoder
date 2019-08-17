@@ -85,7 +85,7 @@ protected:
     }
 
     void assertDftRealEquals(const std::vector<double> &x) {
-        assertEqual(x, fourierTransformer.dftReal());
+        assertEqual(x, fourierTransformer_->dftReal());
     }
 
     void assertIdftComplexEquals(const std::vector<std::complex<double>> &x) {

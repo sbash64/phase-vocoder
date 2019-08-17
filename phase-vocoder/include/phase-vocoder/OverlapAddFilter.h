@@ -36,6 +36,7 @@ class OverlapAddFilter {
     std::vector<std::complex<T>> H;
     std::vector<T> realBuffer;
     std::vector<T> overlap;
+    std::shared_ptr<FourierTransformer> transformer_;
     size_t N;
     size_t M;
     size_t L;
@@ -50,7 +51,7 @@ public:
         M{b.size()}
     {
         if (factory)
-            factory->make(N);
+            transformer_ = factory->make(N);
         L = N - M + 1;
         b.resize(N);
         realBuffer.resize(N);
@@ -70,6 +71,8 @@ public:
 private:
     void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
         transformer.dft(x, X);
+        if (transformer_)
+            transformer_->dft(x, X);
     }
 
     void filter_(gsl::span<T> x) {
