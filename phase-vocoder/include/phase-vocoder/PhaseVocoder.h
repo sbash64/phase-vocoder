@@ -6,12 +6,16 @@
 #include "OverlapAdd.h"
 
 namespace phase_vocoder {
+constexpr int hop(int N) {
+    return N/4;
+}
+
 template<typename T>
 class PhaseVocoder {
     InterpolateFrames interpolateFrames;
     OverlapExtract overlapExtract;
     OverlapAddFilter filter;
-    OverlapAdd overlapAdd;
+    OverlapAdd overlappedOutput;
     Expand expand;
     Decimate decimate;
     std::vector<std::complex<T>> nextFrame;
@@ -22,17 +26,20 @@ class PhaseVocoder {
 public:
     PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
         interpolateFrames{P, Q, N},
-        overlapExtract{N, N/4},
+        overlapExtract{N, hop(N)},
         filter{factory},
-        overlapAdd{N, N/4},
+        overlappedOutput{N, hop(N)},
         expand{P},
         decimate{Q},
         nextFrame{N},
-        expanded{hop*P},
-        decimated{hop*P/Q},
+        expanded{hop(N)*P},
+        decimated{hop(N)*P/Q},
         inputBuffer(N),
         transform{factory.make(N)}
-    {}
+    {
+        std::vector<T> delayedStart(N - hop(N), 0);
+        overlapExtract.add(delayedStart);
+    }
 
     void vocode(gsl::span<T> x) {
         extract.add(x);
@@ -46,8 +53,8 @@ public:
                 interpolateFrames.next(nextFrame);
                 transform->idft(nextFrame, inputBuffer);
                 // window
-                overlapAdd.add(inputBuffer);
-                overlapAdd.next(inputBuffer);
+                overlappedOutput.add(inputBuffer);
+                overlappedOutput.next(inputBuffer);
                 expand.expand({inputBuffer.begin(), hop}, expanded);
                 filter.filter(expanded);
                 decimate.decimate(expanded, decimated);
