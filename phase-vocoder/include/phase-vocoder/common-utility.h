@@ -13,7 +13,7 @@ void shift(gsl::span<T> x, int n) {
 }
 
 template<typename T>
-void addTo(gsl::span<const T> x, gsl::span<T> y) {
+void addFirstToSecond(gsl::span<const T> x, gsl::span<T> y) {
     auto begin_ = y.begin();
     std::transform(
         begin_,

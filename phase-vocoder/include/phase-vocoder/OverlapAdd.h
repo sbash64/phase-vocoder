@@ -16,7 +16,7 @@ public:
     OverlapAdd(int N, int hop) : buffer(N), hop{hop} {}
 
     void add(gsl::span<const T> x) {
-        addTo<T>(x, buffer);
+        addFirstToSecond<T>(x, buffer);
     }
 
     void next(gsl::span<T> y) {

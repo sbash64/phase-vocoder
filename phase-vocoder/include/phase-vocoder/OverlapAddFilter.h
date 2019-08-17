@@ -82,13 +82,7 @@ private:
             std::multiplies<>{}
         );
         transformer_->idft(complexBuffer, realBuffer);
-        std::transform(
-            overlap.begin(),
-            overlap.end(),
-            realBuffer.begin(),
-            overlap.begin(),
-            std::plus<>{}
-        );
+        addFirstToSecond<T>(realBuffer, overlap);
         std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
         shift<T>(overlap, x.size());
     }
