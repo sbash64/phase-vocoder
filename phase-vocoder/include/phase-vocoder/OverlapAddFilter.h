@@ -1,6 +1,7 @@
 #ifndef PHASEVOCODER_OVERLAPADDFILTER_H
 #define PHASEVOCODER_OVERLAPADDFILTER_H
 
+#include "common-utility.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>
@@ -41,7 +42,7 @@ class OverlapAddFilter {
     size_t L;
 public:
     OverlapAddFilter(
-        std::vector<T> b,
+        const std::vector<T> &b,
         FourierTransformer::Factory &factory
     ) :
         N{nearestGreaterPowerTwo(b.size())},
@@ -49,12 +50,12 @@ public:
     {
         transformer_ = factory.make(N);
         L = N - M + 1;
-        b.resize(N);
         realBuffer.resize(N);
+        copy<T>(b, realBuffer);
         H.resize(N);
         overlap.resize(N);
         complexBuffer.resize(N);
-        dft(b, H);
+        dft(realBuffer, H);
     }
 
     void filter(gsl::span<T> x) {
@@ -71,7 +72,7 @@ private:
 
     void filter_(gsl::span<T> x) {
         std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
-        std::copy(x.begin(), x.end(), realBuffer.begin());
+        copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
             complexBuffer.begin(),
@@ -81,17 +82,9 @@ private:
             std::multiplies<>{}
         );
         transformer_->idft(complexBuffer, realBuffer);
-        std::transform(
-            overlap.begin(),
-            overlap.end(),
-            realBuffer.begin(),
-            overlap.begin(),
-            std::plus<>{}
-        );
+        addFirstToSecond<T>(realBuffer, overlap);
         std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
-        for (size_t i{0}; i < N - x.size(); ++i)
-            overlap.at(i) = overlap.at(i+x.size());
-        std::fill(overlap.rbegin(), overlap.rbegin() + x.size(), 0);
+        shift<T>(overlap, x.size());
     }
 };
 }

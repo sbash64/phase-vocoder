@@ -9,7 +9,7 @@ class OverlapAddTests : public ::testing::Test {
     phase_vocoder::OverlapAdd<double> overlapAdd{N, hop};
     std::vector<double> overlap_;
 protected:
-    OverlapAddTests() : overlap_(N) {}
+    OverlapAddTests() : overlap_(hop) {}
 
     void assertOverlap(
         const std::vector<double> &x,
@@ -30,11 +30,13 @@ protected:
 };
 
 TEST_F(OverlapAddTests, firstBlockAddedToZeros) {
-    assertOverlap({ 1, 2, 3, 4, 5 }, { 0, 0, 1, 2, 3 });
+    assertOverlap({ 1, 2, 3, 4, 5 }, { 1, 2 });
 }
 
 TEST_F(OverlapAddTests, nextBlockOverlapAddedToPrevious) {
     consumeAdd({ 1, 2, 3, 4, 5 });
-    assertOverlap({ 6, 7, 8, 9, 10 }, { 1, 2, 3+6, 4+7, 5+8 });
+    assertOverlap({ 6, 7, 8, 9, 10 }, { 3+6, 4+7 });
+    assertOverlap({ 0, 0, 0, 0, 0 }, { 5+8, 9 });
+    assertOverlap({ 0, 0, 0, 0, 0 }, { 10, 0 });
 }
 }
