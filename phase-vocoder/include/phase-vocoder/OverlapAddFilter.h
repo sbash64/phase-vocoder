@@ -31,7 +31,6 @@ constexpr size_t nearestGreaterPowerTwo(size_t n) {
 
 template<typename T>
 class OverlapAddFilter {
-    FourierTransformer &transformer;
     std::vector<std::complex<T>> complexBuffer;
     std::vector<std::complex<T>> H;
     std::vector<T> realBuffer;
@@ -42,11 +41,10 @@ class OverlapAddFilter {
     size_t L;
 public:
     OverlapAddFilter(
-        FourierTransformer &transformer, 
+        FourierTransformer &, 
         std::vector<T> b,
         FourierTransformer::Factory *factory = {}
     ) :
-        transformer{transformer},
         N{nearestGreaterPowerTwo(b.size())},
         M{b.size()}
     {
@@ -69,7 +67,6 @@ public:
 
 private:
     void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
-        transformer.dft(x, X);
         transformer_->dft(x, X);
     }
 
@@ -84,7 +81,6 @@ private:
             complexBuffer.begin(),
             std::multiplies<>{}
         );
-        transformer.idft(complexBuffer, realBuffer);
         transformer_->idft(complexBuffer, realBuffer);
         std::transform(
             overlap.begin(),
