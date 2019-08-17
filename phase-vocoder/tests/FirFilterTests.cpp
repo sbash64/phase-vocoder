@@ -60,32 +60,38 @@ public:
 		for (auto &y_ : y)
 			y_ /= N;
 	}
+
+	class FftwFactory : public Factory {
+	public:
+		std::shared_ptr<FourierTransformer> make(int N) {
+			return std::make_shared<FftwTransformer>(N);
+		}
+	};
 };
 
 class FirFilterTests : public ::testing::Test {
 protected:
+	FftwTransformer::FftwFactory factory;
 	std::vector<double> b{ 0 };
 
 	void assertFilteredOutput(
 		std::vector<double> x,
 		const std::vector<double>& y
 	) {
-		FftwTransformer transformer{
-			phase_vocoder::nearestGreaterPowerTwo(b.size())
-		};
-		phase_vocoder::OverlapAddFilter<double> overlapAdd{transformer, b};
+		auto overlapAdd = construct();
 		overlapAdd.filter(x);
 		assertEqual(y, x);
+	}
+
+	phase_vocoder::OverlapAddFilter<double> construct() {
+		return {b, factory};
 	}
 
 	void assertFilteredOutputs(
 		std::vector<std::vector<double>> x,
 		const std::vector<std::vector<double>>& y
 	) {
-		FftwTransformer transformer{
-			phase_vocoder::nearestGreaterPowerTwo(b.size())
-		};
-		phase_vocoder::OverlapAddFilter<double> overlapAdd{transformer, b};
+		auto overlapAdd = construct();
 		for (size_t i{ 0 }; i < y.size(); ++i) {
 			overlapAdd.filter(x[i]);
 			assertEqual(y[i], x[i], 1e-14);
