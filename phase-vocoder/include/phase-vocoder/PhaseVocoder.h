@@ -38,6 +38,10 @@ std::vector<T> lowPassFilter(T cutoff, int taps) {
         coefficients.begin(),
         std::multiplies<>{}
     );
+
+    auto sum = std::accumulate(coefficients.begin(), coefficients.end(), T{0});
+    for (auto &x : coefficients)
+        x /= sum;
     return coefficients;
 }
 
@@ -60,7 +64,7 @@ public:
     PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
         interpolateFrames{P, Q, N},
         overlapExtract{N, hop(N)},
-        filter{lowPassFilter(T{1}/std::max(P, Q), 51), factory},
+        filter{lowPassFilter(T{0.5}/std::max(P, Q), 51), factory},
         overlappedOutput{N, hop(N)},
         expand{P},
         decimate{Q},
