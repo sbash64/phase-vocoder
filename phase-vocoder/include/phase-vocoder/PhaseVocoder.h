@@ -11,6 +11,15 @@ constexpr int hop(int N) {
 }
 
 template<typename T>
+std::vector<T> hannWindow(int N) {
+    std::vector<T> window(N);
+    auto pi = std::acos(T{-1});
+    for (size_t i{0}; i < window.size(); ++i)
+        window.at(i) = T{0.5} * (1 - std::cos(2*pi*i/N));
+    return window;
+}
+
+template<typename T>
 class PhaseVocoder {
     InterpolateFrames interpolateFrames;
     OverlapExtract overlapExtract;
@@ -22,6 +31,8 @@ class PhaseVocoder {
     std::vector<T> expanded;
     std::vector<T> decimated;
     std::vector<T> inputBuffer;
+    std::vector<T> outputBuffer;
+    std::vector<T> window;
     std::shared_ptr<FourierTransformer> transform;
 public:
     PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
@@ -35,6 +46,8 @@ public:
         expanded{hop(N)*P},
         decimated{hop(N)*P/Q},
         inputBuffer(N),
+        outputBuffer(hop(N)),
+        window{hannWindow(N)},
         transform{factory.make(N)}
     {
         std::vector<T> delayedStart(N - hop(N), 0);
@@ -46,16 +59,16 @@ public:
         auto head = x.begin();
         while (extract.hasNext()) {
             extract.next(inputBuffer);
-            // window
+            applyWindow();
             transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
             while (interpolateFrames.hasNext()) {
                 interpolateFrames.next(nextFrame);
                 transform->idft(nextFrame, inputBuffer);
-                // window
+                applyWindow();
                 overlappedOutput.add(inputBuffer);
-                overlappedOutput.next(inputBuffer);
-                expand.expand({inputBuffer.begin(), hop}, expanded);
+                overlappedOutput.next(outputBuffer);
+                expand.expand(outputBuffer, expanded);
                 filter.filter(expanded);
                 decimate.decimate(expanded, decimated);
                 std::copy(decimated.begin(), decimated.end(), head);
@@ -63,5 +76,15 @@ public:
             }
         }
     }
-}
+
+    void applyWindow() {
+        std::transform(
+            inputBuffer.begin(),
+            inputBuffer.end(),
+            window.begin(),
+            inputBuffer.begin(),
+            std::multiplies<>{}
+        );
+    }
+};
 }
