@@ -17,7 +17,7 @@ public:
 
     void add(gsl::span<const T> x) {
         std::copy(x.rbegin(), x.rbegin() + hop, next_.rbegin());
-        auto begin_ = overlap_.begin() + hop;
+        auto begin_ = overlap_.begin();
         std::transform(
             begin_,
             overlap_.end(),
@@ -31,7 +31,7 @@ public:
         std::copy(overlap_.begin(), overlap_.begin() + hop, y.begin());
         for (size_t i{0}; i < overlap_.size() - hop; ++i)
             overlap_.at(i) = overlap_.at(i+hop);
-        std::copy(next_.rbegin(), next_.rend(), overlap_.rbegin());
+        std::fill(overlap_.rbegin(), overlap_.rbegin() + hop, 0);
     }
 };
 }
