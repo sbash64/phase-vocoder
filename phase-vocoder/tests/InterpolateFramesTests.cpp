@@ -467,7 +467,9 @@ TEST_F(
 ) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-		{},
+		{
+			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }
+		},
 		1e-15
 	);
 }
@@ -479,9 +481,7 @@ TEST_F(
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
-		{
-			{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
-		},
+		{},
 		1e-15
 	);
 }

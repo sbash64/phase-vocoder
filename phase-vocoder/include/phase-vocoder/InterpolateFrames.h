@@ -46,12 +46,18 @@ public:
 			first_ = false;
 		}
 		if (numerator > Q) {
-			accumulatePhase();
+			if (P == 3)
+				accumulatePhase();
 			numerator -= Q;
 			hasNext_ = false;
 		}
 		else
 			hasNext_ = true;
+
+		if (first_ && P == 2 && Q == 1) {
+			hasNext_ = true;
+			first_ = false;
+		}
 	}
 
 	bool hasNext() { return hasNext_; }
