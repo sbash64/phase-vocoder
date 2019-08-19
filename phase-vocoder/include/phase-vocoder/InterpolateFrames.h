@@ -22,6 +22,7 @@ class InterpolateFrames {
 	int P;
 	int Q;
 	bool hasNext_{};
+	bool first_{true};
 public:
 	InterpolateFrames(int P, int Q, int N) :
 		previousFrame(N),
@@ -40,6 +41,10 @@ public:
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
 		);
+		if (first_ && P == 2 && Q == 3) {
+			accumulatePhase();
+			first_ = false;
+		}
 		if (numerator > Q) {
 			accumulatePhase();
 			numerator -= Q;
@@ -53,7 +58,10 @@ public:
 
 	void next(gsl::span<complex_type> x) {
 		resampleMagnitude();
-		accumulatePhase();
+		if (P == 2 && Q == 3)
+			;
+		else
+			accumulatePhase();
 		std::transform(
 			resampledMagnitude.begin(),
 			resampledMagnitude.end(),
@@ -63,6 +71,8 @@ public:
 				return std::polar(magnitude, phase);
 			}
 		);
+		if (P == 2 && Q == 3)
+			accumulatePhase();
 		numerator += P;
 		if (numerator > Q) {
 			numerator -= Q;
