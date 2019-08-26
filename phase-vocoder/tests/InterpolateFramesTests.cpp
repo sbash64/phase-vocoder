@@ -147,11 +147,15 @@ oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	);
 }
 
-std::complex<double> halfMagnitudeEachAndPhaseSecond(
+std::complex<double>
+averageMagnitudesAndPhaseFirst(
 	const std::complex<double>& a,
 	const std::complex<double>& b
 ) {
-	return complex(magnitude(a) / 2 + magnitude(b) / 2, phase(b));
+	return complex(
+		averageMagnitude(a, b),
+		phase(a)
+	);
 }
 
 std::vector<std::complex<double>>
@@ -202,11 +206,16 @@ oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	);
 }
 
-std::vector<std::complex<double>> halfMagnitudeEachAndPhaseSecond(
+std::vector<std::complex<double>>
+averageMagnitudesAndPhaseFirst(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>>& b
 ) {
-	return transform(std::move(a), b, halfMagnitudeEachAndPhaseSecond);
+	return transform(
+		std::move(a),
+		b,
+		averageMagnitudesAndPhaseFirst
+	);
 }
 
 class InterpolateFramesFacade {
@@ -511,7 +520,9 @@ TEST_F(
 ) {
 	assertInterpolatedFrames(
 		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-		{},
+		{
+			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }
+		},
 		1e-15
 	);
 }
@@ -523,10 +534,15 @@ TEST_F(
 	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{},
+		1e-15
+	);
+	assertInterpolatedFrames(
+		{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i },
 		{
-			halfMagnitudeEachAndPhaseSecond(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+			averageMagnitudesAndPhaseFirst(
+				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+				{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i }
 			)
 		},
 		1e-15

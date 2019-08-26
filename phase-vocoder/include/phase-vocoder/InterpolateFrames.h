@@ -7,6 +7,7 @@
 #include <complex>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 namespace phase_vocoder {
 template<typename T>
@@ -21,8 +22,9 @@ class InterpolateFrames {
 	int numerator;
 	int P;
 	int Q;
-	bool hasNext_{};
+	bool hasNext_{true};
 	bool first_{true};
+	bool skip_{};
 public:
 	InterpolateFrames(int P, int Q, int N) :
 		previousFrame(N),
@@ -32,7 +34,11 @@ public:
 		resampledMagnitude(N),
 		numerator{ P },
 		P{ P },
-		Q{ Q } {}
+		Q{ Q } 
+	{
+		if (P > Q)
+			numerator = Q;
+	}
 
 	void add(gsl::span<const complex_type> x) {
 		copy<complex_type>(currentFrame, previousFrame);
@@ -41,33 +47,29 @@ public:
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
 		);
-		if (first_ && P == 2 && Q == 3) {
+		std::cout << "add\n";
+		if (P > Q && first_)
 			accumulatePhase();
-			first_ = false;
+		if (numerator != Q && !skip_) {
+			std::cout << "add: acc\n";
+			accumulatePhase();
 		}
+		hasNext_ = true;
+		skip_ = false;
 		if (numerator > Q) {
-			if (P == 3)
-				accumulatePhase();
 			numerator -= Q;
 			hasNext_ = false;
+			if (numerator < Q)
+				skip_ = true;
 		}
-		else
-			hasNext_ = true;
-
-		if (first_ && P == 2 && Q == 1) {
-			hasNext_ = true;
-			first_ = false;
-		}
+		first_ = false;
 	}
 
 	bool hasNext() { return hasNext_; }
 
 	void next(gsl::span<complex_type> x) {
+		std::cout << "next\n";
 		resampleMagnitude();
-		if (P == 2 && Q == 3)
-			;
-		else
-			accumulatePhase();
 		std::transform(
 			resampledMagnitude.begin(),
 			resampledMagnitude.end(),
@@ -77,8 +79,12 @@ public:
 				return std::polar(magnitude, phase);
 			}
 		);
-		if (P == 2 && Q == 3)
+		if (numerator != Q) {
+			std::cout << "next: acc\n";
 			accumulatePhase();
+			if (numerator + P > Q)
+				skip_ = true;
+		}
 		numerator += P;
 		if (numerator > Q) {
 			numerator -= Q;
