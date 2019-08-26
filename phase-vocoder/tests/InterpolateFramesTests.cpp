@@ -109,8 +109,8 @@ twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 	const std::complex<double>& b
 ) {
 	return complex(
-		(2 * magnitude(a) + magnitude(b)) / 3,
-		2 * phase(a) + phase(b)
+		(2*magnitude(a) + magnitude(b)) / 3,
+		2*phase(a) + phase(b)
 	);
 }
 
@@ -204,8 +204,7 @@ oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	);
 }
 
-std::vector<std::complex<double>>
-magnitudeSecondAndPhaseFirst(
+std::vector<std::complex<double>> magnitudeSecondAndPhaseFirst(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>>& b
 ) {
@@ -340,7 +339,7 @@ TEST_F(
 	assertInterpolatedFrames(
 		{1. + 2i, 3. + 4i, 5. + 6i},
 		{
-			{ 1./2 + 1i, 3./2 + 2i, 5./2 + 3i},
+			{ (1. + 2i)/2., (3. + 4i)/2., (5. + 6i)/2. },
 			doublePhase({1. + 2i, 3. + 4i, 5. + 6i})
 		},
 		1e-15
