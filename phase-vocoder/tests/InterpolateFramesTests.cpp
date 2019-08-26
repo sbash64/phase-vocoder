@@ -109,7 +109,7 @@ twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
 	const std::complex<double>& b
 ) {
 	return complex(
-		2 * magnitude(a) / 3 + magnitude(b) / 3,
+		(2 * magnitude(a) + magnitude(b)) / 3,
 		2 * phase(a) + phase(b)
 	);
 }
@@ -120,20 +120,16 @@ twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
 	const std::complex<double>& b
 ) {
 	return complex(
-		2 * magnitude(a) / 3 + magnitude(b) / 3,
+		(2 * magnitude(a) + magnitude(b)) / 3,
 		2 * phase(a)
 	);
 }
 
-std::complex<double>
-magnitudeSecondAndPhaseFirstPlusSecond(
+std::complex<double> magnitudeSecondAndSummedPhase(
 	const std::complex<double>& a,
 	const std::complex<double>& b
 ) {
-	return complex(
-		magnitude(b),
-		phase(a) + phase(b)
-	);
+	return complex(magnitude(b), summedPhase(a, b));
 }
 
 std::complex<double>
@@ -142,20 +138,23 @@ oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 	const std::complex<double>& b
 ) {
 	return complex(
-		magnitude(a) / 3 + 2 * magnitude(b) / 3,
+		(magnitude(a) + 2 * magnitude(b)) / 3,
 		phase(a) + 2 * phase(b)
 	);
 }
 
-std::complex<double>
-averageMagnitudesAndPhaseFirst(
+std::complex<double> magnitudeSecondAndPhaseFirst(
 	const std::complex<double>& a,
 	const std::complex<double>& b
 ) {
-	return complex(
-		averageMagnitude(a, b),
-		phase(a)
-	);
+	return complex(magnitude(b), phase(a));
+}
+
+std::complex<double> averageMagnitudesAndPhaseFirst(
+	const std::complex<double>& a,
+	const std::complex<double>& b
+) {
+	return complex(averageMagnitude(a, b), phase(a));
 }
 
 std::vector<std::complex<double>>
@@ -170,15 +169,14 @@ twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
 	);
 }
 
-std::vector<std::complex<double>>
-magnitudeSecondAndPhaseFirstPlusSecond(
+std::vector<std::complex<double>> magnitudeSecondAndSummedPhase(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>> &b
 ) {
 	return transform(
 		std::move(a),
 		b,
-		magnitudeSecondAndPhaseFirstPlusSecond
+		magnitudeSecondAndSummedPhase
 	);
 }
 
@@ -207,7 +205,18 @@ oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
 }
 
 std::vector<std::complex<double>>
-averageMagnitudesAndPhaseFirst(
+magnitudeSecondAndPhaseFirst(
+	std::vector<std::complex<double>> a,
+	const std::vector<std::complex<double>>& b
+) {
+	return transform(
+		std::move(a),
+		b,
+		magnitudeSecondAndPhaseFirst
+	);
+}
+
+std::vector<std::complex<double>> averageMagnitudesAndPhaseFirst(
 	std::vector<std::complex<double>> a,
 	const std::vector<std::complex<double>>& b
 ) {
@@ -386,7 +395,7 @@ TEST_F(
 				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 			),
-			magnitudeSecondAndPhaseFirstPlusSecond(
+			magnitudeSecondAndSummedPhase(
 				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
 				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
 			)
@@ -491,6 +500,16 @@ TEST_F(
 	assertInterpolatedFrames(
 		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
 		{},
+		1e-15
+	);
+	assertInterpolatedFrames(
+		{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i },
+		{
+			magnitudeSecondAndPhaseFirst(
+				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+				{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i }
+			)
+		},
 		1e-15
 	);
 }
