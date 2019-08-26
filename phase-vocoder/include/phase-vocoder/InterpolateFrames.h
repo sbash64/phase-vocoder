@@ -21,7 +21,9 @@ class InterpolateFrames {
 	int numerator;
 	int P;
 	int Q;
-	bool hasNext_{};
+	bool hasNext_{true};
+	bool first_{true};
+	bool skip_{};
 public:
 	InterpolateFrames(int P, int Q, int N) :
 		previousFrame(N),
@@ -29,7 +31,7 @@ public:
 		accumulatedPhase(N),
 		phaseAdvance(N),
 		resampledMagnitude(N),
-		numerator{ P },
+		numerator{ std::min(P, Q) },
 		P{ P },
 		Q{ Q } {}
 
@@ -40,20 +42,20 @@ public:
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
 		);
-		if (numerator > Q) {
+		if (P > Q && first_) {
 			accumulatePhase();
-			numerator -= Q;
-			hasNext_ = false;
+			first_ = false;
 		}
-		else
-			hasNext_ = true;
+		hasNext_ = true;
+		accumulatePhaseIfNeeded();
+		updateSkip();
+		checkIfNeedMore();
 	}
 
 	bool hasNext() { return hasNext_; }
 
 	void next(gsl::span<complex_type> x) {
 		resampleMagnitude();
-		accumulatePhase();
 		std::transform(
 			resampledMagnitude.begin(),
 			resampledMagnitude.end(),
@@ -63,14 +65,29 @@ public:
 				return std::polar(magnitude, phase);
 			}
 		);
+		accumulatePhaseIfNeeded();
 		numerator += P;
+		updateSkip();
+		checkIfNeedMore();
+	}
+
+private:
+	void updateSkip() {
+		skip_ = Q < numerator && numerator < Q + P;
+	}
+
+	void accumulatePhaseIfNeeded() {
+		if (numerator != Q && !skip_)
+			accumulatePhase();
+	}
+
+	void checkIfNeedMore() {
 		if (numerator > Q) {
 			numerator -= Q;
 			hasNext_ = false;
 		}
 	}
 
-private:
 	T phaseDifference(const complex_type& a, const complex_type& b) {
 		return phase(b) - phase(a);
 	}
