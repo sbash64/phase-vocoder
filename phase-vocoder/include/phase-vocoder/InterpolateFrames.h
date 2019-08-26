@@ -46,9 +46,9 @@ public:
 			accumulatePhase();
 			first_ = false;
 		}
-		accumulatePhaseIfNeeded();
-		skip_ = Q < numerator && numerator < 2*Q;
 		hasNext_ = true;
+		accumulatePhaseIfNeeded();
+		updateSkip();
 		checkIfNeedMore();
 	}
 
@@ -67,11 +67,15 @@ public:
 		);
 		accumulatePhaseIfNeeded();
 		numerator += P;
-		skip_ = Q < numerator && numerator < Q + P;
+		updateSkip();
 		checkIfNeedMore();
 	}
 
 private:
+	void updateSkip() {
+		skip_ = Q < numerator && numerator < Q + P;
+	}
+
 	void accumulatePhaseIfNeeded() {
 		if (numerator != Q && !skip_)
 			accumulatePhase();
