@@ -7,7 +7,6 @@
 #include <complex>
 #include <algorithm>
 #include <functional>
-#include <iostream>
 
 namespace phase_vocoder {
 template<typename T>
@@ -32,13 +31,9 @@ public:
 		accumulatedPhase(N),
 		phaseAdvance(N),
 		resampledMagnitude(N),
-		numerator{ P },
+		numerator{ std::min(P, Q) },
 		P{ P },
-		Q{ Q } 
-	{
-		if (P > Q)
-			numerator = Q;
-	}
+		Q{ Q } {}
 
 	void add(gsl::span<const complex_type> x) {
 		copy<complex_type>(currentFrame, previousFrame);
@@ -47,28 +42,19 @@ public:
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
 		);
-		std::cout << "add\n";
-		if (P > Q && first_)
+		if (P > Q && first_) {
 			accumulatePhase();
-		if (numerator != Q && !skip_) {
-			std::cout << "add: acc\n";
-			accumulatePhase();
+			first_ = false;
 		}
+		accumulatePhaseIfNeeded();
+		skip_ = Q < numerator && numerator < 2*Q;
 		hasNext_ = true;
-		skip_ = false;
-		if (numerator > Q) {
-			numerator -= Q;
-			hasNext_ = false;
-			if (numerator < Q)
-				skip_ = true;
-		}
-		first_ = false;
+		checkIfNeedMore();
 	}
 
 	bool hasNext() { return hasNext_; }
 
 	void next(gsl::span<complex_type> x) {
-		std::cout << "next\n";
 		resampleMagnitude();
 		std::transform(
 			resampledMagnitude.begin(),
@@ -79,20 +65,25 @@ public:
 				return std::polar(magnitude, phase);
 			}
 		);
-		if (numerator != Q) {
-			std::cout << "next: acc\n";
-			accumulatePhase();
-			if (numerator + P > Q)
-				skip_ = true;
-		}
+		accumulatePhaseIfNeeded();
 		numerator += P;
+		skip_ = Q < numerator && numerator < Q + P;
+		checkIfNeedMore();
+	}
+
+private:
+	void accumulatePhaseIfNeeded() {
+		if (numerator != Q && !skip_)
+			accumulatePhase();
+	}
+
+	void checkIfNeedMore() {
 		if (numerator > Q) {
 			numerator -= Q;
 			hasNext_ = false;
 		}
 	}
 
-private:
 	T phaseDifference(const complex_type& a, const complex_type& b) {
 		return phase(b) - phase(a);
 	}
