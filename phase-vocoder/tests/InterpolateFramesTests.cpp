@@ -235,6 +235,13 @@ public:
 		interpolate{ P, Q, N },
 		N{ N } {}
 
+	void assertYieldsNoFrames(
+		const std::vector<std::complex<double>> &x
+	) {
+		add(x);
+		assertDoesNotHaveNext();
+	}
+
 	void assertInterpolatedFrames(
 		const std::vector<std::complex<double>> &x,
 		const std::vector<std::vector<std::complex<double>>> &frames,
@@ -298,6 +305,13 @@ void assertInterpolatedFrames(
 	double tolerance
 ) {
 	interpolate.assertInterpolatedFrames(x, frames, tolerance);
+}
+
+void assertYieldsNoFrames(
+	InterpolateFramesFacade& interpolate,
+	const std::vector<std::complex<double>>& x
+) {
+	interpolate.assertYieldsNoFrames(x);
 }
 
 class InterpolateFramesP1Q2Tests : public ::testing::Test {
@@ -430,8 +444,8 @@ TEST_F(
 	assertInterpolatedFrames(
 		{ 1. + 2i, 3. + 4i, 5. + 6i },
 		{
-			{ 1/3. + 2i/3., 1. + 4i/3., 5/3. + 2i },
-			doublePhase({ 2/3. + 4i/3., 2. + 8i/3., 10/3. + 4i }),
+			{ (1. + 2i)/3., (3. + 4i)/3., (5. + 6i)/3. },
+			doublePhase({ 2.*(1. + 2i)/3., 2.*(3. + 4i)/3., 2.*(5. + 6i)/3. }),
 			triplePhase({ 1. + 2i, 3. + 4i, 5. + 6i })
 		},
 		1e-15
@@ -474,6 +488,12 @@ protected:
 		::assertInterpolatedFrames(interpolate, x, frames, tolerance);
 	}
 
+	void assertYieldsNoFrames(
+		const std::vector<std::complex<double>>& x
+	) {
+		::assertYieldsNoFrames(interpolate, x);
+	}
+
 	void consumeAdd(const std::vector<std::complex<double>>& x) {
 		::consumeAdd(interpolate, x);
 	}
@@ -497,11 +517,7 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
-	assertInterpolatedFrames(
-		{ 7. + 8i, 9. + 10i, 11. + 12i },
-		{},
-		1e-15
-	);
+	assertYieldsNoFrames({ 7. + 8i, 9. + 10i, 11. + 12i });
 	assertInterpolatedFrames(
 		{ 13. + 14i, 15. + 16i, 17. + 18i },
 		{
@@ -528,6 +544,12 @@ protected:
 		::assertInterpolatedFrames(interpolate, x, frames, tolerance);
 	}
 
+	void assertYieldsNoFrames(
+		const std::vector<std::complex<double>>& x
+	) {
+		::assertYieldsNoFrames(interpolate, x);
+	}
+
 	void consumeAdd(const std::vector<std::complex<double>>& x) {
 		::consumeAdd(interpolate, x);
 	}
@@ -551,11 +573,7 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
-	assertInterpolatedFrames(
-		{ 7. + 8i, 9. + 10i, 11. + 12i },
-		{},
-		1e-15
-	);
+	assertYieldsNoFrames({ 7. + 8i, 9. + 10i, 11. + 12i });
 	assertInterpolatedFrames(
 		{ 13. + 14i, 15. + 16i, 17. + 18i },
 		{
