@@ -324,10 +324,10 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
-		{1.0 + 2i, 3.0 + 4i, 5.0 + 6i},
+		{1. + 2i, 3. + 4i, 5. + 6i},
 		{
-			{ 0.5 + 1i, 1.5 + 2i, 2.5 + 3i},
-			doublePhase({1.0 + 2i, 3.0 + 4i, 5.0 + 6i})
+			{ 1./2 + 1i, 3./2 + 2i, 5./2 + 3i},
+			doublePhase({1. + 2i, 3. + 4i, 5. + 6i})
 		},
 		1e-15
 	);
@@ -337,15 +337,15 @@ TEST_F(
 	InterpolateFramesP1Q2Tests,
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
-	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
-		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{
 			averageMagnitudesAndSumPhases(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			),
-			doublePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
+			doublePhase({ 7. + 8i, 9. + 10i, 11. + 12i })
 		},
 		1e-15
 	);
@@ -375,9 +375,9 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
-		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+		{ 1. + 2i, 3. + 4i, 5. + 6i },
 		{
-			{ 2 / 3.0 + 4i / 3.0, 2.0 + 8i / 3.0, 10 / 3.0 + 4i }
+			{ 2.*(1. + 2i)/3., 2.*(3. + 4i)/3., 2.*(5. + 6i)/3. }
 		},
 		1e-15
 	);
@@ -387,17 +387,17 @@ TEST_F(
 	InterpolateFramesP2Q3Tests,
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
-	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
-		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{
 			twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			),
 			magnitudeSecondAndSummedPhase(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			)
 		},
 		1e-15
@@ -428,11 +428,11 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
-		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+		{ 1. + 2i, 3. + 4i, 5. + 6i },
 		{
-			{ 1/3.0 + 2i/3.0, 1.0 + 4i/3.0, 5/3.0 + 2i },
-			doublePhase({ 2/3.0 + 4i/3.0, 2.0 + 8i/3.0, 10/3.0 + 4i }),
-			triplePhase({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i })
+			{ 1/3. + 2i/3., 1. + 4i/3., 5/3. + 2i },
+			doublePhase({ 2/3. + 4i/3., 2. + 8i/3., 10/3. + 4i }),
+			triplePhase({ 1. + 2i, 3. + 4i, 5. + 6i })
 		},
 		1e-15
 	);
@@ -442,19 +442,19 @@ TEST_F(
 	InterpolateFramesP1Q3Tests,
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
-	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
-		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{
 			twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			),
 			oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
-				{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i }
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			),
-			triplePhase({ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i })
+			triplePhase({ 7. + 8i, 9. + 10i, 11. + 12i })
 		},
 		1e-15
 	);
@@ -484,9 +484,9 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
-		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+		{ 1. + 2i, 3. + 4i, 5. + 6i },
 		{
-			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }
+			{ 1. + 2i, 3. + 4i, 5. + 6i }
 		},
 		1e-15
 	);
@@ -496,18 +496,18 @@ TEST_F(
 	InterpolateFramesP2Q1Tests, 
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
-	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
-		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{},
 		1e-15
 	);
 	assertInterpolatedFrames(
-		{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i },
+		{ 13. + 14i, 15. + 16i, 17. + 18i },
 		{
 			magnitudeSecondAndPhaseFirst(
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
-				{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i }
+				{ 7. + 8i, 9. + 10i, 11. + 12i },
+				{ 13. + 14i, 15. + 16i, 17. + 18i }
 			)
 		},
 		1e-15
@@ -538,9 +538,9 @@ TEST_F(
 	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
-		{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i },
+		{ 1. + 2i, 3. + 4i, 5. + 6i },
 		{
-			{ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i }
+			{ 1. + 2i, 3. + 4i, 5. + 6i }
 		},
 		1e-15
 	);
@@ -550,18 +550,18 @@ TEST_F(
 	InterpolateFramesP3Q2Tests,
 	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
-	consumeAdd({ 1.0 + 2i, 3.0 + 4i, 5.0 + 6i });
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
-		{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{},
 		1e-15
 	);
 	assertInterpolatedFrames(
-		{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i },
+		{ 13. + 14i, 15. + 16i, 17. + 18i },
 		{
 			averageMagnitudesAndPhaseFirst(
-				{ 7.0 + 8i, 9.0 + 10i, 11.0 + 12i },
-				{ 13.0 + 14i, 15.0 + 16i, 17.0 + 18i }
+				{ 7. + 8i, 9. + 10i, 11. + 12i },
+				{ 13. + 14i, 15. + 16i, 17. + 18i }
 			)
 		},
 		1e-15
