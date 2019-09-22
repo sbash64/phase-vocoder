@@ -25,7 +25,7 @@ TEST_F(ExpandTests, insertsPMinusOneZeros) {
     );
 }
 
-TEST_F(ExpandTests, insertsPMinusOneZeros2) {
+TEST_F(ExpandTests, insertsNoZerosWhenPIsOne) {
     assertExpanded(
         { 1, 2, 3, 4, 5 },
         1,

@@ -21,16 +21,20 @@ public:
 		dftPlan{fftw_plan_dft_r2c_1d(
 			N,
 			dftReal_.data(),
-			reinterpret_cast<fftw_complex *>(dftComplex_.data()),
+			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
 		idftPlan{fftw_plan_dft_c2r_1d(
 			N,
-			reinterpret_cast<fftw_complex *>(idftComplex_.data()),
+			to_fftw_complex(idftComplex_),
 			idftReal_.data(),
 			FFTW_ESTIMATE
 		)},
 		N{N} {}
+
+	fftw_complex *to_fftw_complex(std::vector<std::complex<double>> &x) {
+		return reinterpret_cast<fftw_complex *>(x.data());
+	}
 
 	~FftwTransformer() {
 		fftw_destroy_plan(dftPlan);
