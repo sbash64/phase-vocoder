@@ -1,5 +1,5 @@
-#ifndef PHASEVOCODER_OVERLAPADD_H
-#define PHASEVOCODER_OVERLAPADD_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_H_
 
 #include "common-utility.h"
 #include <gsl/gsl>
@@ -19,8 +19,7 @@ public:
     }
 
     void next(gsl::span<T> y) {
-        auto begin_ = buffer.begin();
-        std::copy(begin_, begin_ + hop, y.begin());
+        std::copy(begin(buffer), begin(buffer) + hop, begin(y));
         shift<T>(buffer, hop);
     }
 };
