@@ -13,6 +13,9 @@ template<typename T>
 using const_signal_type = signal_type<const T>;
 
 template<typename T>
+using signal_index_type = typename signal_type<T>::index_type;
+
+template<typename T>
 auto size(const signal_type<T> &x) {
     return x.size();
 }
@@ -29,7 +32,7 @@ auto rbegin(const signal_type<T> &x) {
 
 template<typename T>
 void shift(signal_type<T> x, int n) {
-    for (typename signal_type<T>::index_type i{0}; i < size(x) - n; ++i)
+    for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
         at(x, i) = at(x, i+n);
     std::fill(rbegin(x), rbegin(x) + n, T{0});
 }
@@ -58,6 +61,11 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 template<typename T>
 void copy(const_signal_type<T> source, signal_type<T> destination) {
     std::copy(begin(source), end(source), begin(destination));
+}
+
+template<typename T>
+void copy(const_signal_type<T> source, signal_type<T> destination, size_t n) {
+    std::copy(begin(source), begin(source) + n, begin(destination));
 }
 }
 

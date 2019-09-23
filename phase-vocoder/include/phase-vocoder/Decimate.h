@@ -11,7 +11,7 @@ public:
 
     template<typename T>
     void decimate(const_signal_type<T> x, signal_type<T> y) {
-        for (typename signal_type<T>::index_type i{0}; i < size(y); ++i)
+        for (signal_index_type<T> i{0}; i < size(y); ++i)
             at(y, i) = at(x, i*Q);
     }
 };

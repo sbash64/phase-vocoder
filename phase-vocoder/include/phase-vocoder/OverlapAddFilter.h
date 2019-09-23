@@ -42,8 +42,9 @@ void resize(std::vector<T> &x, size_t n) {
 
 template<typename T>
 class OverlapAddFilter {
-    std::vector<std::complex<T>> complexBuffer;
-    std::vector<std::complex<T>> H;
+    using complex_type = std::complex<T>;
+    std::vector<complex_type> complexBuffer;
+    std::vector<complex_type> H;
     std::vector<T> realBuffer;
     std::vector<T> overlap;
     std::shared_ptr<FourierTransformer> transformer_;
@@ -76,7 +77,7 @@ public:
     }
 
 private:
-    void dft(signal_type<T> x, signal_type<std::complex<T>> X) {
+    void dft(signal_type<T> x, signal_type<complex_type> X) {
         transformer_->dft(x, X);
     }
 
@@ -93,7 +94,7 @@ private:
         );
         transformer_->idft(complexBuffer, realBuffer);
         addFirstToSecond<T>(realBuffer, overlap);
-        std::copy(begin(overlap), begin(overlap) + size(x), begin(x));
+        copy<T>(overlap, x, size(x));
         shift<T>(overlap, size(x));
     }
 };
