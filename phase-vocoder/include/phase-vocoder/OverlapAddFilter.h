@@ -72,7 +72,7 @@ public:
     void filter(signal_type<T> x) {
         for (size_t j{0}; j < size(x)/L; ++j)
             filter_(x.subspan(j*L, L));
-        if (auto left = x.size()%L)
+        if (auto left = size(x)%L)
             filter_(x.last(left));
     }
 

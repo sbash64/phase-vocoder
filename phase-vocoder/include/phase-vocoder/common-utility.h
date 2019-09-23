@@ -59,13 +59,28 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 }
 
 template<typename T>
+using const_signal_iterator_type = typename const_signal_type<T>::iterator;
+
+template<typename T>
+using signal_iterator_type = typename signal_type<T>::iterator;
+
+template<typename T>
+void copy(
+    const_signal_iterator_type<T> sourceBegin,
+    const_signal_iterator_type<T> sourceEnd,
+    signal_iterator_type<T> destination
+) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template<typename T>
 void copy(const_signal_type<T> source, signal_type<T> destination) {
-    std::copy(begin(source), end(source), begin(destination));
+    copy<T>(begin(source), end(source), begin(destination));
 }
 
 template<typename T>
 void copy(const_signal_type<T> source, signal_type<T> destination, size_t n) {
-    std::copy(begin(source), begin(source) + n, begin(destination));
+    copy<T>(begin(source), begin(source) + n, begin(destination));
 }
 }
 
