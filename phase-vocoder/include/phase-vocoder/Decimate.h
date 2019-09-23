@@ -11,8 +11,8 @@ public:
     explicit Decimate(int Q) : Q{Q} {}
 
     template<typename T>
-    void decimate(gsl::span<const T> x, gsl::span<T> y) {
-        for (typename gsl::span<T>::index_type i{0}; i < size(y); ++i)
+    void decimate(const_signal_type<T> x, signal_type<T> y) {
+        for (typename signal_type<T>::index_type i{0}; i < size(y); ++i)
             at(y, i) = at(x, i*Q);
     }
 };

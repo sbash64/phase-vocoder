@@ -15,7 +15,7 @@ class OverlapExtract {
 	int hop;
 	int N;
 public:
-	OverlapExtract(int N, int hop) : cached(N), head{ 0 }, hop{ hop }, N{ N } {}
+	OverlapExtract(int N, int hop) : cached(N), head{0}, hop{hop}, N{N} {}
 
 	void add(gsl::span<const T> x) {
 		add_(x);

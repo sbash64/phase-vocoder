@@ -7,6 +7,12 @@
 
 namespace phase_vocoder {
 template<typename T>
+using signal_type = gsl::span<T>;
+
+template<typename T>
+using const_signal_type = signal_type<const T>;
+
+template<typename T>
 auto size(const gsl::span<T> &x) {
     return x.size();
 }
