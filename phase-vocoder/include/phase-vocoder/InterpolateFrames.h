@@ -1,5 +1,5 @@
-#ifndef PHASEVOCODOER_INTERPOLATEFRAMES_H
-#define PHASEVOCODOER_INTERPOLATEFRAMES_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_H_
 
 #include "common-utility.h"
 #include <gsl/gsl>
@@ -57,10 +57,10 @@ public:
 	void next(gsl::span<complex_type> x) {
 		resampleMagnitude();
 		std::transform(
-			resampledMagnitude.begin(),
-			resampledMagnitude.end(),
-			accumulatedPhase.begin(),
-			x.begin(),
+			begin(resampledMagnitude),
+			end(resampledMagnitude),
+			begin(accumulatedPhase),
+			begin(x),
 			[](T magnitude, T phase) {
 				return std::polar(magnitude, phase);
 			}
@@ -105,10 +105,10 @@ private:
 		T(InterpolateFrames::*f)(const complex_type &, const complex_type &)
 	) {
 		std::transform(
-			previousFrame.begin(),
-			previousFrame.end(),
-			currentFrame.begin(),
-			out.begin(),
+			begin(previousFrame),
+			end(previousFrame),
+			begin(currentFrame),
+			begin(out),
 			[&](const complex_type& a, const complex_type& b) {
 				return (this->*f)(a, b);
 			}

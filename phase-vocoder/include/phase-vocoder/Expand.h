@@ -14,7 +14,7 @@ public:
     template<typename T>
     void expand(gsl::span<const T> x, gsl::span<T> y) {
         std::fill(begin(y), end(y), T{0});
-        for (typename gsl::span<T>::index_type i{0}; i < x.size(); ++i)
+        for (typename gsl::span<T>::index_type i{0}; i < size(x); ++i)
             at(y, i*P) = at(x, i);
     }
 };

@@ -12,7 +12,7 @@ public:
 
     template<typename T>
     void decimate(gsl::span<const T> x, gsl::span<T> y) {
-        for (typename gsl::span<T>::index_type i{0}; i < y.size(); ++i)
+        for (typename gsl::span<T>::index_type i{0}; i < size(y); ++i)
             at(y, i) = at(x, i*Q);
     }
 };

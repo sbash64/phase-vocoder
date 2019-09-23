@@ -7,6 +7,11 @@
 
 namespace phase_vocoder {
 template<typename T>
+auto size(const gsl::span<T> &x) {
+    return x.size();
+}
+
+template<typename T>
 auto at(const gsl::span<T> &x, size_t i) {
     return x.at(i);
 }
@@ -18,7 +23,7 @@ auto rbegin(const gsl::span<T> &x) {
 
 template<typename T>
 void shift(gsl::span<T> x, int n) {
-    for (typename gsl::span<T>::index_type i{0}; i < x.size() - n; ++i)
+    for (typename gsl::span<T>::index_type i{0}; i < size(x) - n; ++i)
         at(x, i) = at(x, i+n);
     std::fill(rbegin(x), rbegin(x) + n, T{0});
 }
