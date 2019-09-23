@@ -1,5 +1,5 @@
-#ifndef PHASEVOCODER_COMMON_UTILITY_H
-#define PHASEVOCODER_COMMON_UTILITY_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_COMMON_UTILITY_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_COMMON_UTILITY_H_
 
 #include <gsl/gsl>
 #include <algorithm>
@@ -7,27 +7,41 @@
 
 namespace phase_vocoder {
 template<typename T>
+auto rbegin(const gsl::span<T> &x) {
+    return x.rbegin();
+}
+
+template<typename T>
 void shift(gsl::span<T> x, int n) {
     for (typename gsl::span<T>::index_type i{0}; i < x.size() - n; ++i)
         x.at(i) = x.at(i+n);
-    std::fill(x.rbegin(), x.rbegin() + n, T{0});
+    std::fill(rbegin(x), rbegin(x) + n, T{0});
+}
+
+template<typename T>
+auto begin(const gsl::span<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto end(const gsl::span<T> &x) {
+    return x.end();
 }
 
 template<typename T>
 void addFirstToSecond(gsl::span<const T> x, gsl::span<T> y) {
-    auto begin_ = y.begin();
     std::transform(
-        begin_,
-        y.end(),
-        x.begin(),
-        begin_,
+        begin(y),
+        end(y),
+        begin(x),
+        begin(y),
         std::plus<>{}
     );
 }
 
 template<typename T>
 void copy(gsl::span<const T> source, gsl::span<T> destination) {
-    std::copy(source.begin(), source.end(), destination.begin());
+    std::copy(begin(source), end(source), begin(destination));
 }
 }
 
