@@ -3,12 +3,25 @@
 #include <gtest/gtest.h>
 
 namespace {
+template<typename T>
+void copy(gsl::span<const T> x, gsl::span<T> y) {
+    std::copy(x.begin(), x.end(), y.begin());
+}
+
+template<typename T>
+void resizeToMatch(std::vector<T> &x, gsl::span<const T> y) {
+    x.resize(y.size());
+}
+
+template<typename T>
 class FourierTransformerStub : public phase_vocoder::FourierTransformer {
-    std::vector<std::vector<double>> dftReals_;
-    std::vector<std::complex<double>> dftComplex_;
-    std::vector<std::complex<double>> idftComplex_;
-    std::vector<double> dftReal_;
-    std::vector<double> idftReal_;
+	using complex_buffer_type = std::vector<std::complex<T>>;
+	using real_buffer_type = std::vector<T>;
+    std::vector<std::vector<T>> dftReals_;
+    complex_buffer_type dftComplex_;
+    complex_buffer_type idftComplex_;
+    real_buffer_type dftReal_;
+    real_buffer_type idftReal_;
 public:
     auto dftReal() const {
         return dftReal_;
@@ -22,30 +35,25 @@ public:
         return idftComplex_;
     }
 
-    template<typename T>
-    void copy(gsl::span<const T> x, gsl::span<T> y) {
-        std::copy(x.begin(), x.end(), y.begin());
-    }
-
-    void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
-        dftReal_.resize(x.size());
-        copy<double>(x, dftReal_);
-        copy<std::complex<double>>(dftComplex_, y);
+    void dft(gsl::span<T> x, gsl::span<std::complex<T>> y) override {
+        resizeToMatch<T>(dftReal_, x);
+        copy<T>(x, dftReal_);
+        copy<std::complex<T>>(dftComplex_, y);
         dftReals_.push_back(dftReal_);
     }
 
-    void setDftComplex(std::vector<std::complex<double>> x) {
+    void setDftComplex(complex_buffer_type x) {
         dftComplex_ = std::move(x);
     }
 
-    void setIdftReal(std::vector<double> x) {
+    void setIdftReal(real_buffer_type x) {
         idftReal_ = std::move(x);
     }
 
-    void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
-        idftComplex_.resize(x.size());
-        copy<std::complex<double>>(x, idftComplex_);
-        copy<double>(idftReal_, y);
+    void idft(gsl::span<std::complex<T>> x, gsl::span<T> y) override {
+        resizeToMatch<std::complex<T>>(idftComplex_, x);
+        copy<std::complex<T>>(x, idftComplex_);
+        copy<T>(idftReal_, y);
     }
 
     class FactoryStub : public Factory {
@@ -68,9 +76,9 @@ public:
 
 class OverlapAddFilterTests : public ::testing::Test {
 protected:
-    std::shared_ptr<FourierTransformerStub> fourierTransformer_ =
-        std::make_shared<FourierTransformerStub>();
-    FourierTransformerStub::FactoryStub factory{fourierTransformer_};
+    std::shared_ptr<FourierTransformerStub<double>> fourierTransformer_ =
+        std::make_shared<FourierTransformerStub<double>>();
+    FourierTransformerStub<double>::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
     std::vector<double> x;
 
