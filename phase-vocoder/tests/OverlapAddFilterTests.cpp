@@ -4,11 +4,11 @@
 
 namespace {
 class FourierTransformerStub : public phase_vocoder::FourierTransformer {
-    std::vector<double> dftReal_;
     std::vector<std::vector<double>> dftReals_;
-    std::vector<double> idftReal_;
     std::vector<std::complex<double>> dftComplex_;
     std::vector<std::complex<double>> idftComplex_;
+    std::vector<double> dftReal_;
+    std::vector<double> idftReal_;
 public:
     auto dftReal() const {
         return dftReal_;
@@ -23,20 +23,14 @@ public:
     }
 
     template<typename T>
-    void copy(gsl::span<T> x, std::vector<T> &y) {
-        y.clear();
-        for (auto x_ : x)
-            y.push_back(x_);
-    }
-
-    template<typename T>
-    void copy(const std::vector<T> &x, gsl::span<T> y) {
+    void copy(gsl::span<const T> x, gsl::span<T> y) {
         std::copy(x.begin(), x.end(), y.begin());
     }
 
     void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
-        copy(x, dftReal_);
-        copy(dftComplex_, y);
+        dftReal_.resize(x.size());
+        copy<double>(x, dftReal_);
+        copy<std::complex<double>>(dftComplex_, y);
         dftReals_.push_back(dftReal_);
     }
 
@@ -49,13 +43,14 @@ public:
     }
 
     void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
-        copy(x, idftComplex_);
-        copy(idftReal_, y);
+        idftComplex_.resize(x.size());
+        copy<std::complex<double>>(x, idftComplex_);
+        copy<double>(idftReal_, y);
     }
 
     class FactoryStub : public Factory {
-        int N_;
         std::shared_ptr<FourierTransformer> transform;
+        int N_;
     public:
         explicit FactoryStub(std::shared_ptr<FourierTransformer> transform) :
             transform{std::move(transform)} {}
