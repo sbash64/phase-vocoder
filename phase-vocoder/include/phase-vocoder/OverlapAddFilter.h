@@ -31,6 +31,11 @@ constexpr size_t nearestGreaterPowerTwo(size_t n) {
 }
 
 template<typename T>
+void resize(std::vector<T> &x, size_t n) {
+    x.resize(n);
+}
+
+template<typename T>
 class OverlapAddFilter {
     std::vector<std::complex<T>> complexBuffer;
     std::vector<std::complex<T>> H;
@@ -45,16 +50,16 @@ public:
         const std::vector<T> &b,
         FourierTransformer::Factory &factory
     ) :
-        N{nearestGreaterPowerTwo(b.size())},
-        M{b.size()}
+        N{nearestGreaterPowerTwo(size(b))},
+        M{size(b)}
     {
         transformer_ = factory.make(N);
         L = N - M + 1;
-        realBuffer.resize(N);
+        resize(realBuffer, N);
         copy<T>(b, realBuffer);
-        H.resize(N);
-        overlap.resize(N);
-        complexBuffer.resize(N);
+        resize(H, N);
+        resize(overlap, N);
+        resize(complexBuffer, N);
         dft(realBuffer, H);
     }
 
@@ -71,20 +76,20 @@ private:
     }
 
     void filter_(gsl::span<T> x) {
-        std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
+        std::fill(begin(realBuffer) + size(x), end(realBuffer), T{0});
         copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
-            complexBuffer.begin(),
-            complexBuffer.end(),
-            H.begin(),
-            complexBuffer.begin(),
+            begin(complexBuffer),
+            end(complexBuffer),
+            begin(H),
+            begin(complexBuffer),
             std::multiplies<>{}
         );
         transformer_->idft(complexBuffer, realBuffer);
         addFirstToSecond<T>(realBuffer, overlap);
-        std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
-        shift<T>(overlap, x.size());
+        std::copy(begin(overlap), begin(overlap) + size(x), begin(x));
+        shift<T>(overlap, size(x));
     }
 };
 }
