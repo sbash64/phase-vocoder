@@ -9,6 +9,11 @@ void copy(gsl::span<const T> x, gsl::span<T> y) {
 	std::copy(x.begin(), x.end(), y.begin());
 }
 
+template<typename T>
+T *data(std::vector<T> &x) {
+	return x.data();
+}
+
 fftw_complex *to_fftw_complex(std::vector<std::complex<double>> &x) {
 	return reinterpret_cast<fftw_complex *>(x.data());
 }
@@ -32,14 +37,14 @@ public:
 		idftReal_(N),
 		dftPlan{fftw_plan_dft_r2c_1d(
 			N,
-			dftReal_.data(),
+			data(dftReal_),
 			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
 		idftPlan{fftw_plan_dft_c2r_1d(
 			N,
 			to_fftw_complex(idftComplex_),
-			idftReal_.data(),
+			data(idftReal_),
 			FFTW_ESTIMATE
 		)},
 		N{N} {}
@@ -95,8 +100,9 @@ protected:
 	) {
 		auto overlapAdd = construct();
 		for (size_t i{ 0 }; i < y.size(); ++i) {
-			overlapAdd.filter(x[i]);
-			assertEqual(y[i], x[i], 1e-14);
+			auto next = std::move(x.at(i));
+			overlapAdd.filter(next);
+			assertEqual(y.at(i), next, 1e-14);
 		}
 	}
 
