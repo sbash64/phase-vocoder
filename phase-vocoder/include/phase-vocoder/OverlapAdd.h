@@ -14,11 +14,11 @@ class OverlapAdd {
 public:
     OverlapAdd(int N, int hop) : buffer(N), hop{hop} {}
 
-    void add(gsl::span<const T> x) {
+    void add(const_signal_type<T> x) {
         addFirstToSecond<T>(x, buffer);
     }
 
-    void next(gsl::span<T> y) {
+    void next(signal_type<T> y) {
         std::copy(begin(buffer), begin(buffer) + hop, begin(y));
         shift<T>(buffer, hop);
     }
