@@ -2,7 +2,6 @@
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_DECIMATE_H_
 
 #include "common-utility.h"
-#include <gsl/gsl>
 
 namespace phase_vocoder {
 class Decimate {

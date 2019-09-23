@@ -2,7 +2,6 @@
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_EXPAND_H_
 
 #include "common-utility.h"
-#include <gsl/gsl>
 #include <algorithm>
 
 namespace phase_vocoder {
