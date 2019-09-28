@@ -1,8 +1,7 @@
-#ifndef PHASEVOCODER_OVERLAPEXTRACT_H
-#define PHASEVOCODER_OVERLAPEXTRACT_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPEXTRACT_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPEXTRACT_H_
 
 #include "common-utility.h"
-#include <gsl/gsl>
 #include <vector>
 #include <algorithm>
 
@@ -10,32 +9,50 @@ namespace phase_vocoder {
 template<typename T>
 class OverlapExtract {
 	std::vector<T> cached;
-	gsl::span<const T> signal;
-	typename gsl::span<T>::index_type head;
+	const_signal_type<T> signal;
+	typename signal_type<T>::index_type head;
 	int hop;
 	int N;
 public:
-	OverlapExtract(int N, int hop) : cached(N), head{ 0 }, hop{ hop }, N{ N } {}
+	OverlapExtract(int N, int hop) : cached(N), head{0}, hop{hop}, N{N} {}
 
-	void add(gsl::span<const T> x) {
-		auto toFill = std::min(N - head, x.size());
-		std::copy(x.begin(), x.begin() + toFill, cached.begin() + head);
-		signal = x.last(x.size() - toFill);
-		head += toFill;
+	void add(const_signal_type<T> x) {
+		add_(x);
 	}
 
 	bool hasNext() {
 		return head == N;
 	}
 
-	void next(gsl::span<T> out) {
+	void next(signal_type<T> out) {
 		copy<T>(cached, out);
 		shift<T>(cached, hop);
 		head = N - hop;
-		auto toFill = std::min(N - head, signal.size());
-		std::copy(signal.begin(), signal.begin() + toFill, cached.begin() + head);
-		signal = signal.last(signal.size() - toFill);
-		head += toFill;
+		add_(signal);
+	}
+
+private:
+	void add_(const_signal_type<T> x) {
+		auto toFill = leftToFill(x);
+		copyToCached(x, toFill);
+		assignRemainingSignal(x, toFill);
+		addToHead(toFill);
+	}
+
+	int leftToFill(const_signal_type<T> x) {
+		return std::min(N - head, size(x));
+	}
+
+	void copyToCached(const_signal_type<T> x, int n) {
+		std::copy(begin(x), begin(x) + n, begin(cached) + head);
+	}
+
+	void assignRemainingSignal(const_signal_type<T> x, int used) {
+		signal = x.last(size(x) - used);
+	}
+
+	void addToHead(int n) {
+		head += n;
 	}
 };
 }

@@ -1,7 +1,7 @@
-#ifndef PHASEVOCODER_EXPAND_H
-#define PHASEVOCODER_EXPAND_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_EXPAND_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_EXPAND_H_
 
-#include <gsl/gsl>
+#include "common-utility.h"
 #include <algorithm>
 
 namespace phase_vocoder {
@@ -11,10 +11,10 @@ public:
     explicit Expand(int P) : P{P} {}
 
     template<typename T>
-    void expand(gsl::span<const T> x, gsl::span<T> y) {
-        std::fill(y.begin(), y.end(), 0);
-        for (typename gsl::span<T>::index_type i{0}; i < x.size(); ++i)
-            y.at(i*P) = x.at(i);
+    void expand(const_signal_type<T> x, signal_type<T> y) {
+        std::fill(begin(y), end(y), T{0});
+        for (signal_index_type<T> i{0}; i < size(x); ++i)
+            at(y, i*P) = at(x, i);
     }
 };
 }

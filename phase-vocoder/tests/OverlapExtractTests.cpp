@@ -17,7 +17,7 @@ protected:
 		std::vector<std::vector<int>> segments
 	) {
 		add(std::move(x));
-		for (auto segment : segments) {
+		for (auto &segment : segments) {
 			assertHasNext();
 			assertNextEquals(std::move(segment));
 		}

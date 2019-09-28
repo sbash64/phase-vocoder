@@ -4,11 +4,28 @@
 #include <gtest/gtest.h>
 
 namespace {
+template<typename T>
+void copy(gsl::span<const T> x, gsl::span<T> y) {
+	std::copy(x.begin(), x.end(), y.begin());
+}
+
+template<typename T>
+T *data(std::vector<T> &x) {
+	return x.data();
+}
+
+fftw_complex *to_fftw_complex(std::vector<std::complex<double>> &x) {
+	return reinterpret_cast<fftw_complex *>(x.data());
+}
+
+template<typename T>
 class FftwTransformer : public phase_vocoder::FourierTransformer {
-	std::vector<std::complex<double>> dftComplex_;
-	std::vector<std::complex<double>> idftComplex_;
-	std::vector<double> dftReal_;
-	std::vector<double> idftReal_;
+	using complex_buffer_type = std::vector<std::complex<T>>;
+	using real_buffer_type = std::vector<T>;
+	complex_buffer_type dftComplex_;
+	complex_buffer_type idftComplex_;
+	real_buffer_type dftReal_;
+	real_buffer_type idftReal_;
 	fftw_plan dftPlan;
 	fftw_plan idftPlan;
 	size_t N;
@@ -20,14 +37,14 @@ public:
 		idftReal_(N),
 		dftPlan{fftw_plan_dft_r2c_1d(
 			N,
-			dftReal_.data(),
-			reinterpret_cast<fftw_complex *>(dftComplex_.data()),
+			data(dftReal_),
+			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
 		idftPlan{fftw_plan_dft_c2r_1d(
 			N,
-			reinterpret_cast<fftw_complex *>(idftComplex_.data()),
-			idftReal_.data(),
+			to_fftw_complex(idftComplex_),
+			data(idftReal_),
 			FFTW_ESTIMATE
 		)},
 		N{N} {}
@@ -37,26 +54,16 @@ public:
 		fftw_destroy_plan(idftPlan);
 	}
 
-	template<typename T>
-	void copy(gsl::span<T> x, std::vector<T> &y) {
-		std::copy(x.begin(), x.end(), y.begin());
-	}
-
-	template<typename T>
-	void copy(const std::vector<T> &x, gsl::span<T> y) {
-		std::copy(x.begin(), x.end(), y.begin());
-	}
-
-	void dft(gsl::span<double> x, gsl::span<std::complex<double>> y) override {
-		copy(x, dftReal_);
+	void dft(gsl::span<T> x, gsl::span<std::complex<T>> y) override {
+		copy<T>(x, dftReal_);
 		fftw_execute(dftPlan);
-		copy(dftComplex_, y);
+		copy<std::complex<T>>(dftComplex_, y);
 	}
 
-	void idft(gsl::span<std::complex<double>> x, gsl::span<double> y) override {
-		copy(x, idftComplex_);
+	void idft(gsl::span<std::complex<T>> x, gsl::span<T> y) override {
+		copy<std::complex<T>>(x, idftComplex_);
 		fftw_execute(idftPlan);
-		copy(idftReal_, y);
+		copy<T>(idftReal_, y);
 		for (auto &y_ : y)
 			y_ /= N;
 	}
@@ -71,7 +78,7 @@ public:
 
 class FirFilterTests : public ::testing::Test {
 protected:
-	FftwTransformer::FftwFactory factory;
+	FftwTransformer<double>::FftwFactory factory;
 	std::vector<double> b{ 0 };
 
 	void assertFilteredOutput(
@@ -93,8 +100,9 @@ protected:
 	) {
 		auto overlapAdd = construct();
 		for (size_t i{ 0 }; i < y.size(); ++i) {
-			overlapAdd.filter(x[i]);
-			assertEqual(y[i], x[i], 1e-14);
+			auto next = std::move(x.at(i));
+			overlapAdd.filter(next);
+			assertEqual(y.at(i), next, 1e-14);
 		}
 	}
 
