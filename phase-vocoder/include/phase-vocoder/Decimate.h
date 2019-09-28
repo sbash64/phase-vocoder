@@ -1,7 +1,7 @@
-#ifndef PHASEVOCODER_DECIMATE_H
-#define PHASEVOCODER_DECIMATE_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_DECIMATE_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_DECIMATE_H_
 
-#include <gsl/gsl>
+#include "common-utility.h"
 
 namespace phase_vocoder {
 class Decimate {
@@ -10,9 +10,9 @@ public:
     explicit Decimate(int Q) : Q{Q} {}
 
     template<typename T>
-    void decimate(gsl::span<const T> x, gsl::span<T> y) {
-        for (typename gsl::span<T>::index_type i{0}; i < y.size(); ++i)
-            y.at(i) = x.at(i*Q);
+    void decimate(const_signal_type<T> x, signal_type<T> y) {
+        for (signal_index_type<T> i{0}; i < size(y); ++i)
+            at(y, i) = at(x, i*Q);
     }
 };
 }

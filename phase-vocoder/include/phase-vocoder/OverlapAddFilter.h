@@ -1,8 +1,7 @@
-#ifndef PHASEVOCODER_OVERLAPADDFILTER_H
-#define PHASEVOCODER_OVERLAPADDFILTER_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
 
 #include "common-utility.h"
-#include <gsl/gsl>
 #include <vector>
 #include <complex>
 #include <algorithm>
@@ -13,8 +12,14 @@ namespace phase_vocoder {
 class FourierTransformer {
 public:
     virtual ~FourierTransformer() = default;
-    virtual void dft(gsl::span<double>, gsl::span<std::complex<double>>) = 0;
-    virtual void idft(gsl::span<std::complex<double>>, gsl::span<double>) = 0;
+    virtual void dft(
+        signal_type<double>,
+        signal_type<std::complex<double>>
+    ) = 0;
+    virtual void idft(
+        signal_type<std::complex<double>>,
+        signal_type<double>
+    ) = 0;
 
     class Factory {
     public:
@@ -31,9 +36,15 @@ constexpr size_t nearestGreaterPowerTwo(size_t n) {
 }
 
 template<typename T>
+void resize(std::vector<T> &x, size_t n) {
+    x.resize(n);
+}
+
+template<typename T>
 class OverlapAddFilter {
-    std::vector<std::complex<T>> complexBuffer;
-    std::vector<std::complex<T>> H;
+    using complex_type = std::complex<T>;
+    std::vector<complex_type> complexBuffer;
+    std::vector<complex_type> H;
     std::vector<T> realBuffer;
     std::vector<T> overlap;
     std::shared_ptr<FourierTransformer> transformer_;
@@ -45,46 +56,46 @@ public:
         const std::vector<T> &b,
         FourierTransformer::Factory &factory
     ) :
-        N{nearestGreaterPowerTwo(b.size())},
-        M{b.size()}
+        N{nearestGreaterPowerTwo(size(b))},
+        M{size(b)}
     {
         transformer_ = factory.make(N);
         L = N - M + 1;
-        realBuffer.resize(N);
+        resize(realBuffer, N);
         copy<T>(b, realBuffer);
-        H.resize(N);
-        overlap.resize(N);
-        complexBuffer.resize(N);
+        resize(H, N);
+        resize(overlap, N);
+        resize(complexBuffer, N);
         dft(realBuffer, H);
     }
 
-    void filter(gsl::span<T> x) {
-        for (size_t j{0}; j < x.size()/L; ++j)
+    void filter(signal_type<T> x) {
+        for (size_t j{0}; j < size(x)/L; ++j)
             filter_(x.subspan(j*L, L));
-        if (auto left = x.size()%L)
+        if (auto left = size(x)%L)
             filter_(x.last(left));
     }
 
 private:
-    void dft(gsl::span<T> x, gsl::span<std::complex<T>> X) {
+    void dft(signal_type<T> x, signal_type<complex_type> X) {
         transformer_->dft(x, X);
     }
 
-    void filter_(gsl::span<T> x) {
-        std::fill(realBuffer.begin() + x.size(), realBuffer.end(), 0);
+    void filter_(signal_type<T> x) {
+        std::fill(begin(realBuffer) + size(x), end(realBuffer), T{0});
         copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
-            complexBuffer.begin(),
-            complexBuffer.end(),
-            H.begin(),
-            complexBuffer.begin(),
+            begin(complexBuffer),
+            end(complexBuffer),
+            begin(H),
+            begin(complexBuffer),
             std::multiplies<>{}
         );
         transformer_->idft(complexBuffer, realBuffer);
         addFirstToSecond<T>(realBuffer, overlap);
-        std::copy(overlap.begin(), overlap.begin() + x.size(), x.begin());
-        shift<T>(overlap, x.size());
+        copy<T>(overlap, x, size(x));
+        shift<T>(overlap, size(x));
     }
 };
 }

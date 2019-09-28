@@ -1,8 +1,7 @@
-#ifndef PHASEVOCODER_OVERLAPADD_H
-#define PHASEVOCODER_OVERLAPADD_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_H_
 
 #include "common-utility.h"
-#include <gsl/gsl>
 #include <vector>
 #include <algorithm>
 
@@ -14,13 +13,12 @@ class OverlapAdd {
 public:
     OverlapAdd(int N, int hop) : buffer(N), hop{hop} {}
 
-    void add(gsl::span<const T> x) {
+    void add(const_signal_type<T> x) {
         addFirstToSecond<T>(x, buffer);
     }
 
-    void next(gsl::span<T> y) {
-        auto begin_ = buffer.begin();
-        std::copy(begin_, begin_ + hop, y.begin());
+    void next(signal_type<T> y) {
+        std::copy(begin(buffer), begin(buffer) + hop, begin(y));
         shift<T>(buffer, hop);
     }
 };

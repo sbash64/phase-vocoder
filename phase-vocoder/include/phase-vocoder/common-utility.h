@@ -1,5 +1,5 @@
-#ifndef PHASEVOCODER_COMMON_UTILITY_H
-#define PHASEVOCODER_COMMON_UTILITY_H
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_COMMON_UTILITY_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_COMMON_UTILITY_H_
 
 #include <gsl/gsl>
 #include <algorithm>
@@ -7,27 +7,80 @@
 
 namespace phase_vocoder {
 template<typename T>
-void shift(gsl::span<T> x, int n) {
-    for (typename gsl::span<T>::index_type i{0}; i < x.size() - n; ++i)
-        x.at(i) = x.at(i+n);
-    std::fill(x.rbegin(), x.rbegin() + n, T{0});
+using signal_type = gsl::span<T>;
+
+template<typename T>
+using const_signal_type = signal_type<const T>;
+
+template<typename T>
+using signal_index_type = typename signal_type<T>::index_type;
+
+template<typename T>
+auto size(const signal_type<T> &x) {
+    return x.size();
 }
 
 template<typename T>
-void addFirstToSecond(gsl::span<const T> x, gsl::span<T> y) {
-    auto begin_ = y.begin();
+auto at(const signal_type<T> &x, size_t i) {
+    return x.at(i);
+}
+
+template<typename T>
+auto rbegin(const signal_type<T> &x) {
+    return x.rbegin();
+}
+
+template<typename T>
+void shift(signal_type<T> x, int n) {
+    for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
+        at(x, i) = at(x, i+n);
+    std::fill(rbegin(x), rbegin(x) + n, T{0});
+}
+
+template<typename T>
+auto begin(const signal_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto end(const signal_type<T> &x) {
+    return x.end();
+}
+
+template<typename T>
+void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
     std::transform(
-        begin_,
-        y.end(),
-        x.begin(),
-        begin_,
+        begin(y),
+        end(y),
+        begin(x),
+        begin(y),
         std::plus<>{}
     );
 }
 
 template<typename T>
-void copy(gsl::span<const T> source, gsl::span<T> destination) {
-    std::copy(source.begin(), source.end(), destination.begin());
+using const_signal_iterator_type = typename const_signal_type<T>::iterator;
+
+template<typename T>
+using signal_iterator_type = typename signal_type<T>::iterator;
+
+template<typename T>
+void copy(
+    const_signal_iterator_type<T> sourceBegin,
+    const_signal_iterator_type<T> sourceEnd,
+    signal_iterator_type<T> destination
+) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template<typename T>
+void copy(const_signal_type<T> source, signal_type<T> destination) {
+    copy<T>(begin(source), end(source), begin(destination));
+}
+
+template<typename T>
+void copy(const_signal_type<T> source, signal_type<T> destination, size_t n) {
+    copy<T>(begin(source), begin(source) + n, begin(destination));
 }
 }
 
