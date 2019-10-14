@@ -1,30 +1,48 @@
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_H_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_H_
+
 #include "OverlapExtract.h"
 #include "OverlapAddFilter.h"
 #include "InterpolateFrames.h"
 #include "Expand.h"
 #include "Decimate.h"
 #include "OverlapAdd.h"
+#include <memory>
+#include <functional>
+#include <algorithm>
+#include <vector>
 
 namespace phase_vocoder {
 constexpr int hop(int N) {
     return N/4;
 }
 
+size_t size(int N) {
+    return gsl::narrow<size_t>(N);
+}
+
 template<typename T>
 std::vector<T> hannWindow(int N) {
-    std::vector<T> window(N);
+    std::vector<T> window(size(N));
+    auto half = (N-1)/2;
     auto pi = std::acos(T{-1});
-    for (size_t i{0}; i < window.size(); ++i)
-        window.at(i) = T{0.5} * (1 - std::cos(2*pi*i/N));
+    std::generate(
+        window.begin() + half,
+        window.end(),
+        [=, n = 0]() mutable {
+            return T{0.5} * (1 + std::cos(pi*n/half));
+    });
+    std::copy(window.rbegin(), window.rbegin()+half, window.begin());
     return window;
 }
 
 template<typename T>
 std::vector<T> lowPassFilter(T cutoff, int taps) {
-    std::vector<T> coefficients(taps);
+    auto size = gsl::narrow<size_t>(taps);
+    std::vector<T> coefficients(size);
     auto pi = std::acos(T{-1});
-    for (size_t i{0}; i < coefficients.size(); ++i) {
-        auto something = (pi * (i - (taps - 1)/2));
+    for (size_t i{0}; i < size; ++i) {
+        auto something = (pi * (i - (size - 1)/2));
         coefficients.at(i) = something == 0
             ? T{1}
             : std::sin(2 * cutoff * something)/something;
@@ -60,23 +78,29 @@ class PhaseVocoder {
     std::vector<T> outputBuffer;
     std::vector<T> window;
     std::shared_ptr<FourierTransformer> transform;
+    int P;
+    int Q;
+    int N;
 public:
     PhaseVocoder(int P, int Q, int N, FourierTransformer::Factory &factory) :
         interpolateFrames{P, Q, N},
         overlapExtract{N, hop(N)},
-        filter{lowPassFilter(T{0.5}/std::max(P, Q), 51), factory},
+        filter{lowPassFilter(T{0.5}/std::max(P, Q), 501), factory},
         overlappedOutput{N, hop(N)},
         expand{P},
         decimate{Q},
-        nextFrame(N),
-        expanded(hop(N)*P),
-        decimated(hop(N)*P/Q),
-        inputBuffer(N),
-        outputBuffer(hop(N)),
-        window{hannWindow<T>(N)},
-        transform{factory.make(N)}
+        nextFrame(size(N)),
+        expanded(size(hop(N)*P)),
+        decimated(size(hop(N)*P/Q)),
+        inputBuffer(size(N)),
+        outputBuffer(size(hop(N))),
+        window{hannWindow<T>(N+1)},
+        transform{factory.make(N)},
+        P{P},
+        Q{Q},
+        N{N}
     {
-        std::vector<T> delayedStart(N - hop(N), 0);
+        std::vector<T> delayedStart(size(N - hop(N)), 0);
         overlapExtract.add(delayedStart);
     }
 
@@ -98,7 +122,7 @@ public:
                 filter.filter(expanded);
                 decimate.decimate<T>(expanded, decimated);
                 std::copy(decimated.begin(), decimated.end(), head);
-                head += decimated.size();
+                head += hop(N)*P/Q;
             }
         }
     }
@@ -114,3 +138,5 @@ public:
     }
 };
 }
+
+#endif
