@@ -16,6 +16,15 @@ template<typename T>
 using signal_index_type = typename signal_type<T>::index_type;
 
 template<typename T>
+using signal_iterator_type = typename signal_type<T>::iterator;
+
+template<typename T>
+using const_signal_iterator_type = typename const_signal_type<T>::iterator;
+
+template<typename T>
+using signal_size_type = typename signal_type<T>::size_type;
+
+template<typename T>
 auto size(const signal_type<T> &x) {
     return x.size();
 }
@@ -59,12 +68,6 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 }
 
 template<typename T>
-using const_signal_iterator_type = typename const_signal_type<T>::iterator;
-
-template<typename T>
-using signal_iterator_type = typename signal_type<T>::iterator;
-
-template<typename T>
 void copy(
     const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
@@ -79,7 +82,11 @@ void copy(const_signal_type<T> source, signal_type<T> destination) {
 }
 
 template<typename T>
-void copy(const_signal_type<T> source, signal_type<T> destination, typename signal_type<T>::size_type n) {
+void copy(
+    const_signal_type<T> source,
+    signal_type<T> destination,
+    signal_size_type<T> n
+) {
     copy<T>(begin(source), begin(source) + n, begin(destination));
 }
 }

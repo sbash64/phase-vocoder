@@ -72,7 +72,7 @@ public:
     }
 
     void filter(signal_type<T> x) {
-        for (gsl::index j{0}; j < size(x)/L; ++j)
+        for (signal_index_type<T> j{0}; j < size(x)/L; ++j)
             filter_(x.subspan(j*L, L));
         if (auto left = size(x)%L)
             filter_(x.last(left));
