@@ -36,13 +36,13 @@ public:
 		dftReal_(N),
 		idftReal_(N),
 		dftPlan{fftw_plan_dft_r2c_1d(
-			N,
+			gsl::narrow_cast<int>(N),
 			data(dftReal_),
 			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
 		idftPlan{fftw_plan_dft_c2r_1d(
-			N,
+			gsl::narrow_cast<int>(N),
 			to_fftw_complex(idftComplex_),
 			data(idftReal_),
 			FFTW_ESTIMATE
@@ -70,8 +70,8 @@ public:
 
 	class FftwFactory : public Factory {
 	public:
-		std::shared_ptr<FourierTransformer> make(int N) {
-			return std::make_shared<FftwTransformer>(N);
+		std::shared_ptr<FourierTransformer> make(int N_) {
+			return std::make_shared<FftwTransformer>(N_);
 		}
 	};
 };

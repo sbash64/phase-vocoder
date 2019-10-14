@@ -31,7 +31,7 @@ auto rbegin(const signal_type<T> &x) {
 }
 
 template<typename T>
-void shift(signal_type<T> x, int n) {
+void shift(signal_type<T> x, signal_index_type<T> n) {
     for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
         at(x, i) = at(x, i+n);
     std::fill(rbegin(x), rbegin(x) + n, T{0});
@@ -79,7 +79,7 @@ void copy(const_signal_type<T> source, signal_type<T> destination) {
 }
 
 template<typename T>
-void copy(const_signal_type<T> source, signal_type<T> destination, size_t n) {
+void copy(const_signal_type<T> source, signal_type<T> destination, typename signal_type<T>::size_type n) {
     copy<T>(begin(source), begin(source) + n, begin(destination));
 }
 }

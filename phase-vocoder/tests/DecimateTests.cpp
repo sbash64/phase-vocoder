@@ -11,7 +11,7 @@ protected:
         const std::vector<double> &y
     ) {
         phase_vocoder::Decimate decimate{Q};
-        std::vector<double> decimated(x.size()/Q);
+        std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
         decimate.decimate<double>(x, decimated);
         assertEqual(y, decimated);
     }

@@ -7,14 +7,24 @@
 
 namespace phase_vocoder {
 template<typename T>
+constexpr auto sizeNarrow(int x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+}
+
+template<typename T>
 class OverlapExtract {
+	using signal_size_type = typename const_signal_type<T>::size_type;
 	std::vector<T> cached;
 	const_signal_type<T> signal;
 	typename signal_type<T>::index_type head;
 	int hop;
 	int N;
 public:
-	OverlapExtract(int N, int hop) : cached(N), head{0}, hop{hop}, N{N} {}
+	OverlapExtract(int N, int hop) :
+		cached(sizeNarrow<T>(N)),
+		head{0},
+		hop{hop},
+		N{N} {}
 
 	void add(const_signal_type<T> x) {
 		add_(x);
@@ -39,19 +49,19 @@ private:
 		addToHead(toFill);
 	}
 
-	int leftToFill(const_signal_type<T> x) {
+	signal_size_type leftToFill(const_signal_type<T> x) {
 		return std::min(N - head, size(x));
 	}
 
-	void copyToCached(const_signal_type<T> x, int n) {
+	void copyToCached(const_signal_type<T> x, signal_size_type n) {
 		std::copy(begin(x), begin(x) + n, begin(cached) + head);
 	}
 
-	void assignRemainingSignal(const_signal_type<T> x, int used) {
+	void assignRemainingSignal(const_signal_type<T> x, signal_size_type used) {
 		signal = x.last(size(x) - used);
 	}
 
-	void addToHead(int n) {
+	void addToHead(signal_size_type n) {
 		head += n;
 	}
 };

@@ -277,7 +277,7 @@ public:
 	}
 
 	std::vector<std::complex<double>> next() {
-		std::vector<std::complex<double>> out(N);
+		std::vector<std::complex<double>> out(gsl::narrow_cast<size_t>(N));
 		interpolate.next(out);
 		return out;
 	}

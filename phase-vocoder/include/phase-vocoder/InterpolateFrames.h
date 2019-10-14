@@ -9,6 +9,11 @@
 
 namespace phase_vocoder {
 template<typename T>
+constexpr auto sizeNarrow(int x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+}
+
+template<typename T>
 class InterpolateFrames {
 	using complex_type = std::complex<T>;
 	using frame_type = std::vector<complex_type>;
@@ -25,11 +30,11 @@ class InterpolateFrames {
 	bool skip_{};
 public:
 	InterpolateFrames(int P, int Q, int N) :
-		previousFrame(N),
-		currentFrame(N),
-		accumulatedPhase(N),
-		phaseAdvance(N),
-		resampledMagnitude(N),
+		previousFrame(sizeNarrow<complex_type>(N)),
+		currentFrame(sizeNarrow<complex_type>(N)),
+		accumulatedPhase(sizeNarrow<T>(N)),
+		phaseAdvance(sizeNarrow<T>(N)),
+		resampledMagnitude(sizeNarrow<T>(N)),
 		numerator{std::min(P, Q)},
 		P{P},
 		Q{Q} {}

@@ -10,7 +10,7 @@ void copy(gsl::span<const T> x, gsl::span<T> y) {
 
 template<typename T>
 void resizeToMatch(std::vector<T> &x, gsl::span<const T> y) {
-    x.resize(y.size());
+    x.resize(gsl::narrow_cast<size_t>(y.size()));
 }
 
 template<typename T>
@@ -80,7 +80,7 @@ protected:
         std::make_shared<FourierTransformerStub<double>>();
     FourierTransformerStub<double>::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
-    std::vector<double> x;
+    std::vector<double> signal;
 
     phase_vocoder::OverlapAddFilter<double> construct() {
         return {b, factory};
@@ -107,15 +107,15 @@ protected:
     }
 
     void filter(phase_vocoder::OverlapAddFilter<double> &overlapAdd) {
-        overlapAdd.filter(x);
+        overlapAdd.filter(signal);
     }
 
     void assertXEquals(const std::vector<double> &x_) {
-        assertEqual(x_, x);
+        assertEqual(x_, signal);
     }
 
     void resizeX(size_t n) {
-        x.resize(n);
+        signal.resize(n);
     }
 
     void assertDftRealEquals(const std::vector<double> &x, size_t n) {
@@ -144,7 +144,7 @@ TEST_F(
 TEST_F(OverlapAddFilterTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
     setTapCount(4 - 1);
     auto overlapAdd = construct();
-    x = { 5, 6, 7, 8, 9, 10 };
+    signal = { 5, 6, 7, 8, 9, 10 };
     filter(overlapAdd);
     assertDftRealEquals({5, 6, 0, 0}, 1);
     assertDftRealEquals({7, 8, 0, 0}, 2);
@@ -157,7 +157,7 @@ TEST_F(
 ) {
     setTapCount(4 - 1);
     auto overlapAdd = construct();
-    x = { 5, 6, 7 };
+    signal = { 5, 6, 7 };
     filter(overlapAdd);
     assertDftRealEquals({5, 6, 0, 0}, 1);
     assertDftRealEquals({7, 0, 0, 0}, 2);

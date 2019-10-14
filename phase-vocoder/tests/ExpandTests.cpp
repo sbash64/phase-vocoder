@@ -11,7 +11,7 @@ protected:
         const std::vector<double> &y
     ) {
         phase_vocoder::Expand expand{P};
-        std::vector<double> expanded(x.size() * P, 1);
+        std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
         expand.expand<double>(x, expanded);
         assertEqual(y, expanded);
     }

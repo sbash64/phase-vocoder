@@ -28,8 +28,13 @@ public:
     };
 };
 
-constexpr size_t nearestGreaterPowerTwo(size_t n) {
-    size_t power{1};
+template<typename T>
+constexpr auto sizeNarrow(int x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+}
+
+constexpr int nearestGreaterPowerTwo(std::size_t n) {
+    int power{1};
     while (n >>= 1)
         ++power;
     return 1 << power;
@@ -48,29 +53,26 @@ class OverlapAddFilter {
     std::vector<T> realBuffer;
     std::vector<T> overlap;
     std::shared_ptr<FourierTransformer> transformer_;
-    size_t N;
-    size_t M;
-    size_t L;
+    int L;
 public:
     OverlapAddFilter(
         const std::vector<T> &b,
         FourierTransformer::Factory &factory
-    ) :
-        N{nearestGreaterPowerTwo(size(b))},
-        M{size(b)}
-    {
+    ) {
+        auto M = size(b);
+        auto N = nearestGreaterPowerTwo(M);
         transformer_ = factory.make(N);
-        L = N - M + 1;
-        resize(realBuffer, N);
+        L = N - gsl::narrow_cast<int>(M) + 1;
+        resize(realBuffer, sizeNarrow<T>(N));
         copy<T>(b, realBuffer);
-        resize(H, N);
-        resize(overlap, N);
-        resize(complexBuffer, N);
+        resize(H, sizeNarrow<complex_type>(N));
+        resize(overlap, sizeNarrow<T>(N));
+        resize(complexBuffer, sizeNarrow<complex_type>(N));
         dft(realBuffer, H);
     }
 
     void filter(signal_type<T> x) {
-        for (size_t j{0}; j < size(x)/L; ++j)
+        for (gsl::index j{0}; j < size(x)/L; ++j)
             filter_(x.subspan(j*L, L));
         if (auto left = size(x)%L)
             filter_(x.last(left));
