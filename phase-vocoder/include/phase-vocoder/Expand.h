@@ -14,7 +14,7 @@ public:
     void expand(const_signal_type<T> x, signal_type<T> y) {
         std::fill(begin(y), end(y), T{0});
         for (signal_index_type<T> i{0}; i < size(x); ++i)
-            at(y, i*P) = at(x, i);
+            phase_vocoder::at(y, i*P) = phase_vocoder::at(x, i);
     }
 };
 }
