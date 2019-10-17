@@ -2,7 +2,7 @@
 #include <phase-vocoder/Decimate.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 class DecimateTests : public ::testing::Test {
 protected:
     void assertDecimated(
@@ -10,7 +10,7 @@ protected:
         int Q,
         const std::vector<double> &y
     ) {
-        phase_vocoder::Decimate decimate{Q};
+        Decimate decimate{Q};
         std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
         decimate.decimate<double>(x, decimated);
         assertEqual(y, decimated);
@@ -24,4 +24,4 @@ TEST_F(DecimateTests, extractsEveryQthElement) {
         { 1, 2, 3, 4, 5 }
     );
 }
-}
+}}

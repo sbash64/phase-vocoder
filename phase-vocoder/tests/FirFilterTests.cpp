@@ -3,7 +3,7 @@
 #include <fftw3.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 template<typename T>
 void copy(gsl::span<const T> x, gsl::span<T> y) {
 	std::copy(x.begin(), x.end(), y.begin());
@@ -19,7 +19,7 @@ fftw_complex *to_fftw_complex(std::vector<std::complex<double>> &x) {
 }
 
 template<typename T>
-class FftwTransformer : public phase_vocoder::FourierTransformer {
+class FftwTransformer : public FourierTransformer {
 	using complex_buffer_type = std::vector<std::complex<T>>;
 	using real_buffer_type = std::vector<T>;
 	complex_buffer_type dftComplex_;
@@ -90,7 +90,7 @@ protected:
 		assertEqual(y, x);
 	}
 
-	phase_vocoder::OverlapAddFilter<double> construct() {
+	OverlapAddFilter<double> construct() {
 		return {b, factory};
 	}
 
@@ -168,4 +168,4 @@ TEST_F(FirFilterTests, changingSteps) {
 		}
 	);
 }
-}
+}}

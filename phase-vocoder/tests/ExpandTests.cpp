@@ -2,7 +2,7 @@
 #include <phase-vocoder/Expand.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 class ExpandTests : public ::testing::Test {
 protected:
     void assertExpanded(
@@ -10,7 +10,7 @@ protected:
         int P,
         const std::vector<double> &y
     ) {
-        phase_vocoder::Expand expand{P};
+        Expand expand{P};
         std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
         expand.expand<double>(x, expanded);
         assertEqual(y, expanded);
@@ -32,4 +32,4 @@ TEST_F(ExpandTests, insertsNoZerosWhenPIsOne) {
         { 1, 2, 3, 4, 5 }
     );
 }
-}
+}}
