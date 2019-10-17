@@ -2,11 +2,11 @@
 #include <phase-vocoder/OverlapAdd.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapAddTests : public ::testing::Test {
-    phase_vocoder::OverlapAdd<double> overlapAdd{N, hop};
+    OverlapAdd<double> overlapAdd{N, hop};
     std::vector<double> overlap_;
 protected:
     OverlapAddTests() : overlap_(hop) {}
@@ -39,4 +39,4 @@ TEST_F(OverlapAddTests, nextBlockOverlapAddedToPrevious) {
     assertOverlap({ 0, 0, 0, 0, 0 }, { 5+8, 9 });
     assertOverlap({ 0, 0, 0, 0, 0 }, { 10, 0 });
 }
-}
+}}

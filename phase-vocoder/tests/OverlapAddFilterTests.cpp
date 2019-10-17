@@ -2,7 +2,7 @@
 #include <phase-vocoder/OverlapAddFilter.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 template<typename T>
 void copy(gsl::span<const T> x, gsl::span<T> y) {
     std::copy(x.begin(), x.end(), y.begin());
@@ -14,7 +14,7 @@ void resizeToMatch(std::vector<T> &x, gsl::span<const T> y) {
 }
 
 template<typename T>
-class FourierTransformerStub : public phase_vocoder::FourierTransformer {
+class FourierTransformerStub : public FourierTransformer {
 	using complex_buffer_type = std::vector<std::complex<T>>;
 	using real_buffer_type = std::vector<T>;
     std::vector<std::vector<T>> dftReals_;
@@ -228,4 +228,4 @@ TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform5) {
     filter(overlapAdd);
     assertXEquals({ 6+8+9, 7+10, 8+11+9 });
 }
-}
+}}

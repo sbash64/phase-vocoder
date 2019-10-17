@@ -2,12 +2,12 @@
 #include <phase-vocoder/OverlapExtract.h>
 #include <gtest/gtest.h>
 
-namespace {
+namespace phase_vocoder::test { namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapExtractTests : public ::testing::Test {
 protected:
-	phase_vocoder::OverlapExtract<int> extract;
+	OverlapExtract<int> extract;
 	std::vector<int> buffer;
 
 	OverlapExtractTests() : extract{ N, hop }, buffer(N)  {}
@@ -86,4 +86,4 @@ TEST_F(OverlapExtractTests, addsToExisting) {
 		{ { 1, 2, 3, 4, 5 } }
 	);
 }
-}
+}}

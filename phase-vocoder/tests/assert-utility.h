@@ -5,6 +5,7 @@
 #include <complex>
 #include <vector>
 
+namespace phase_vocoder::test {
 template<typename T>
 void assertEqual(T expected, T actual) {
 	EXPECT_EQ(expected, actual);
@@ -47,6 +48,7 @@ void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
 	assertEqual(expected.size(), actual.size());
 	for (std::size_t i = 0; i < expected.size(); ++i)
 		assertEqual(expected.at(i), actual.at(i));
+}
 }
 
 #endif
