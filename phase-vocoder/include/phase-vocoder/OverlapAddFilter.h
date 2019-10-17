@@ -28,11 +28,6 @@ public:
     };
 };
 
-template<typename T>
-constexpr auto sizeNarrow(int x) {
-	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
-}
-
 constexpr int nearestGreaterPowerTwo(std::size_t n) {
     int power{1};
     while (n >>= 1)

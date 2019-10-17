@@ -4,6 +4,7 @@
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>
+#include <vector>
 
 namespace phase_vocoder {
 template<typename T>
@@ -88,6 +89,11 @@ void copy(
     signal_size_type<T> n
 ) {
     copy<T>(begin(source), begin(source) + n, begin(destination));
+}
+
+template<typename T>
+constexpr auto sizeNarrow(int x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
 }
 }
 

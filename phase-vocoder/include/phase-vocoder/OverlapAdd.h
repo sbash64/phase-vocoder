@@ -7,11 +7,6 @@
 
 namespace phase_vocoder {
 template<typename T>
-constexpr auto sizeNarrow(int x) {
-	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
-}
-
-template<typename T>
 class OverlapAdd {
     std::vector<T> buffer;
     int hop;

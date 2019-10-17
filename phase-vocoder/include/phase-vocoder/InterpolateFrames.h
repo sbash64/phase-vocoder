@@ -9,11 +9,6 @@
 
 namespace phase_vocoder {
 template<typename T>
-constexpr auto sizeNarrow(int x) {
-	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
-}
-
-template<typename T>
 class InterpolateFrames {
 	using complex_type = std::complex<T>;
 	using frame_type = std::vector<complex_type>;
