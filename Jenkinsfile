@@ -24,7 +24,7 @@ def checkout_scm() {
 }
 
 def cmake_generate_build_with_tests() {
-    cmake_generate_build('-DENABLE_TESTS=ON')
+    cmake_generate_build('-DENABLE_TESTS=ON -DCMAKE_BUILD_TYPE=Release')
 }
 
 def cmake_generate_build(flags) {
