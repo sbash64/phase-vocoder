@@ -22,14 +22,24 @@ void assertEqual(std::complex<T> a, std::complex<T> b, T e) {
 }
 
 template<typename T>
+auto size(const std::vector<T> &x) {
+	return x.size();
+}
+
+template<typename T>
+auto at(const std::vector<T> &x, std::size_t n) {
+	return x.at(n);
+}
+
+template<typename T>
 void assertEqual(
 	const std::vector<std::complex<T>> &expected,
 	const std::vector<std::complex<T>> &actual,
 	T tolerance
 ) {
-	assertEqual(expected.size(), actual.size());
-	for (std::size_t i = 0; i < expected.size(); ++i)
-		assertEqual(expected.at(i), actual.at(i), tolerance);
+	assertEqual(size(expected), size(actual));
+	for (std::size_t i = 0; i < size(expected); ++i)
+		assertEqual(at(expected, i), at(actual, i), tolerance);
 }
 
 template<typename T>
@@ -38,16 +48,16 @@ void assertEqual(
 	const std::vector<T> &actual,
 	T tolerance
 ) {
-	assertEqual(expected.size(), actual.size());
-	for (std::size_t i = 0; i < expected.size(); ++i)
-		EXPECT_NEAR(expected.at(i), actual.at(i), tolerance);
+	assertEqual(size(expected), size(actual));
+	for (std::size_t i = 0; i < size(expected); ++i)
+		EXPECT_NEAR(at(expected, i), at(actual, i), tolerance);
 }
 
 template<typename T>
 void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
-	assertEqual(expected.size(), actual.size());
-	for (std::size_t i = 0; i < expected.size(); ++i)
-		assertEqual(expected.at(i), actual.at(i));
+	assertEqual(size(expected), size(actual));
+	for (std::size_t i = 0; i < size(expected); ++i)
+		assertEqual(at(expected, i), at(actual, i));
 }
 }
 
