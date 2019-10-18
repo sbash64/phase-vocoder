@@ -1,7 +1,7 @@
 #ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
 
-#include "common-utility.h"
+#include "model.h"
 #include <gsl/gsl>
 #include <vector>
 #include <complex>

@@ -1,7 +1,7 @@
 #ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_DECIMATE_H_
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_DECIMATE_H_
 
-#include "common-utility.h"
+#include "model.h"
 
 namespace phase_vocoder {
 class Decimate {
