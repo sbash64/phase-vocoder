@@ -15,10 +15,10 @@ public:
     virtual ~FourierTransformer() = default;
     virtual void dft(
         signal_type<double>,
-        signal_type<std::complex<double>>
+        signal_type<complex_type<double>>
     ) = 0;
     virtual void idft(
-        signal_type<std::complex<double>>,
+        signal_type<complex_type<double>>,
         signal_type<double>
     ) = 0;
 
@@ -43,9 +43,8 @@ void resize(std::vector<T> &x, size_t n) {
 
 template<typename T>
 class OverlapAddFilter {
-    using complex_type = std::complex<T>;
-    std::vector<complex_type> complexBuffer;
-    std::vector<complex_type> H;
+    std::vector<complex_type<T>> complexBuffer;
+    std::vector<complex_type<T>> H;
     std::vector<T> realBuffer;
     std::vector<T> overlap;
     std::shared_ptr<FourierTransformer> transformer_;
@@ -61,9 +60,9 @@ public:
         L = N - gsl::narrow_cast<int>(M) + 1;
         resize(realBuffer, sizeNarrow<T>(N));
         copy<T>(b, realBuffer);
-        resize(H, sizeNarrow<complex_type>(N));
+        resize(H, sizeNarrow<complex_type<T>>(N));
         resize(overlap, sizeNarrow<T>(N));
-        resize(complexBuffer, sizeNarrow<complex_type>(N));
+        resize(complexBuffer, sizeNarrow<complex_type<T>>(N));
         dft(realBuffer, H);
     }
 
@@ -75,7 +74,7 @@ public:
     }
 
 private:
-    void dft(signal_type<T> x, signal_type<complex_type> X) {
+    void dft(signal_type<T> x, signal_type<complex_type<T>> X) {
         transformer_->dft(x, X);
     }
 

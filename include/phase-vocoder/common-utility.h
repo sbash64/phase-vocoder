@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <functional>
 #include <vector>
+#include <complex>
 
 namespace phase_vocoder {
 template<typename T>
@@ -24,6 +25,9 @@ using const_signal_iterator_type = typename const_signal_type<T>::iterator;
 
 template<typename T>
 using signal_size_type = typename signal_type<T>::size_type;
+
+template<typename T>
+using complex_type = std::complex<T>;
 
 template<typename T>
 auto size(const signal_type<T> &x) {

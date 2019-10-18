@@ -61,13 +61,13 @@ public:
 		fftw_destroy_plan(idftPlan);
 	}
 
-	void dft(gsl::span<T> x, gsl::span<std::complex<T>> y) override {
+	void dft(signal_type<T> x, signal_type<std::complex<T>> y) override {
 		copy<T>(x, dftReal_);
 		fftw_execute(dftPlan);
 		copy<std::complex<T>>(dftComplex_, y);
 	}
 
-	void idft(gsl::span<std::complex<T>> x, gsl::span<T> y) override {
+	void idft(signal_type<std::complex<T>> x, signal_type<T> y) override {
 		copy<std::complex<T>>(x, idftComplex_);
 		fftw_execute(idftPlan);
 		copy<T>(idftReal_, y);

@@ -10,8 +10,7 @@
 namespace phase_vocoder {
 template<typename T>
 class InterpolateFrames {
-	using complex_type = std::complex<T>;
-	using frame_type = std::vector<complex_type>;
+	using frame_type = std::vector<complex_type<T>>;
 	frame_type previousFrame;
 	frame_type currentFrame;
 	std::vector<T> accumulatedPhase;
@@ -25,8 +24,8 @@ class InterpolateFrames {
 	bool skip_{};
 public:
 	InterpolateFrames(int P, int Q, int N) :
-		previousFrame(sizeNarrow<complex_type>(N)),
-		currentFrame(sizeNarrow<complex_type>(N)),
+		previousFrame(sizeNarrow<complex_type<T>>(N)),
+		currentFrame(sizeNarrow<complex_type<T>>(N)),
 		accumulatedPhase(sizeNarrow<T>(N)),
 		phaseAdvance(sizeNarrow<T>(N)),
 		resampledMagnitude(sizeNarrow<T>(N)),
@@ -34,9 +33,9 @@ public:
 		P{P},
 		Q{Q} {}
 
-	void add(const_signal_type<complex_type> x) {
-		copy<complex_type>(currentFrame, previousFrame);
-		copy<complex_type>(x, currentFrame);
+	void add(const_signal_type<complex_type<T>> x) {
+		copy<complex_type<T>>(currentFrame, previousFrame);
+		copy<complex_type<T>>(x, currentFrame);
 		transformFrames(
 			phaseAdvance,
 			&InterpolateFrames::phaseDifference
@@ -53,7 +52,7 @@ public:
 
 	bool hasNext() { return hasNext_; }
 
-	void next(signal_type<complex_type> x) {
+	void next(signal_type<complex_type<T>> x) {
 		resampleMagnitude();
 		std::transform(
 			begin(resampledMagnitude),
@@ -87,34 +86,34 @@ private:
 		}
 	}
 
-	T phaseDifference(const complex_type& a, const complex_type& b) {
+	T phaseDifference(const complex_type<T>& a, const complex_type<T>& b) {
 		return phase(b) - phase(a);
 	}
 
-	T phase(const complex_type& x) {
+	T phase(const complex_type<T>& x) {
 		return std::arg(x);
 	}
 
-	T magnitude(const complex_type &x) {
+	T magnitude(const complex_type<T> &x) {
 		return std::abs(x);
 	}
 
 	void transformFrames(
 		std::vector<T> &out,
-		T(InterpolateFrames::*f)(const complex_type &, const complex_type &)
+		T(InterpolateFrames::*f)(const complex_type<T> &, const complex_type<T> &)
 	) {
 		std::transform(
 			begin(previousFrame),
 			end(previousFrame),
 			begin(currentFrame),
 			begin(out),
-			[&](const complex_type& a, const complex_type& b) {
+			[&](const complex_type<T>& a, const complex_type<T>& b) {
 				return (this->*f)(a, b);
 			}
 		);
 	}
 
-	T resampleMagnitude_(const complex_type& a, const complex_type& b) {
+	T resampleMagnitude_(const complex_type<T>& a, const complex_type<T>& b) {
 		T denominator = Q;
 		auto ratio = numerator / denominator;
 		return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
