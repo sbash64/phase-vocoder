@@ -2,8 +2,15 @@
 #include <phase-vocoder/OverlapAddFilter.h>
 #include <fftw3.h>
 #include <gtest/gtest.h>
+#include <gsl/gsl>
+#include <vector>
 
 namespace phase_vocoder::test { namespace {
+template<typename T>
+constexpr auto sizeNarrow(int x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+}
+
 template<typename T>
 void copy(gsl::span<const T> x, gsl::span<T> y) {
 	std::copy(x.begin(), x.end(), y.begin());
@@ -28,21 +35,21 @@ class FftwTransformer : public FourierTransformer {
 	real_buffer_type idftReal_;
 	fftw_plan dftPlan;
 	fftw_plan idftPlan;
-	size_t N;
+	int N;
 public:
-	explicit FftwTransformer(size_t N) :
-		dftComplex_(N),
-		idftComplex_(N),
-		dftReal_(N),
-		idftReal_(N),
+	explicit FftwTransformer(int N) :
+		dftComplex_(sizeNarrow<std::complex<T>>(N)),
+		idftComplex_(sizeNarrow<std::complex<T>>(N)),
+		dftReal_(sizeNarrow<T>(N)),
+		idftReal_(sizeNarrow<T>(N)),
 		dftPlan{fftw_plan_dft_r2c_1d(
-			gsl::narrow_cast<int>(N),
+			N,
 			data(dftReal_),
 			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
 		idftPlan{fftw_plan_dft_c2r_1d(
-			gsl::narrow_cast<int>(N),
+			N,
 			to_fftw_complex(idftComplex_),
 			data(idftReal_),
 			FFTW_ESTIMATE
