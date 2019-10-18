@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 #include <gsl/gsl>
 #include <vector>
+#include <type_traits>
 
 namespace phase_vocoder::test { namespace {
 template<typename T>
@@ -17,12 +18,20 @@ void copy(gsl::span<const T> x, gsl::span<T> y) {
 }
 
 template<typename T>
-T *data(std::vector<T> &x) {
+auto data(std::vector<T> &x) {
 	return x.data();
 }
 
-fftw_complex *to_fftw_complex(std::vector<std::complex<double>> &x) {
+auto *to_fftw_complex(std::vector<complex_type<double>> &x) {
 	return reinterpret_cast<fftw_complex *>(x.data());
+}
+
+auto *make_fftw_plan(int a, double * b, fftw_complex * c, unsigned int d) {
+	return fftw_plan_dft_r2c_1d(a, b, c, d);
+}
+
+auto *make_fftw_plan(int a, fftw_complex * b, double * c, unsigned int d) {
+	return fftw_plan_dft_c2r_1d(a, b, c, d);
 }
 
 template<typename T>
@@ -33,8 +42,9 @@ class FftwTransformer : public FourierTransformer {
 	complex_buffer_type idftComplex_;
 	real_buffer_type dftReal_;
 	real_buffer_type idftReal_;
-	fftw_plan dftPlan;
-	fftw_plan idftPlan;
+	std::conditional_t<std::is_same_v<double, T>, fftw_plan, fftwf_plan> dftPlan;
+	std::conditional_t<std::is_same_v<double, T>, fftw_plan, fftwf_plan> idftPlan;
+	using unused_type = std::conditional_t<std::is_same_v<double, T>, float, double>;
 	int N;
 public:
 	explicit FftwTransformer(int N) :
@@ -42,13 +52,13 @@ public:
 		idftComplex_(sizeNarrow<std::complex<T>>(N)),
 		dftReal_(sizeNarrow<T>(N)),
 		idftReal_(sizeNarrow<T>(N)),
-		dftPlan{fftw_plan_dft_r2c_1d(
+		dftPlan{make_fftw_plan(
 			N,
 			data(dftReal_),
 			to_fftw_complex(dftComplex_),
 			FFTW_ESTIMATE
 		)},
-		idftPlan{fftw_plan_dft_c2r_1d(
+		idftPlan{make_fftw_plan(
 			N,
 			to_fftw_complex(idftComplex_),
 			data(idftReal_),
@@ -67,12 +77,18 @@ public:
 		copy<std::complex<T>>(dftComplex_, y);
 	}
 
+	void dft(signal_type<unused_type>, signal_type<complex_type<unused_type>>) override {
+	}
+
 	void idft(signal_type<std::complex<T>> x, signal_type<T> y) override {
 		copy<std::complex<T>>(x, idftComplex_);
 		fftw_execute(idftPlan);
 		copy<T>(idftReal_, y);
 		for (auto &y_ : y)
 			y_ /= N;
+	}
+
+	void idft(signal_type<std::complex<unused_type>>, signal_type<unused_type>) override {
 	}
 
 	class FftwFactory : public Factory {

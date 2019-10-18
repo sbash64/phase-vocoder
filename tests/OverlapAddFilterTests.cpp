@@ -13,11 +13,10 @@ void resizeToMatch(std::vector<T> &x, gsl::span<const T> y) {
     x.resize(gsl::narrow_cast<size_t>(y.size()));
 }
 
-template<typename T>
 class FourierTransformerStub : public FourierTransformer {
-	using complex_buffer_type = std::vector<std::complex<T>>;
-	using real_buffer_type = std::vector<T>;
-    std::vector<std::vector<T>> dftReals_;
+	using complex_buffer_type = std::vector<complex_type<double>>;
+	using real_buffer_type = std::vector<double>;
+    std::vector<std::vector<double>> dftReals_;
     complex_buffer_type dftComplex_;
     complex_buffer_type idftComplex_;
     real_buffer_type dftReal_;
@@ -35,11 +34,14 @@ public:
         return idftComplex_;
     }
 
-    void dft(gsl::span<T> x, gsl::span<std::complex<T>> y) override {
-        resizeToMatch<T>(dftReal_, x);
-        copy<T>(x, dftReal_);
-        copy<std::complex<T>>(dftComplex_, y);
+    void dft(signal_type<double> x, complex_signal_type<double> y) override {
+        resizeToMatch<double>(dftReal_, x);
+        copy<double>(x, dftReal_);
+        copy<complex_type<double>>(dftComplex_, y);
         dftReals_.push_back(dftReal_);
+    }
+
+    void dft(signal_type<float>, complex_signal_type<float>) override {
     }
 
     void setDftComplex(complex_buffer_type x) {
@@ -50,10 +52,13 @@ public:
         idftReal_ = std::move(x);
     }
 
-    void idft(gsl::span<std::complex<T>> x, gsl::span<T> y) override {
-        resizeToMatch<std::complex<T>>(idftComplex_, x);
-        copy<std::complex<T>>(x, idftComplex_);
-        copy<T>(idftReal_, y);
+    void idft(complex_signal_type<double> x, signal_type<double> y) override {
+        resizeToMatch<complex_type<double>>(idftComplex_, x);
+        copy<complex_type<double>>(x, idftComplex_);
+        copy<double>(idftReal_, y);
+    }
+
+    void idft(complex_signal_type<float>, signal_type<float>) override {
     }
 
     class FactoryStub : public Factory {
@@ -76,9 +81,9 @@ public:
 
 class OverlapAddFilterTests : public ::testing::Test {
 protected:
-    std::shared_ptr<FourierTransformerStub<double>> fourierTransformer_ =
-        std::make_shared<FourierTransformerStub<double>>();
-    FourierTransformerStub<double>::FactoryStub factory{fourierTransformer_};
+    std::shared_ptr<FourierTransformerStub> fourierTransformer_ =
+        std::make_shared<FourierTransformerStub>();
+    FourierTransformerStub::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
     std::vector<double> signal;
 
@@ -90,7 +95,7 @@ protected:
         assertEqual(x, fourierTransformer_->dftReal());
     }
 
-    void assertIdftComplexEquals(const std::vector<std::complex<double>> &x) {
+    void assertIdftComplexEquals(const std::vector<complex_type<double>> &x) {
         assertEqual(x, fourierTransformer_->idftComplex());
     }
 
@@ -98,7 +103,7 @@ protected:
         b.resize(n);
     }
 
-    void setDftComplex(std::vector<std::complex<double>> x) {
+    void setDftComplex(std::vector<complex_type<double>> x) {
         fourierTransformer_->setDftComplex(std::move(x));
     }
 

@@ -20,6 +20,14 @@ public:
         complex_signal_type<double>,
         signal_type<double>
     ) = 0;
+    virtual void dft(
+        signal_type<float>,
+        complex_signal_type<float>
+    ) = 0;
+    virtual void idft(
+        complex_signal_type<float>,
+        signal_type<float>
+    ) = 0;
 
     class Factory {
     public:
