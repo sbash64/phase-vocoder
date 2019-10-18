@@ -24,12 +24,28 @@ auto rbegin(const signal_type<T> &x) {
 }
 
 template<typename T>
+void zero(
+    signal_reverse_iterator_type<T> b,
+    signal_reverse_iterator_type<T> e
+) {
+    std::fill(b, e, T{0});
+}
+
+template<typename T>
+void zero(
+    signal_iterator_type<T> b,
+    signal_iterator_type<T> e
+) {
+    std::fill(b, e, T{0});
+}
+
+template<typename T>
 void shift(signal_type<T> x, signal_index_type<T> n) {
     for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
         // gsl namespace has function called "at".
         // explicit name resolves ambiguous call.
         phase_vocoder::at(x, i) = phase_vocoder::at(x, i+n);
-    std::fill(rbegin(x), rbegin(x) + n, T{0});
+    zero<T>(rbegin(x), rbegin(x) + n);
 }
 
 template<typename T>

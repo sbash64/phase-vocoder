@@ -18,6 +18,9 @@ template<typename T>
 using signal_iterator_type = typename signal_type<T>::iterator;
 
 template<typename T>
+using signal_reverse_iterator_type = typename signal_type<T>::reverse_iterator;
+
+template<typename T>
 using const_signal_iterator_type = typename const_signal_type<T>::iterator;
 
 template<typename T>
