@@ -13,7 +13,7 @@ public:
 
     template<typename T>
     void expand(const_signal_type<T> x, signal_type<T> y) {
-        zero<T>(begin(y), end(y));
+        zero<T>(phase_vocoder::begin(y), phase_vocoder::end(y));
         for (signal_index_type<T> i{0}; i < size(x); ++i)
             // gsl namespace has function called "at".
             // explicit name resolves ambiguous call.

@@ -9,6 +9,42 @@
 
 namespace phase_vocoder {
 template<typename T>
+using buffer_type = std::vector<T>;
+
+template<typename T>
+using buffer_iterator_type = typename std::vector<T>::iterator;
+
+template<typename T>
+auto begin(const buffer_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto begin(buffer_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto end(const buffer_type<T> &x) {
+    return x.end();
+}
+
+template<typename T>
+auto end(buffer_type<T> &x) {
+    return x.end();
+}
+
+template<typename T>
+auto begin(const signal_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto end(const signal_type<T> &x) {
+    return x.end();
+}
+
+template<typename T>
 auto size(const signal_type<T> &x) {
     return x.size();
 }
@@ -40,22 +76,20 @@ void zero(
 }
 
 template<typename T>
+void zero(
+    buffer_iterator_type<T> b,
+    buffer_iterator_type<T> e
+) {
+    std::fill(b, e, T{0});
+}
+
+template<typename T>
 void shift(signal_type<T> x, signal_index_type<T> n) {
     for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
         // gsl namespace has function called "at".
         // explicit name resolves ambiguous call.
         phase_vocoder::at(x, i) = phase_vocoder::at(x, i+n);
     zero<T>(rbegin(x), rbegin(x) + n);
-}
-
-template<typename T>
-auto begin(const signal_type<T> &x) {
-    return x.begin();
-}
-
-template<typename T>
-auto end(const signal_type<T> &x) {
-    return x.end();
 }
 
 template<typename T>

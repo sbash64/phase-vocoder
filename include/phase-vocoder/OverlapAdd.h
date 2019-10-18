@@ -3,13 +3,12 @@
 
 #include "model.h"
 #include "utility.h"
-#include <vector>
 #include <algorithm>
 
 namespace phase_vocoder {
 template<typename T>
 class OverlapAdd {
-    std::vector<T> buffer;
+    buffer_type<T> buffer;
     int hop;
 public:
     OverlapAdd(int N, int hop) : buffer(sizeNarrow<T>(N)), hop{hop} {}
@@ -19,7 +18,11 @@ public:
     }
 
     void next(signal_type<T> y) {
-        std::copy(begin(buffer), begin(buffer) + hop, begin(y));
+        std::copy(
+            phase_vocoder::begin(buffer),
+            phase_vocoder::begin(buffer) + hop,
+            phase_vocoder::begin(y)
+        );
         shift<T>(buffer, hop);
     }
 };

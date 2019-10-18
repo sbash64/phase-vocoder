@@ -16,10 +16,10 @@ public:
     virtual ~FourierTransformer() = default;
     virtual void dft(
         signal_type<double>,
-        signal_type<complex_type<double>>
+        complex_signal_type<double>
     ) = 0;
     virtual void idft(
-        signal_type<complex_type<double>>,
+        complex_signal_type<double>,
         signal_type<double>
     ) = 0;
 
@@ -38,21 +38,21 @@ constexpr int nearestGreaterPowerTwo(std::size_t n) {
 }
 
 template<typename T>
-void resize(std::vector<T> &x, size_t n) {
+void resize(buffer_type<T> &x, size_t n) {
     x.resize(n);
 }
 
 template<typename T>
 class OverlapAddFilter {
-    std::vector<complex_type<T>> complexBuffer;
-    std::vector<complex_type<T>> H;
-    std::vector<T> realBuffer;
-    std::vector<T> overlap;
+    buffer_type<complex_type<T>> complexBuffer;
+    buffer_type<complex_type<T>> H;
+    buffer_type<T> realBuffer;
+    buffer_type<T> overlap;
     std::shared_ptr<FourierTransformer> transformer_;
     int L;
 public:
     OverlapAddFilter(
-        const std::vector<T> &b,
+        const buffer_type<T> &b,
         FourierTransformer::Factory &factory
     ) {
         auto M = size(b);
@@ -75,19 +75,19 @@ public:
     }
 
 private:
-    void dft(signal_type<T> x, signal_type<complex_type<T>> X) {
+    void dft(signal_type<T> x, complex_signal_type<T> X) {
         transformer_->dft(x, X);
     }
 
     void filter_(signal_type<T> x) {
-        std::fill(begin(realBuffer) + size(x), end(realBuffer), T{0});
+        zero<T>(phase_vocoder::begin(realBuffer) + size(x), phase_vocoder::end(realBuffer));
         copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
-            begin(complexBuffer),
-            end(complexBuffer),
-            begin(H),
-            begin(complexBuffer),
+            phase_vocoder::begin(complexBuffer),
+            phase_vocoder::end(complexBuffer),
+            phase_vocoder::begin(H),
+            phase_vocoder::begin(complexBuffer),
             std::multiplies<>{}
         );
         transformer_->idft(complexBuffer, realBuffer);

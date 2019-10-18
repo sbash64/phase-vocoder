@@ -28,6 +28,12 @@ using signal_size_type = typename signal_type<T>::size_type;
 
 template<typename T>
 using complex_type = std::complex<T>;
+
+template<typename T>
+using complex_signal_type = signal_type<complex_type<T>>;
+
+template<typename T>
+using const_complex_signal_type = const_signal_type<complex_type<T>>;
 }
 
 #endif

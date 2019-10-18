@@ -3,20 +3,18 @@
 
 #include "model.h"
 #include "utility.h"
-#include <vector>
-#include <complex>
 #include <algorithm>
 #include <functional>
 
 namespace phase_vocoder {
 template<typename T>
 class InterpolateFrames {
-	using frame_type = std::vector<complex_type<T>>;
+	using frame_type = buffer_type<complex_type<T>>;
 	frame_type previousFrame;
 	frame_type currentFrame;
-	std::vector<T> accumulatedPhase;
-	std::vector<T> phaseAdvance;
-	std::vector<T> resampledMagnitude;
+	buffer_type<T> accumulatedPhase;
+	buffer_type<T> phaseAdvance;
+	buffer_type<T> resampledMagnitude;
 	int numerator;
 	int P;
 	int Q;
@@ -34,7 +32,7 @@ public:
 		P{P},
 		Q{Q} {}
 
-	void add(const_signal_type<complex_type<T>> x) {
+	void add(const_complex_signal_type<T> x) {
 		copy<complex_type<T>>(currentFrame, previousFrame);
 		copy<complex_type<T>>(x, currentFrame);
 		transformFrames(
@@ -53,13 +51,13 @@ public:
 
 	bool hasNext() { return hasNext_; }
 
-	void next(signal_type<complex_type<T>> x) {
+	void next(complex_signal_type<T> x) {
 		resampleMagnitude();
 		std::transform(
-			begin(resampledMagnitude),
-			end(resampledMagnitude),
-			begin(accumulatedPhase),
-			begin(x),
+			phase_vocoder::begin(resampledMagnitude),
+			phase_vocoder::end(resampledMagnitude),
+			phase_vocoder::begin(accumulatedPhase),
+			phase_vocoder::begin(x),
 			[](T magnitude, T phase) {
 				return std::polar(magnitude, phase);
 			}
@@ -100,14 +98,14 @@ private:
 	}
 
 	void transformFrames(
-		std::vector<T> &out,
+		buffer_type<T> &out,
 		T(InterpolateFrames::*f)(const complex_type<T> &, const complex_type<T> &)
 	) {
 		std::transform(
-			begin(previousFrame),
-			end(previousFrame),
-			begin(currentFrame),
-			begin(out),
+			phase_vocoder::begin(previousFrame),
+			phase_vocoder::end(previousFrame),
+			phase_vocoder::begin(currentFrame),
+			phase_vocoder::begin(out),
 			[&](const complex_type<T>& a, const complex_type<T>& b) {
 				return (this->*f)(a, b);
 			}
