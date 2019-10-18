@@ -3,13 +3,11 @@
 
 #include "model.h"
 #include "utility.h"
-#include <vector>
 #include <algorithm>
 
 namespace phase_vocoder {
 template<typename T>
 class OverlapExtract {
-	using signal_size_type = typename const_signal_type<T>::size_type;
 	buffer_type<T> cached;
 	const_signal_type<T> signal;
 	signal_index_type<T> head;
@@ -45,19 +43,23 @@ private:
 		addToHead(toFill);
 	}
 
-	signal_size_type leftToFill(const_signal_type<T> x) {
+	signal_size_type<T> leftToFill(const_signal_type<T> x) {
 		return std::min(N - head, size(x));
 	}
 
-	void copyToCached(const_signal_type<T> x, signal_size_type n) {
-		std::copy(phase_vocoder::begin(x), phase_vocoder::begin(x) + n, phase_vocoder::begin(cached) + head);
+	void copyToCached(const_signal_type<T> x, signal_size_type<T> n) {
+		std::copy(
+			phase_vocoder::begin(x),
+			phase_vocoder::begin(x) + n,
+			phase_vocoder::begin(cached) + head
+		);
 	}
 
-	void assignRemainingSignal(const_signal_type<T> x, signal_size_type used) {
+	void assignRemainingSignal(const_signal_type<T> x, signal_size_type<T> used) {
 		signal = x.last(size(x) - used);
 	}
 
-	void addToHead(signal_size_type n) {
+	void addToHead(signal_size_type<T> n) {
 		head += n;
 	}
 };

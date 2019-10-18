@@ -95,10 +95,10 @@ void shift(signal_type<T> x, signal_index_type<T> n) {
 template<typename T>
 void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
     std::transform(
-        begin(y),
-        end(y),
-        begin(x),
-        begin(y),
+        phase_vocoder::begin(y),
+        phase_vocoder::end(y),
+        phase_vocoder::begin(x),
+        phase_vocoder::begin(y),
         std::plus<>{}
     );
 }
@@ -128,7 +128,7 @@ void copy(
 
 template<typename T>
 constexpr auto sizeNarrow(int x) {
-	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+	return gsl::narrow_cast<typename buffer_type<T>::size_type>(x);
 }
 }
 

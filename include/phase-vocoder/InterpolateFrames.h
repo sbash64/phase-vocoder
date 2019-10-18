@@ -112,7 +112,7 @@ private:
 		);
 	}
 
-	T resampleMagnitude_(const complex_type<T>& a, const complex_type<T>& b) {
+	T resampleMagnitude(const complex_type<T>& a, const complex_type<T>& b) {
 		T denominator = Q;
 		auto ratio = numerator / denominator;
 		return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
@@ -121,7 +121,7 @@ private:
 	void resampleMagnitude() {
 		transformFrames(
 			resampledMagnitude,
-			&InterpolateFrames::resampleMagnitude_
+			&InterpolateFrames::resampleMagnitude
 		);
 	}
 

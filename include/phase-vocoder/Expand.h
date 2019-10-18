@@ -3,7 +3,6 @@
 
 #include "model.h"
 #include "utility.h"
-#include <algorithm>
 
 namespace phase_vocoder {
 class Expand {
