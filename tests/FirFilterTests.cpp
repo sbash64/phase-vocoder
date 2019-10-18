@@ -13,7 +13,7 @@ constexpr auto sizeNarrow(int x) {
 }
 
 template<typename T>
-void copy(gsl::span<const T> x, gsl::span<T> y) {
+void copy(const_signal_type<T> x, signal_type<T> y) {
 	std::copy(x.begin(), x.end(), y.begin());
 }
 
@@ -36,20 +36,26 @@ auto *make_fftw_plan(int a, fftw_complex * b, double * c, unsigned int d) {
 
 template<typename T>
 class FftwTransformer : public FourierTransformer {
-	using complex_buffer_type = std::vector<std::complex<T>>;
+	using complex_buffer_type = std::vector<complex_type<T>>;
 	using real_buffer_type = std::vector<T>;
 	complex_buffer_type dftComplex_;
 	complex_buffer_type idftComplex_;
 	real_buffer_type dftReal_;
 	real_buffer_type idftReal_;
-	std::conditional_t<std::is_same_v<double, T>, fftw_plan, fftwf_plan> dftPlan;
-	std::conditional_t<std::is_same_v<double, T>, fftw_plan, fftwf_plan> idftPlan;
-	using unused_type = std::conditional_t<std::is_same_v<double, T>, float, double>;
+	using is_double = std::is_same<double, T>;
+	using fftw_plan_type = std::conditional_t<
+		is_double::value,
+		fftw_plan,
+		fftwf_plan
+	>;
+	fftw_plan_type dftPlan;
+	fftw_plan_type idftPlan;
+	using unused_type = std::conditional_t<is_double::value, float, double>;
 	int N;
 public:
 	explicit FftwTransformer(int N) :
-		dftComplex_(sizeNarrow<std::complex<T>>(N)),
-		idftComplex_(sizeNarrow<std::complex<T>>(N)),
+		dftComplex_(sizeNarrow<complex_type<T>>(N)),
+		idftComplex_(sizeNarrow<complex_type<T>>(N)),
 		dftReal_(sizeNarrow<T>(N)),
 		idftReal_(sizeNarrow<T>(N)),
 		dftPlan{make_fftw_plan(
@@ -71,25 +77,29 @@ public:
 		fftw_destroy_plan(idftPlan);
 	}
 
-	void dft(signal_type<T> x, signal_type<std::complex<T>> y) override {
+	void dft(signal_type<T> x, complex_signal_type<T> y) override {
 		copy<T>(x, dftReal_);
 		fftw_execute(dftPlan);
-		copy<std::complex<T>>(dftComplex_, y);
+		copy<complex_type<T>>(dftComplex_, y);
 	}
 
-	void dft(signal_type<unused_type>, signal_type<complex_type<unused_type>>) override {
-	}
+	void dft(
+		signal_type<unused_type>,
+		complex_signal_type<unused_type>
+	) override {}
 
-	void idft(signal_type<std::complex<T>> x, signal_type<T> y) override {
-		copy<std::complex<T>>(x, idftComplex_);
+	void idft(complex_signal_type<T> x, signal_type<T> y) override {
+		copy<complex_type<T>>(x, idftComplex_);
 		fftw_execute(idftPlan);
 		copy<T>(idftReal_, y);
 		for (auto &y_ : y)
 			y_ /= N;
 	}
 
-	void idft(signal_type<std::complex<unused_type>>, signal_type<unused_type>) override {
-	}
+	void idft(
+		complex_signal_type<unused_type>,
+		signal_type<unused_type>
+	) override {}
 
 	class FftwFactory : public Factory {
 	public:
