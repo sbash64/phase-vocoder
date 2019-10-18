@@ -2,6 +2,7 @@
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_H_
 
 #include "model.h"
+#include "utility.h"
 #include <vector>
 #include <complex>
 #include <algorithm>

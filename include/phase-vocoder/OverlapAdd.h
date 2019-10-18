@@ -2,6 +2,7 @@
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_H_
 
 #include "model.h"
+#include "utility.h"
 #include <vector>
 #include <algorithm>
 
