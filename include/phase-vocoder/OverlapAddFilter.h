@@ -3,6 +3,7 @@
 
 #include "model.h"
 #include "utility.h"
+#include "OverlapAdd.h"
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>
@@ -50,17 +51,19 @@ void resize(buffer_type<T> &x, size_t n) {
 
 template<typename T>
 class OverlapAddFilter {
+    OverlapAdd<T> overlap;
     buffer_type<complex_type<T>> complexBuffer;
     buffer_type<complex_type<T>> H;
     buffer_type<T> realBuffer;
-    buffer_type<T> overlap;
     std::shared_ptr<FourierTransformer> transformer;
     int L;
 public:
     OverlapAddFilter(
         const buffer_type<T> &b,
         FourierTransformer::Factory &factory
-    ) {
+    ) :
+        overlap{nearestGreaterPowerTwo(size(b))}
+    {
         auto M = size(b);
         auto N = nearestGreaterPowerTwo(M);
         transformer = factory.make(N);
@@ -68,7 +71,6 @@ public:
         resize(realBuffer, sizeNarrow<T>(N));
         copy<T>(b, realBuffer);
         resize(H, sizeNarrow<complex_type<T>>(N));
-        resize(overlap, sizeNarrow<T>(N));
         resize(complexBuffer, sizeNarrow<complex_type<T>>(N));
         dft(realBuffer, H);
     }
@@ -100,9 +102,8 @@ private:
             std::multiplies<>{}
         );
         transformer->idft(complexBuffer, realBuffer);
-        addFirstToSecond<T>(realBuffer, overlap);
-        copy<T>(overlap, x, size(x));
-        shift<T>(overlap, size(x));
+        overlap.add(realBuffer);
+        overlap.next(x);
     }
 };
 }
