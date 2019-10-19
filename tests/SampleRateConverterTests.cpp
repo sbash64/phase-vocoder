@@ -5,16 +5,17 @@ namespace phase_vocoder {
 class ISignalConverter {
 public:
     virtual ~ISignalConverter() = default;
-    virtual void expand(const_signal_type<double>, signal_type<double>, int) = 0;
-    virtual void expand(const_signal_type<float>, signal_type<float>, int) = 0;
-    virtual void decimate(const_signal_type<double>, signal_type<double>, int) = 0;
-    virtual void decimate(const_signal_type<float>, signal_type<float>, int) = 0;
+    virtual void expand(const_signal_type<double>, signal_type<double>) = 0;
+    virtual void expand(const_signal_type<float>, signal_type<float>) = 0;
+    virtual void decimate(const_signal_type<double>, signal_type<double>) = 0;
+    virtual void decimate(const_signal_type<float>, signal_type<float>) = 0;
 };
 
 class Filter {
 public:
     virtual ~Filter() = default;
-    virtual void filter() = 0;
+    virtual void filter(signal_type<double>) = 0;
+    virtual void filter(signal_type<float>) = 0;
 
     class Factory {
     public:
@@ -36,9 +37,9 @@ public:
 
     template<typename T>
     void convert(const_signal_type<T> x, signal_type<T> y) {
-        converter.expand(x, y, {});
-        filter->filter();
-        converter.decimate(x, y, {});
+        converter.expand(x, y);
+        filter->filter(y);
+        converter.decimate(x, y);
     }
 };
 }
@@ -59,23 +60,27 @@ public:
         return log_;
     }
 
-    void decimate(const_signal_type<double>, signal_type<double>, int) override {
+    void decimate(const_signal_type<double>, signal_type<double>) override {
         append(log_, "decimate");
     }
 
-    void decimate(const_signal_type<float>, signal_type<float>, int) override {
+    void decimate(const_signal_type<float>, signal_type<float>) override {
         append(log_, "decimate");
     }
 
-    void expand(const_signal_type<double>, signal_type<double>, int) override {
+    void expand(const_signal_type<double>, signal_type<double>) override {
         append(log_, "expand ");
     }
 
-    void expand(const_signal_type<float>, signal_type<float>, int) override {
+    void expand(const_signal_type<float>, signal_type<float>) override {
         append(log_, "expand ");
     }
 
-    void filter() override {
+    void filter(signal_type<double>) override {
+        append(log_, "filter ");
+    }
+
+    void filter(signal_type<float>) override {
         append(log_, "filter ");
     }
 private:
