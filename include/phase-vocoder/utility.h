@@ -12,7 +12,22 @@ template<typename T>
 using buffer_type = std::vector<T>;
 
 template<typename T>
-using buffer_iterator_type = typename std::vector<T>::iterator;
+using buffer_iterator_type = typename buffer_type<T>::iterator;
+
+template<typename T>
+using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
+
+template<typename T>
+using buffer_size_type = typename buffer_type<T>::size_type;
+
+template<typename T>
+using buffer_index_type = typename buffer_type<T>::size_type;
+
+template<typename T>
+using complex_buffer_type = buffer_type<complex_type<T>>;
+
+template<typename T>
+using const_buffer_iterator_type = typename buffer_type<T>::const_iterator;
 
 template<typename T>
 auto begin(const buffer_type<T> &x) {
@@ -50,12 +65,32 @@ auto size(const signal_type<T> &x) {
 }
 
 template<typename T>
-auto &at(const signal_type<T> &x, signal_index_type<T> i) {
+auto size(const buffer_type<T> &x) {
+    return x.size();
+}
+
+template<typename T>
+auto &at(signal_type<T> &x, signal_index_type<T> i) {
     return x.at(i);
 }
 
 template<typename T>
-auto rbegin(const signal_type<T> &x) {
+auto &at(const_signal_type<T> &x, signal_index_type<T> i) {
+    return x.at(i);
+}
+
+template<typename T>
+auto &at(buffer_type<T> &x, buffer_index_type<T> i) {
+    return x.at(i);
+}
+
+template<typename T>
+auto &at(const buffer_type<T> &x, buffer_index_type<T> i) {
+    return x.at(i);
+}
+
+template<typename T>
+auto rbegin(buffer_type<T> &x) {
     return x.rbegin();
 }
 
@@ -84,11 +119,25 @@ void zero(
 }
 
 template<typename T>
-void shift(signal_type<T> x, signal_index_type<T> n) {
-    for (signal_index_type<T> i{0}; i < size(x) - n; ++i)
+void zero(
+    buffer_reverse_iterator_type<T> b,
+    buffer_reverse_iterator_type<T> e
+) {
+    std::fill(b, e, T{0});
+}
+
+template<typename T>
+constexpr auto sizeNarrow(signal_index_type<T> x) {
+	return gsl::narrow_cast<buffer_size_type<T>>(x);
+}
+
+template<typename T>
+void shift(buffer_type<T> &x, signal_index_type<T> n) {
+    auto n_ = sizeNarrow<T>(n);
+    for (buffer_index_type<T> i{0}; i < size(x) - n_; ++i)
         // gsl namespace has function called "at".
         // explicit name resolves ambiguous call.
-        phase_vocoder::at(x, i) = phase_vocoder::at(x, i+n);
+        phase_vocoder::at(x, i) = phase_vocoder::at(x, i+n_);
     zero<T>(rbegin(x), rbegin(x) + n);
 }
 
@@ -113,7 +162,21 @@ void copy(
 }
 
 template<typename T>
+void copy(
+    const_buffer_iterator_type<T> sourceBegin,
+    const_buffer_iterator_type<T> sourceEnd,
+    signal_iterator_type<T> destination
+) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template<typename T>
 void copy(const_signal_type<T> source, signal_type<T> destination) {
+    copy<T>(begin(source), end(source), begin(destination));
+}
+
+template<typename T>
+void copy(const buffer_type<T> &source, signal_type<T> destination) {
     copy<T>(begin(source), end(source), begin(destination));
 }
 
@@ -127,8 +190,12 @@ void copy(
 }
 
 template<typename T>
-constexpr auto sizeNarrow(int x) {
-	return gsl::narrow_cast<typename buffer_type<T>::size_type>(x);
+void copy(
+    const buffer_type<T> &source,
+    signal_type<T> destination,
+    signal_size_type<T> n
+) {
+    copy(begin(source), begin(source) + n, begin(destination));
 }
 }
 

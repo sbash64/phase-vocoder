@@ -29,8 +29,8 @@ public:
 	}
 
 	void next(signal_type<T> out) {
-		copy<T>(cached, out);
-		shift<T>(cached, hop);
+		copy(cached, out);
+		shift(cached, hop);
 		head = N - hop;
 		add_(signal);
 	}
