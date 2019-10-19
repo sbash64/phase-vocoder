@@ -9,15 +9,15 @@ namespace phase_vocoder {
 template<typename T>
 class OverlapAdd {
     buffer_type<T> buffer;
-    int hop;
 public:
-    OverlapAdd(int N, int hop) : buffer(sizeNarrow<T>(N)), hop{hop} {}
+    OverlapAdd(int N) : buffer(sizeNarrow<T>(N)) {}
 
     void add(const_signal_type<T> x) {
         addFirstToSecond<T>(x, buffer);
     }
 
     void next(signal_type<T> y) {
+        auto hop = y.size();
         std::copy(
             phase_vocoder::begin(buffer),
             phase_vocoder::begin(buffer) + hop,

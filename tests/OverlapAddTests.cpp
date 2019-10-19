@@ -6,7 +6,7 @@ namespace phase_vocoder::test { namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapAddTests : public ::testing::Test {
-    OverlapAdd<double> overlapAdd{N, hop};
+    OverlapAdd<double> overlapAdd{N};
     std::vector<double> overlap_;
 protected:
     OverlapAddTests() : overlap_(hop) {}
