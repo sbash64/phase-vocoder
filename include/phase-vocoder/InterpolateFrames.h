@@ -101,14 +101,17 @@ private:
 		buffer_type<T> &out,
 		T(InterpolateFrames::*f)(const complex_type<T> &, const complex_type<T> &)
 	) {
-		std::transform(
-			begin(previousFrame),
-			end(previousFrame),
-			begin(currentFrame),
-			begin(out),
-			[&](const complex_type<T>& a, const complex_type<T>& b) {
-				return (this->*f)(a, b);
-			}
+		std::function<T(
+			const complex_type<T> &a,
+			const complex_type<T> &b)
+		> f_ = [&](auto a, auto b) {
+			return (this->*f)(a, b);
+		};
+		phase_vocoder::transform(
+			previousFrame,
+			currentFrame,
+			out,
+			f_
 		);
 	}
 

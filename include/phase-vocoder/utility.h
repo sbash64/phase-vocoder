@@ -283,6 +283,22 @@ void copy(
 ) {
     copy<T>(begin(source), begin(source) + n, begin(destination));
 }
+
+template<typename T>
+void transform(
+    const complex_buffer_type<T> &first,
+    const complex_buffer_type<T> &second,
+    buffer_type<T> &out,
+    std::function<T(const complex_type<T> &, const complex_type<T> &)> f
+) {
+    std::transform(
+        begin(first),
+        end(first),
+        begin(second),
+        begin(out),
+        f
+    );
+}
 }
 
 #endif
