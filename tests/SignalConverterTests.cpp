@@ -11,7 +11,7 @@ protected:
         const std::vector<double> &y
     ) {
         std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
-        converter.expand<double>(x, expanded, P);
+        converter.expand<double>(x, expanded);
         assertEqual(y, expanded);
     }
 
@@ -21,7 +21,7 @@ protected:
         const std::vector<double> &y
     ) {
         std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
-        converter.decimate<double>(x, decimated, Q);
+        converter.decimate<double>(x, decimated);
         assertEqual(y, decimated);
     }
 private:
