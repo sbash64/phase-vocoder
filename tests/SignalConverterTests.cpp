@@ -1,32 +1,32 @@
 #include "assert-utility.h"
-#include <phase-vocoder/Expand.h>
-#include <phase-vocoder/Decimate.h>
+#include <phase-vocoder/SignalConverter.h>
 #include <gtest/gtest.h>
 
 namespace phase_vocoder::test { namespace {
-void assertDecimated(
-    const std::vector<double> &x,
-    int Q,
-    const std::vector<double> &y
-) {
-    Decimate decimate;
-    std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
-    decimate.decimate<double>(x, decimated, Q);
-    assertEqual(y, decimated);
-}
+class SignalConverterTests : public ::testing::Test {
+protected:
+    void assertExpanded(
+        const std::vector<double> &x,
+        int P,
+        const std::vector<double> &y
+    ) {
+        std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
+        converter.expand<double>(x, expanded, P);
+        assertEqual(y, expanded);
+    }
 
-void assertExpanded(
-    const std::vector<double> &x,
-    int P,
-    const std::vector<double> &y
-) {
-    Expand expand;
-    std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
-    expand.expand<double>(x, expanded, P);
-    assertEqual(y, expanded);
-}
-
-class SignalConverterTests : public ::testing::Test {};
+    void assertDecimated(
+        const std::vector<double> &x,
+        int Q,
+        const std::vector<double> &y
+    ) {
+        std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
+        converter.decimate<double>(x, decimated, Q);
+        assertEqual(y, decimated);
+    }
+private:
+    SignalConverter converter;
+};
 
 TEST_F(SignalConverterTests, extractsEveryQthElement) {
     assertDecimated(
