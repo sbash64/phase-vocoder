@@ -12,7 +12,7 @@ public:
     explicit OverlapAdd(int N) : buffer(sizeNarrow<T>(N)) {}
 
     void add(const_signal_type<T> x) {
-        addFirstToSecond<T>(x, buffer);
+        addFirstToSecond(x, buffer);
     }
 
     void next(signal_type<T> y) {

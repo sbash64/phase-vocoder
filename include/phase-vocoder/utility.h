@@ -27,6 +27,9 @@ template<typename T>
 using complex_buffer_type = buffer_type<complex_type<T>>;
 
 template<typename T>
+using complex_buffer_iterator_type = typename complex_buffer_type<T>::iterator;
+
+template<typename T>
 using const_buffer_iterator_type = typename buffer_type<T>::const_iterator;
 
 template<typename T>
@@ -36,6 +39,26 @@ auto begin(const buffer_type<T> &x) {
 
 template<typename T>
 auto begin(buffer_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto begin(complex_buffer_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto begin(const const_signal_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto begin(const const_complex_signal_type<T> &x) {
+    return x.begin();
+}
+
+template<typename T>
+auto begin(const signal_type<T> &x) {
     return x.begin();
 }
 
@@ -50,8 +73,13 @@ auto end(buffer_type<T> &x) {
 }
 
 template<typename T>
-auto begin(const signal_type<T> &x) {
-    return x.begin();
+auto end(const const_complex_signal_type<T> &x) {
+    return x.end();
+}
+
+template<typename T>
+auto end(const const_signal_type<T> &x) {
+    return x.end();
 }
 
 template<typename T>
@@ -65,17 +93,22 @@ auto size(const signal_type<T> &x) {
 }
 
 template<typename T>
+auto size(const const_signal_type<T> &x) {
+    return x.size();
+}
+
+template<typename T>
 auto size(const buffer_type<T> &x) {
     return x.size();
 }
 
 template<typename T>
-auto &at(signal_type<T> &x, signal_index_type<T> i) {
+auto &at(const signal_type<T> &x, signal_index_type<T> i) {
     return x.at(i);
 }
 
 template<typename T>
-auto &at(const_signal_type<T> &x, signal_index_type<T> i) {
+auto &at(const const_signal_type<T> &x, signal_index_type<T> i) {
     return x.at(i);
 }
 
@@ -144,10 +177,32 @@ void shift(buffer_type<T> &x, signal_index_type<T> n) {
 template<typename T>
 void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
     std::transform(
-        phase_vocoder::begin(y),
-        phase_vocoder::end(y),
-        phase_vocoder::begin(x),
-        phase_vocoder::begin(y),
+        begin(y),
+        end(y),
+        begin(x),
+        begin(y),
+        std::plus<>{}
+    );
+}
+
+template<typename T>
+void addFirstToSecond(const_signal_type<T> x, buffer_type<T> &y) {
+    std::transform(
+        begin(y),
+        end(y),
+        begin(x),
+        begin(y),
+        std::plus<>{}
+    );
+}
+
+template<typename T>
+void addFirstToSecond(const buffer_type<T> &x, buffer_type<T> &y) {
+    std::transform(
+        begin(y),
+        end(y),
+        begin(x),
+        begin(y),
         std::plus<>{}
     );
 }
@@ -171,6 +226,24 @@ void copy(
 }
 
 template<typename T>
+void copy(
+    const_buffer_iterator_type<T> sourceBegin,
+    const_buffer_iterator_type<T> sourceEnd,
+    buffer_iterator_type<T> destination
+) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template<typename T>
+void copy(
+    const_complex_signal_iterator_type<T> sourceBegin,
+    const_complex_signal_iterator_type<T> sourceEnd,
+    complex_buffer_iterator_type<T> destination
+) {
+    std::copy(sourceBegin, sourceEnd, destination);
+}
+
+template<typename T>
 void copy(const_signal_type<T> source, signal_type<T> destination) {
     copy<T>(begin(source), end(source), begin(destination));
 }
@@ -181,12 +254,25 @@ void copy(const buffer_type<T> &source, signal_type<T> destination) {
 }
 
 template<typename T>
+void copy(const buffer_type<T> &source, buffer_type<T> &destination) {
+    copy<T>(begin(source), end(source), begin(destination));
+}
+
+template<typename T>
+void copy(
+    const_complex_signal_type<T> source,
+    complex_buffer_type<T> &destination
+) {
+    copy<T>(begin(source), end(source), begin(destination));
+}
+
+template<typename T>
 void copy(
     const_signal_type<T> source,
     signal_type<T> destination,
     signal_size_type<T> n
 ) {
-    copy<T>(begin(source), begin(source) + n, begin(destination));
+    copy(begin(source), begin(source) + n, begin(destination));
 }
 
 template<typename T>
@@ -195,7 +281,7 @@ void copy(
     signal_type<T> destination,
     signal_size_type<T> n
 ) {
-    copy(begin(source), begin(source) + n, begin(destination));
+    copy<T>(begin(source), begin(source) + n, begin(destination));
 }
 }
 

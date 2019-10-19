@@ -49,9 +49,9 @@ private:
 
 	void copyToCached(const_signal_type<T> x, signal_size_type<T> n) {
 		std::copy(
-			phase_vocoder::begin(x),
-			phase_vocoder::begin(x) + n,
-			phase_vocoder::begin(cached) + head
+			begin(x),
+			begin(x) + n,
+			begin(cached) + head
 		);
 	}
 

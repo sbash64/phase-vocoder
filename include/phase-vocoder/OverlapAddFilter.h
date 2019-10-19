@@ -69,7 +69,7 @@ public:
         transformer = factory.make(N);
         L = N - gsl::narrow_cast<int>(M) + 1;
         resize(realBuffer, sizeNarrow<T>(N));
-        copy<T>(b, realBuffer);
+        copy(b, realBuffer);
         resize(H, sizeNarrow<complex_type<T>>(N));
         resize(complexBuffer, sizeNarrow<complex_type<T>>(N));
         dft(realBuffer, H);
@@ -89,16 +89,16 @@ private:
 
     void filter_(signal_type<T> x) {
         zero<T>(
-            phase_vocoder::begin(realBuffer) + size(x),
-            phase_vocoder::end(realBuffer)
+            begin(realBuffer) + size(x),
+            end(realBuffer)
         );
         copy<T>(x, realBuffer);
         dft(realBuffer, complexBuffer);
         std::transform(
-            phase_vocoder::begin(complexBuffer),
-            phase_vocoder::end(complexBuffer),
-            phase_vocoder::begin(H),
-            phase_vocoder::begin(complexBuffer),
+            begin(complexBuffer),
+            end(complexBuffer),
+            begin(H),
+            begin(complexBuffer),
             std::multiplies<>{}
         );
         transformer->idft(complexBuffer, realBuffer);
