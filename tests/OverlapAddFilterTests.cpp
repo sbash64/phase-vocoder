@@ -4,12 +4,12 @@
 
 namespace phase_vocoder::test { namespace {
 template<typename T>
-void copy(gsl::span<const T> x, gsl::span<T> y) {
+void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());
 }
 
 template<typename T>
-void resizeToMatch(std::vector<T> &x, gsl::span<const T> y) {
+void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
     x.resize(gsl::narrow_cast<size_t>(y.size()));
 }
 
