@@ -6,12 +6,9 @@
 
 namespace phase_vocoder {
 class Decimate {
-    int Q;
 public:
-    explicit Decimate(int Q) : Q{Q} {}
-
     template<typename T>
-    void decimate(const_signal_type<T> x, signal_type<T> y) {
+    void decimate(const_signal_type<T> x, signal_type<T> y, int Q) {
         for (signal_index_type<T> i{0}; i < size(y); ++i)
             // gsl namespace has function called "at".
             // explicit name resolves ambiguous call.

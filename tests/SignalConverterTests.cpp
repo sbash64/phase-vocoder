@@ -9,9 +9,9 @@ void assertDecimated(
     int Q,
     const std::vector<double> &y
 ) {
-    Decimate decimate{Q};
+    Decimate decimate;
     std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
-    decimate.decimate<double>(x, decimated);
+    decimate.decimate<double>(x, decimated, Q);
     assertEqual(y, decimated);
 }
 
@@ -20,9 +20,9 @@ void assertExpanded(
     int P,
     const std::vector<double> &y
 ) {
-    Expand expand{P};
+    Expand expand;
     std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
-    expand.expand<double>(x, expanded);
+    expand.expand<double>(x, expanded, P);
     assertEqual(y, expanded);
 }
 

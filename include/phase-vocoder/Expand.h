@@ -6,12 +6,9 @@
 
 namespace phase_vocoder {
 class Expand {
-    int P;
 public:
-    explicit Expand(int P) : P{P} {}
-
     template<typename T>
-    void expand(const_signal_type<T> x, signal_type<T> y) {
+    void expand(const_signal_type<T> x, signal_type<T> y, int P) {
         zero<T>(begin(y), end(y));
         for (signal_index_type<T> i{0}; i < size(x); ++i)
             // gsl namespace has function called "at".
