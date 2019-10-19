@@ -1,6 +1,7 @@
 #ifndef PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
 #define PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
 
+#include <phase-vocoder/model.h>
 #include <gtest/gtest.h>
 #include <complex>
 #include <vector>
@@ -12,12 +13,12 @@ void assertEqual(T expected, T actual) {
 }
 
 template<typename T>
-bool normDifferenceBelowTolerance(std::complex<T> a, std::complex<T> b, T e) {
+bool normDifferenceBelowTolerance(complex_type<T> a, complex_type<T> b, T e) {
 	return std::norm(a - b) < e;
 }
 
 template<typename T>
-void assertEqual(std::complex<T> a, std::complex<T> b, T e) {
+void assertEqual(complex_type<T> a, complex_type<T> b, T e) {
 	EXPECT_PRED3(normDifferenceBelowTolerance<T>, a, b, e);
 }
 
@@ -33,8 +34,8 @@ auto at(const std::vector<T> &x, std::size_t n) {
 
 template<typename T>
 void assertEqual(
-	const std::vector<std::complex<T>> &expected,
-	const std::vector<std::complex<T>> &actual,
+	const std::vector<complex_type<T>> &expected,
+	const std::vector<complex_type<T>> &actual,
 	T tolerance
 ) {
 	assertEqual(size(expected), size(actual));

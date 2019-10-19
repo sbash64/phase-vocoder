@@ -33,7 +33,7 @@ public:
 		Q{Q} {}
 
 	void add(const_complex_signal_type<T> x) {
-		copy<complex_type<T>>(currentFrame, previousFrame);
+		copy(currentFrame, previousFrame);
 		copy(x, currentFrame);
 		transformFrames(
 			phaseAdvance,
