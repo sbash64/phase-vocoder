@@ -1,11 +1,14 @@
+#include <phase-vocoder/model.h>
 #include <memory>
 
 namespace phase_vocoder {
 class ISignalConverter {
 public:
     virtual ~ISignalConverter() = default;
-    virtual void decimate() = 0;
-    virtual void expand() = 0;
+    virtual void expand(const_signal_type<double>, signal_type<double>, int) = 0;
+    virtual void expand(const_signal_type<float>, signal_type<float>, int) = 0;
+    virtual void decimate(const_signal_type<double>, signal_type<double>, int) = 0;
+    virtual void decimate(const_signal_type<float>, signal_type<float>, int) = 0;
 };
 
 class Filter {
@@ -31,10 +34,11 @@ public:
         filter{factory.make()},
         converter{converter} {}
 
-    void convert() {
-        converter.expand();
+    template<typename T>
+    void convert(const_signal_type<T> x, signal_type<T> y) {
+        converter.expand(x, y, {});
         filter->filter();
-        converter.decimate();
+        converter.decimate(x, y, {});
     }
 };
 }
@@ -55,11 +59,19 @@ public:
         return log_;
     }
 
-    void decimate() override {
+    void decimate(const_signal_type<double>, signal_type<double>, int) override {
         append(log_, "decimate");
     }
 
-    void expand() override {
+    void decimate(const_signal_type<float>, signal_type<float>, int) override {
+        append(log_, "decimate");
+    }
+
+    void expand(const_signal_type<double>, signal_type<double>, int) override {
+        append(log_, "expand ");
+    }
+
+    void expand(const_signal_type<float>, signal_type<float>, int) override {
         append(log_, "expand ");
     }
 
@@ -86,13 +98,15 @@ private:
 class SampleRateConverterTests : public ::testing::Test {
 protected:
     void convert() {
-        converter.convert();
+        converter.convert<double>(x, y);
     }
 
     auto conversionLog() const {
         return shunt->log();
     }
 private:
+    std::vector<double> x;
+    std::vector<double> y;
     std::shared_ptr<SampleRateConverterShunt> shunt =
         std::make_shared<SampleRateConverterShunt>();
     SampleRateConverterShuntFactory factory{shunt};
