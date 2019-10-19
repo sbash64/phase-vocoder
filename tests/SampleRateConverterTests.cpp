@@ -1,13 +1,10 @@
-namespace phase_vocoder {
-class Decimator {
-public:
-    virtual ~Decimator() = default;
-    virtual void decimate() = 0;
-};
+#include <memory>
 
-class Expander {
+namespace phase_vocoder {
+class SignalConverter {
 public:
-    virtual ~Expander() = default;
+    virtual ~SignalConverter() = default;
+    virtual void decimate() = 0;
     virtual void expand() = 0;
 };
 
@@ -15,26 +12,29 @@ class Filter {
 public:
     virtual ~Filter() = default;
     virtual void filter() = 0;
+
+    class Factory {
+    public:
+        virtual ~Factory() = default;
+        virtual std::shared_ptr<Filter> make() = 0;
+    };
 };
 
 class SampleRateConverter {
-    Decimator &decimator;
-    Expander &expander;
-    Filter &filter;
+    std::shared_ptr<Filter> filter;
+    SignalConverter &converter;
 public:
     SampleRateConverter(
-        Decimator &decimator,
-        Expander &expander,
-        Filter &filter
+        SignalConverter &converter,
+        Filter::Factory &factory
     ) :
-        decimator{decimator},
-        expander{expander},
-        filter{filter} {}
-    
+        filter{factory.make()},
+        converter{converter} {}
+
     void convert() {
-        expander.expand();
-        filter.filter();
-        decimator.decimate();
+        converter.expand();
+        filter->filter();
+        converter.decimate();
     }
 };
 }
@@ -48,10 +48,8 @@ void append(std::string &s, const std::string &what) {
 }
 
 class SampleRateConverterShunt :
-    public Decimator,
-    public Expander,
-    public Filter
-{
+    public SignalConverter,
+    public Filter {
 public:
     auto log() const {
         return log_;
@@ -72,6 +70,19 @@ private:
     std::string log_;
 };
 
+class SampleRateConverterShuntFactory : public Filter::Factory {
+public:
+    std::shared_ptr<Filter> make() override {
+        return filter_;
+    }
+
+    explicit SampleRateConverterShuntFactory(std::shared_ptr<Filter> f) :
+        filter_{std::move(f)} {}
+
+private:
+    std::shared_ptr<Filter> filter_;
+};
+
 class SampleRateConverterTests : public ::testing::Test {
 protected:
     void convert() {
@@ -79,11 +90,13 @@ protected:
     }
 
     auto conversionLog() const {
-        return shunt.log();
+        return shunt->log();
     }
 private:
-    SampleRateConverterShunt shunt;
-    SampleRateConverter converter{shunt, shunt, shunt};
+    std::shared_ptr<SampleRateConverterShunt> shunt =
+        std::make_shared<SampleRateConverterShunt>();
+    SampleRateConverterShuntFactory factory{shunt};
+    SampleRateConverter converter{*shunt, factory};
 };
 
 #define ASSERT_EQUAL(a, b)\
@@ -92,7 +105,7 @@ private:
 #define ASSERT_CONVERSION_LOG(a)\
     ASSERT_EQUAL(a, conversionLog())
 
-TEST_F(SampleRateConverterTests, tbd) {
+TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
 }
