@@ -5,8 +5,7 @@ add_executable(
 	FirFilterTests.cpp
 	OverlapAddFilterTests.cpp
 	OverlapAddTests.cpp
-	ExpandTests.cpp
-	DecimateTests.cpp
+	SignalConverterTests.cpp
 	SampleRateConverterTests.cpp
 	HannWindowTests.cpp
 )

@@ -1,9 +1,9 @@
 #include <memory>
 
 namespace phase_vocoder {
-class SignalConverter {
+class ISignalConverter {
 public:
-    virtual ~SignalConverter() = default;
+    virtual ~ISignalConverter() = default;
     virtual void decimate() = 0;
     virtual void expand() = 0;
 };
@@ -22,10 +22,10 @@ public:
 
 class SampleRateConverter {
     std::shared_ptr<Filter> filter;
-    SignalConverter &converter;
+    ISignalConverter &converter;
 public:
     SampleRateConverter(
-        SignalConverter &converter,
+        ISignalConverter &converter,
         Filter::Factory &factory
     ) :
         filter{factory.make()},
@@ -48,7 +48,7 @@ void append(std::string &s, const std::string &what) {
 }
 
 class SampleRateConverterShunt :
-    public SignalConverter,
+    public ISignalConverter,
     public Filter {
 public:
     auto log() const {
