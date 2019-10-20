@@ -16,6 +16,7 @@ FetchContent_MakeAvailable(GSL)
 
 add_library(phase-vocoder 
     src/OverlapAdd.cpp
+    src/OverlapAddFilter.cpp
 )
 target_include_directories(phase-vocoder PUBLIC include)
 target_include_directories(phase-vocoder PRIVATE include/phase-vocoder)
