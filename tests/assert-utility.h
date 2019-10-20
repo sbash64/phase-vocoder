@@ -28,6 +28,11 @@ auto size(const std::vector<T> &x) {
 }
 
 template<typename T>
+auto size(const const_signal_type<T> &x) {
+	return x.size();
+}
+
+template<typename T>
 auto at(const std::vector<T> &x, std::size_t n) {
 	return x.at(n);
 }
@@ -59,6 +64,18 @@ void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
 	assertEqual(size(expected), size(actual));
 	for (std::size_t i = 0; i < size(expected); ++i)
 		assertEqual(at(expected, i), at(actual, i));
+}
+
+template<typename T>
+constexpr auto sizeNarrow(signal_index_type<T> x) {
+	return gsl::narrow_cast<typename std::vector<T>::size_type>(x);
+}
+
+template<typename T>
+void assertEqual(const std::vector<T> &expected, const_signal_type<T> actual) {
+	assertEqual(size(expected), sizeNarrow<T>(size(actual)));
+	for (signal_index_type<T> i{0}; sizeNarrow<T>(i) < size(expected); ++i)
+		assertEqual(at(expected, sizeNarrow<T>(i)), at(actual, i));
 }
 }
 

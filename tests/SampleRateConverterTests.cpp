@@ -44,6 +44,7 @@ public:
 };
 }
 
+#include "assert-utility.h"
 #include <gtest/gtest.h>
 #include <string>
 
@@ -60,12 +61,16 @@ public:
         return log_;
     }
 
-    void decimate(const_signal_type<double>, signal_type<double>) override {
+    auto decimateInput() const {
+        return decimateInput_;
+    }
+
+    void decimate(const_signal_type<double> x, signal_type<double>) override {
         append(log_, "decimate");
+        decimateInput_ = x;
     }
 
     void decimate(const_signal_type<float>, signal_type<float>) override {
-        append(log_, "decimate");
     }
 
     void expand(const_signal_type<double>, signal_type<double>) override {
@@ -73,7 +78,6 @@ public:
     }
 
     void expand(const_signal_type<float>, signal_type<float>) override {
-        append(log_, "expand ");
     }
 
     void filter(signal_type<double>) override {
@@ -81,9 +85,9 @@ public:
     }
 
     void filter(signal_type<float>) override {
-        append(log_, "filter ");
     }
 private:
+    const_signal_type<double> decimateInput_;
     std::string log_;
 };
 
@@ -109,6 +113,14 @@ protected:
     auto conversionLog() const {
         return shunt->log();
     }
+
+    auto input() const {
+        return x;
+    }
+
+    auto decimateInput() const {
+        return shunt->decimateInput();
+    }
 private:
     std::vector<double> x;
     std::vector<double> y;
@@ -124,8 +136,16 @@ private:
 #define ASSERT_CONVERSION_LOG(a)\
     ASSERT_EQUAL(a, conversionLog())
 
+#define ASSERT_INPUT_PASSED_TO_DECIMATE()\
+    assertEqual(input(), decimateInput())
+
 TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
+}
+
+TEST_F(SampleRateConverterTests, convertPassesInputToDecimate) {
+    convert();
+    ASSERT_INPUT_PASSED_TO_DECIMATE();
 }
 }}
