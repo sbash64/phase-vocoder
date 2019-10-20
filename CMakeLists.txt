@@ -14,9 +14,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(GSL)
 
-add_library(phase-vocoder INTERFACE)
-target_include_directories(phase-vocoder INTERFACE include)
-target_link_libraries(phase-vocoder INTERFACE GSL)
+add_library(phase-vocoder 
+    src/OverlapAdd.cpp
+)
+target_include_directories(phase-vocoder PUBLIC include)
+target_include_directories(phase-vocoder PRIVATE include/phase-vocoder)
+target_link_libraries(phase-vocoder GSL)
 
 FetchContent_Declare(
     googletest

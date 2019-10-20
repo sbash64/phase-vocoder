@@ -7,18 +7,12 @@
 namespace phase_vocoder {
 template<typename T>
 class OverlapAdd {
-    buffer_type<T> buffer;
 public:
-    explicit OverlapAdd(int N) : buffer(sizeNarrow<T>(N)) {}
-
-    void add(const_signal_type<T> x) {
-        addFirstToSecond(x, buffer);
-    }
-
-    void next(signal_type<T> y) {
-        copy(buffer, y, size(y));
-        shift(buffer, size(y));
-    }
+    explicit OverlapAdd(int N);
+    void add(const_signal_type<T> x);
+    void next(signal_type<T> y);
+private:
+    buffer_type<T> buffer;
 };
 }
 
