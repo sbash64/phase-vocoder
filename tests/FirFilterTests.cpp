@@ -35,7 +35,7 @@ auto *make_fftw_plan(int a, fftw_complex * b, double * c, unsigned int d) {
 }
 
 template<typename T>
-class FftwTransformer : public FourierTransformer {
+class FftwTransformer : public FourierTransformer<T> {
 	using complex_buffer_type = std::vector<complex_type<T>>;
 	using real_buffer_type = std::vector<T>;
 	complex_buffer_type dftComplex_;
@@ -83,11 +83,6 @@ public:
 		copy<complex_type<T>>(dftComplex_, y);
 	}
 
-	void dft(
-		signal_type<unused_type>,
-		complex_signal_type<unused_type>
-	) override {}
-
 	void idft(complex_signal_type<T> x, signal_type<T> y) override {
 		copy<complex_type<T>>(x, idftComplex_);
 		fftw_execute(idftPlan);
@@ -96,14 +91,9 @@ public:
 			y_ /= N;
 	}
 
-	void idft(
-		complex_signal_type<unused_type>,
-		signal_type<unused_type>
-	) override {}
-
-	class FftwFactory : public Factory {
+	class FftwFactory : public FourierTransformer<T>::Factory {
 	public:
-		std::shared_ptr<FourierTransformer> make(int N_) {
+		std::shared_ptr<FourierTransformer<T>> make(int N_) {
 			return std::make_shared<FftwTransformer>(N_);
 		}
 	};

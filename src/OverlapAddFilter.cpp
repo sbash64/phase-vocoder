@@ -15,7 +15,7 @@ void resize(buffer_type<T> &x, size_t n) {
 template<typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
     const buffer_type<T> &b,
-    FourierTransformer::Factory &factory
+    typename FourierTransformer<T>::Factory &factory
 ) :
     overlap{nearestGreaterPowerTwo(size(b))}
 {

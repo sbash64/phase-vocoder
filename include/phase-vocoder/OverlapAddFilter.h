@@ -10,30 +10,23 @@
 #include <memory>
 
 namespace phase_vocoder {
+template<typename T>
 class FourierTransformer {
 public:
     virtual ~FourierTransformer() = default;
     virtual void dft(
-        signal_type<double>,
-        complex_signal_type<double>
+        signal_type<T>,
+        complex_signal_type<T>
     ) = 0;
     virtual void idft(
-        complex_signal_type<double>,
-        signal_type<double>
-    ) = 0;
-    virtual void dft(
-        signal_type<float>,
-        complex_signal_type<float>
-    ) = 0;
-    virtual void idft(
-        complex_signal_type<float>,
-        signal_type<float>
+        complex_signal_type<T>,
+        signal_type<T>
     ) = 0;
 
     class Factory {
     public:
         virtual ~Factory() = default;
-        virtual std::shared_ptr<FourierTransformer> make(int N) = 0;
+        virtual std::shared_ptr<FourierTransformer<T>> make(int N) = 0;
     };
 };
 
@@ -42,7 +35,7 @@ class OverlapAddFilter {
 public:
     OverlapAddFilter(
         const buffer_type<T> &b,
-        FourierTransformer::Factory &factory
+        typename FourierTransformer<T>::Factory &factory
     );
     void filter(signal_type<T> x);
 
@@ -54,7 +47,7 @@ private:
     buffer_type<complex_type<T>> complexBuffer;
     buffer_type<complex_type<T>> H;
     buffer_type<T> realBuffer;
-    std::shared_ptr<FourierTransformer> transformer;
+    std::shared_ptr<FourierTransformer<T>> transformer;
     int L;
 };
 }

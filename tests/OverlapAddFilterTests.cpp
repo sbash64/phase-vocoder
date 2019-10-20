@@ -13,7 +13,7 @@ void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
     x.resize(gsl::narrow_cast<size_t>(y.size()));
 }
 
-class FourierTransformerStub : public FourierTransformer {
+class FourierTransformerStub : public FourierTransformer<double> {
 	using complex_buffer_type = std::vector<complex_type<double>>;
 	using real_buffer_type = std::vector<double>;
     std::vector<std::vector<double>> dftReals_;
@@ -41,9 +41,6 @@ public:
         dftReals_.push_back(dftReal_);
     }
 
-    void dft(signal_type<float>, complex_signal_type<float>) override {
-    }
-
     void setDftComplex(complex_buffer_type x) {
         dftComplex_ = std::move(x);
     }
@@ -58,17 +55,14 @@ public:
         copy<double>(idftReal_, y);
     }
 
-    void idft(complex_signal_type<float>, signal_type<float>) override {
-    }
-
-    class FactoryStub : public Factory {
+    class FactoryStub : public FourierTransformer<double>::Factory {
         std::shared_ptr<FourierTransformer> transform;
         int N_;
     public:
         explicit FactoryStub(std::shared_ptr<FourierTransformer> transform) :
             transform{std::move(transform)} {}
 
-        std::shared_ptr<FourierTransformer> make(int N) override {
+        std::shared_ptr<FourierTransformer<double>> make(int N) override {
             N_ = N;
             return transform;
         }
