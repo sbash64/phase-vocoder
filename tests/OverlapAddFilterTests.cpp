@@ -55,14 +55,14 @@ public:
         copy<double>(idftReal_, y);
     }
 
-    class FactoryStub : public FourierTransformer<double>::Factory {
+    class FactoryStub : public FourierTransformer::Factory {
         std::shared_ptr<FourierTransformer> transform;
         int N_;
     public:
         explicit FactoryStub(std::shared_ptr<FourierTransformer> transform) :
             transform{std::move(transform)} {}
 
-        std::shared_ptr<FourierTransformer<double>> make(int N) override {
+        std::shared_ptr<FourierTransformer> make(int N) override {
             N_ = N;
             return transform;
         }

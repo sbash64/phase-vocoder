@@ -1,4 +1,8 @@
 #include "OverlapAddFilter.h"
+#include <gsl/gsl>
+#include <algorithm>
+#include <functional>
+
 namespace phase_vocoder {
 constexpr int nearestGreaterPowerTwo(std::size_t n) {
     int power{1};
@@ -8,7 +12,7 @@ constexpr int nearestGreaterPowerTwo(std::size_t n) {
 }
 
 template<typename T>
-void resize(buffer_type<T> &x, size_t n) {
+void resize(buffer_type<T> &x, std::size_t n) {
     x.resize(n);
 }
 

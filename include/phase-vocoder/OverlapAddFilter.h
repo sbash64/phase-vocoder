@@ -4,9 +4,6 @@
 #include "model.h"
 #include "utility.h"
 #include "OverlapAdd.h"
-#include <gsl/gsl>
-#include <algorithm>
-#include <functional>
 #include <memory>
 
 namespace phase_vocoder {
@@ -26,7 +23,7 @@ public:
     class Factory {
     public:
         virtual ~Factory() = default;
-        virtual std::shared_ptr<FourierTransformer<T>> make(int N) = 0;
+        virtual std::shared_ptr<FourierTransformer> make(int N) = 0;
     };
 };
 
@@ -44,8 +41,8 @@ private:
     void filter_(signal_type<T> x);
 
     OverlapAdd<T> overlap;
-    buffer_type<complex_type<T>> complexBuffer;
-    buffer_type<complex_type<T>> H;
+    complex_buffer_type<T> complexBuffer;
+    complex_buffer_type<T> H;
     buffer_type<T> realBuffer;
     std::shared_ptr<FourierTransformer<T>> transformer;
     int L;
