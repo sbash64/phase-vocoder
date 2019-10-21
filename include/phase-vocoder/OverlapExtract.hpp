@@ -3,7 +3,6 @@
 
 #include "model.hpp"
 #include "utility.hpp"
-#include <algorithm>
 
 namespace phase_vocoder {
 template<typename T>
@@ -14,12 +13,6 @@ public:
 	bool hasNext();
 	void next(signal_type<T> out);
 private:
-	void add_(const_signal_type<T> x);
-	signal_size_type<T> leftToFill(const_signal_type<T> x);
-	void copyToCached(const_signal_type<T> x, signal_size_type<T> n);
-	void assignRemainingSignal(const_signal_type<T> x, signal_size_type<T> used);
-	void addToHead(signal_size_type<T> n);
-
 	buffer_type<T> cached;
 	const_signal_type<T> signal;
 	signal_index_type<T> head;
