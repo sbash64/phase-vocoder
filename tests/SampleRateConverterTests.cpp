@@ -2,20 +2,19 @@
 #include <memory>
 
 namespace phase_vocoder {
+template<typename T>
 class ISignalConverter {
 public:
     virtual ~ISignalConverter() = default;
-    virtual void expand(const_signal_type<double>, signal_type<double>) = 0;
-    virtual void expand(const_signal_type<float>, signal_type<float>) = 0;
-    virtual void decimate(const_signal_type<double>, signal_type<double>) = 0;
-    virtual void decimate(const_signal_type<float>, signal_type<float>) = 0;
+    virtual void expand(const_signal_type<T>, signal_type<T>) = 0;
+    virtual void decimate(const_signal_type<T>, signal_type<T>) = 0;
 };
 
+template<typename T>
 class Filter {
 public:
     virtual ~Filter() = default;
-    virtual void filter(signal_type<double>) = 0;
-    virtual void filter(signal_type<float>) = 0;
+    virtual void filter(signal_type<T>) = 0;
 
     class Factory {
     public:
@@ -24,23 +23,24 @@ public:
     };
 };
 
+template<typename T>
 class SampleRateConverter {
-    std::shared_ptr<Filter> filter;
-    ISignalConverter &converter;
 public:
     SampleRateConverter(
-        ISignalConverter &converter,
-        Filter::Factory &factory
+        ISignalConverter<T> &converter,
+        typename Filter<T>::Factory &factory
     ) :
         filter{factory.make()},
         converter{converter} {}
 
-    template<typename T>
     void convert(const_signal_type<T> x, signal_type<T> y) {
         converter.expand(x, y);
         filter->filter(y);
         converter.decimate(x, y);
     }
+private:
+    std::shared_ptr<Filter<T>> filter;
+    ISignalConverter<T> &converter;
 };
 }
 
@@ -53,9 +53,10 @@ void append(std::string &s, const std::string &what) {
     s += what;
 }
 
+template<typename T>
 class SampleRateConverterShunt :
-    public ISignalConverter,
-    public Filter {
+    public ISignalConverter<T>,
+    public Filter<T> {
 public:
     auto log() const {
         return log_;
@@ -65,49 +66,41 @@ public:
         return decimateInput_;
     }
 
-    void decimate(const_signal_type<double> x, signal_type<double>) override {
+    void decimate(const_signal_type<T> x, signal_type<T>) override {
         append(log_, "decimate");
         decimateInput_ = x;
     }
 
-    void decimate(const_signal_type<float>, signal_type<float>) override {
-    }
-
-    void expand(const_signal_type<double>, signal_type<double>) override {
+    void expand(const_signal_type<T>, signal_type<T>) override {
         append(log_, "expand ");
     }
 
-    void expand(const_signal_type<float>, signal_type<float>) override {
-    }
-
-    void filter(signal_type<double>) override {
+    void filter(signal_type<T>) override {
         append(log_, "filter ");
     }
-
-    void filter(signal_type<float>) override {
-    }
 private:
-    const_signal_type<double> decimateInput_;
+    const_signal_type<T> decimateInput_;
     std::string log_;
 };
 
-class SampleRateConverterShuntFactory : public Filter::Factory {
+template<typename T>
+class SampleRateConverterShuntFactory : public Filter<T>::Factory {
 public:
-    std::shared_ptr<Filter> make() override {
+    std::shared_ptr<Filter<T>> make() override {
         return filter_;
     }
 
-    explicit SampleRateConverterShuntFactory(std::shared_ptr<Filter> f) :
+    explicit SampleRateConverterShuntFactory(std::shared_ptr<Filter<T>> f) :
         filter_{std::move(f)} {}
 
 private:
-    std::shared_ptr<Filter> filter_;
+    std::shared_ptr<Filter<T>> filter_;
 };
 
 class SampleRateConverterTests : public ::testing::Test {
 protected:
     void convert() {
-        converter.convert<double>(x, y);
+        converter.convert(x, y);
     }
 
     auto conversionLog() const {
@@ -124,10 +117,10 @@ protected:
 private:
     std::vector<double> x;
     std::vector<double> y;
-    std::shared_ptr<SampleRateConverterShunt> shunt =
-        std::make_shared<SampleRateConverterShunt>();
-    SampleRateConverterShuntFactory factory{shunt};
-    SampleRateConverter converter{*shunt, factory};
+    std::shared_ptr<SampleRateConverterShunt<double>> shunt =
+        std::make_shared<SampleRateConverterShunt<double>>();
+    SampleRateConverterShuntFactory<double> factory{shunt};
+    SampleRateConverter<double> converter{*shunt, factory};
 };
 
 #define ASSERT_EQUAL(a, b)\
