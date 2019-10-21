@@ -1,7 +1,7 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_H_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_H_
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_HPP_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_HPP_
 
-#include "utility.h"
+#include "utility.hpp"
 #include <vector>
 #include <algorithm>
 #include <cmath>

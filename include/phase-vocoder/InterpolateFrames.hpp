@@ -1,8 +1,8 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_H_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_H_
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
 
-#include "model.h"
-#include "utility.h"
+#include "model.hpp"
+#include "utility.hpp"
 #include <algorithm>
 #include <functional>
 

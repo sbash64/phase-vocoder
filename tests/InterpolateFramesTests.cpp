@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <phase-vocoder/InterpolateFrames.h>
+#include <phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
 namespace phase_vocoder::test { namespace {

@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <phase-vocoder/OverlapAddFilter.h>
+#include <phase-vocoder/OverlapAddFilter.hpp>
 #include <fftw3.h>
 #include <gtest/gtest.h>
 #include <gsl/gsl>

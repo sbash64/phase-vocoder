@@ -1,9 +1,9 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_H_
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
 
-#include "model.h"
-#include "utility.h"
-#include "OverlapAdd.h"
+#include "model.hpp"
+#include "utility.hpp"
+#include "OverlapAdd.hpp"
 #include <memory>
 
 namespace phase_vocoder {

@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <phase-vocoder/OverlapExtract.h>
+#include <phase-vocoder/OverlapExtract.hpp>
 #include <gtest/gtest.h>
 
 namespace phase_vocoder::test { namespace {

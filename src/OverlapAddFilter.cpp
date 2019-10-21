@@ -1,4 +1,4 @@
-#include "OverlapAddFilter.h"
+#include "OverlapAddFilter.hpp"
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>

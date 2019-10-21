@@ -1,4 +1,4 @@
-#include <phase-vocoder/model.h>
+#include <phase-vocoder/model.hpp>
 #include <memory>
 
 namespace phase_vocoder {

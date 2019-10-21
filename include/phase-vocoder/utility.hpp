@@ -1,7 +1,7 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_H_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_H_
+#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_HPP_
+#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_HPP_
 
-#include "model.h"
+#include "model.hpp"
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>

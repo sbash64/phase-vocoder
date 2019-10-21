@@ -1,5 +1,5 @@
 #include "assert-utility.h"
-#include <phase-vocoder/SignalConverter.h>
+#include <phase-vocoder/SignalConverter.hpp>
 #include <gtest/gtest.h>
 
 namespace phase_vocoder::test { namespace {
