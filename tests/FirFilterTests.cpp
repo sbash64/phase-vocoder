@@ -134,26 +134,29 @@ protected:
 	}
 };
 
-TEST_F(FirFilterTests, emptyInputYieldsEmpty) {
+#define FIR_FILTER_TEST(a)\
+    TEST_F(FirFilterTests, a)
+
+FIR_FILTER_TEST(emptyInputYieldsEmpty) {
 	assertFilteredOutput({}, {});
 }
 
-TEST_F(FirFilterTests, identityYieldsSame) {
+FIR_FILTER_TEST(identityYieldsSame) {
 	setCoefficients({ 1 });
 	assertFilteredOutput({2, 3, 4}, {2, 3, 4});
 }
 
-TEST_F(FirFilterTests, doubleYieldsDouble) {
+FIR_FILTER_TEST(doubleYieldsDouble) {
 	setCoefficients({ 2 });
 	assertFilteredOutput({ 3, 4, 5 }, { 6, 8, 10 });
 }
 
-TEST_F(FirFilterTests, simpleConvolution) {
+FIR_FILTER_TEST(simpleConvolution) {
 	setCoefficients({ 1, 2, 3 });
 	assertFilteredOutput({ 4, 5, 6 }, { 1*4, 1*5. + 2*4., 1*6. + 2*5. + 3*4. });
 }
 
-TEST_F(FirFilterTests, simpleConvolutionInSteps) {
+FIR_FILTER_TEST(simpleConvolutionInSteps) {
 	setCoefficients({ 1, 2, 3 });
 	assertFilteredOutputs(
 		{
@@ -169,7 +172,7 @@ TEST_F(FirFilterTests, simpleConvolutionInSteps) {
 	);
 }
 
-TEST_F(FirFilterTests, changingSteps) {
+FIR_FILTER_TEST(changingSteps) {
 	setCoefficients({ 1, 2, 3, 4 });
 	assertFilteredOutputs(
 		{

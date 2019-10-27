@@ -42,7 +42,10 @@ class HannWindowTests : public ::testing::Test {};
 #define ASSERT_YIELDS_FIVE_WINDOW_SAMPLES(a, b, c, d, e, f)\
     assertEqual(fiveSamples(b, c, d, e, f), hannWindow<double>(a), 1e-15)
 
-TEST_F(HannWindowTests, even) {
+#define HANN_WINDOW_TEST(a)\
+    TEST_F(HannWindowTests, a)
+
+HANN_WINDOW_TEST(even) {
     ASSERT_YIELDS_SIX_WINDOW_SAMPLES(
         5,
         sinSquared(pi() * 0. / 5.),
@@ -54,7 +57,7 @@ TEST_F(HannWindowTests, even) {
     );
 }
 
-TEST_F(HannWindowTests, odd) {
+HANN_WINDOW_TEST(odd) {
     ASSERT_YIELDS_FIVE_WINDOW_SAMPLES(
         4,
         sinSquared(pi() * 0. / 4.),
