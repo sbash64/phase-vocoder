@@ -11,18 +11,14 @@ constexpr int nearestGreaterPowerTwo(std::size_t n) {
     return 1 << power;
 }
 
-template<typename T>
-void resize(buffer_type<T> &x, std::size_t n) {
+template <typename T> void resize(buffer_type<T> &x, std::size_t n) {
     x.resize(n);
 }
 
-template<typename T>
+template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
-    const buffer_type<T> &b,
-    typename FourierTransformer<T>::Factory &factory
-) :
-    overlap{nearestGreaterPowerTwo(size(b))}
-{
+    const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
+    : overlap{nearestGreaterPowerTwo(size(b))} {
     auto M = size(b);
     auto N = nearestGreaterPowerTwo(M);
     transformer = factory.make(N);
@@ -34,34 +30,24 @@ OverlapAddFilter<T>::OverlapAddFilter(
     dft(realBuffer, H);
 }
 
-template<typename T>
-void OverlapAddFilter<T>::filter(signal_type<T> x) {
-    for (signal_index_type<T> j{0}; j < size(x)/L; ++j)
-        filter_(x.subspan(j*L, L));
-    if (auto left = size(x)%L)
+template <typename T> void OverlapAddFilter<T>::filter(signal_type<T> x) {
+    for (signal_index_type<T> j{0}; j < size(x) / L; ++j)
+        filter_(x.subspan(j * L, L));
+    if (auto left = size(x) % L)
         filter_(x.last(left));
 }
 
-template<typename T>
+template <typename T>
 void OverlapAddFilter<T>::dft(signal_type<T> x, complex_signal_type<T> X) {
     transformer->dft(x, X);
 }
 
-template<typename T>
-void OverlapAddFilter<T>::filter_(signal_type<T> x) {
-    zero<T>(
-        begin(realBuffer) + size(x),
-        end(realBuffer)
-    );
+template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
+    zero<T>(begin(realBuffer) + size(x), end(realBuffer));
     copy<T>(x, realBuffer);
     dft(realBuffer, complexBuffer);
-    std::transform(
-        begin(complexBuffer),
-        end(complexBuffer),
-        begin(H),
-        begin(complexBuffer),
-        std::multiplies<>{}
-    );
+    std::transform(begin(complexBuffer), end(complexBuffer), begin(H),
+        begin(complexBuffer), std::multiplies<>{});
     transformer->idft(complexBuffer, realBuffer);
     overlap.add(realBuffer);
     overlap.next(x);
