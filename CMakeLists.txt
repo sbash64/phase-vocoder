@@ -19,6 +19,7 @@ add_library(phase-vocoder
     src/OverlapAddFilter.cpp
     src/OverlapExtract.cpp
     src/InterpolateFrames.cpp
+    src/SignalConverter.cpp
 )
 target_include_directories(phase-vocoder PUBLIC include)
 target_include_directories(phase-vocoder PRIVATE include/phase-vocoder)
