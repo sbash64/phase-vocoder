@@ -313,6 +313,38 @@ static void assertYieldsNoFrames(
 	interpolate.assertYieldsNoFrames(x);
 }
 
+class InterpolateFramesP1Q1Tests : public ::testing::Test {
+	int P = 1;
+	int Q = 1;
+	int N = 3;
+	InterpolateFramesFacade interpolate{ P, Q, N };
+protected:
+	void assertInterpolatedFrames(
+		const std::vector<complex_type<double>> &x,
+		const std::vector<std::vector<complex_type<double>>> &frames,
+		double tolerance
+	) {
+		test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+	}
+
+	void consumeAdd(const std::vector<complex_type<double>> &x) {
+        test::consumeAdd(interpolate, x);
+	}
+};
+
+TEST_F(
+	InterpolateFramesP1Q1Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase
+) {
+	assertInterpolatedFrames(
+		{1. + 2i, 3. + 4i, 5. + 6i},
+		{
+			{1. + 2i, 3. + 4i, 5. + 6i}
+		},
+		1e-15
+	);
+}
+
 class InterpolateFramesP1Q2Tests : public ::testing::Test {
 	int P = 1;
 	int Q = 2;

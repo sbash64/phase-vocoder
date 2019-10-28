@@ -21,7 +21,7 @@ template <typename T> class FourierTransformer {
     };
 };
 
-template <typename T> class OverlapAddFilter : Filter<T> {
+template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
     OverlapAddFilter(const buffer_type<T> &b,
         typename FourierTransformer<T>::Factory &factory);

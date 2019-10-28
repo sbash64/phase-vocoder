@@ -16,7 +16,7 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     copy(currentFrame, previousFrame);
     copy(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
-    if (P > Q && first_) {
+    if (P >= Q && first_) {
         accumulatePhase();
         first_ = false;
     }
