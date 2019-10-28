@@ -66,12 +66,17 @@ public:
         return decimateInput_;
     }
 
+    auto expandInput() const {
+        return expandInput_;
+    }
+
     void decimate(const_signal_type<T> x, signal_type<T>) override {
         append(log_, "decimate");
         decimateInput_ = x;
     }
 
-    void expand(const_signal_type<T>, signal_type<T>) override {
+    void expand(const_signal_type<T> x, signal_type<T>) override {
+        expandInput_ = x;
         append(log_, "expand ");
     }
 
@@ -80,6 +85,7 @@ public:
     }
 private:
     const_signal_type<T> decimateInput_;
+    const_signal_type<T> expandInput_;
     std::string log_;
 };
 
@@ -114,6 +120,11 @@ protected:
     auto decimateInput() const {
         return shunt->decimateInput();
     }
+
+    auto expandInput() const {
+        return shunt->expandInput();
+    }
+    
 private:
     std::vector<double> x;
     std::vector<double> y;
@@ -132,6 +143,9 @@ private:
 #define ASSERT_INPUT_PASSED_TO_DECIMATE()\
     assertEqual(input(), decimateInput())
 
+#define ASSERT_INPUT_PASSED_TO_EXPAND()\
+    assertEqual(input(), expandInput())
+
 TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
@@ -140,5 +154,10 @@ TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
 TEST_F(SampleRateConverterTests, convertPassesInputToDecimate) {
     convert();
     ASSERT_INPUT_PASSED_TO_DECIMATE();
+}
+
+TEST_F(SampleRateConverterTests, convertPassesInputToExpand) {
+    convert();
+    ASSERT_INPUT_PASSED_TO_EXPAND();
 }
 }}
