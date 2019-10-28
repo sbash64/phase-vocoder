@@ -10,7 +10,7 @@ static void append(std::string &s, const std::string &what) {
 
 template<typename T>
 class SampleRateConverterShunt :
-    public ISignalConverter<T>,
+    public SignalConverter<T>,
     public Filter<T> {
 public:
     auto log() const {

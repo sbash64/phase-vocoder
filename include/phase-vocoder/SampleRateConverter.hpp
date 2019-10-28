@@ -6,9 +6,9 @@
 #include <memory>
 
 namespace phase_vocoder {
-template <typename T> class ISignalConverter {
+template <typename T> class SignalConverter {
   public:
-    virtual ~ISignalConverter() = default;
+    virtual ~SignalConverter() = default;
     virtual void expand(const_signal_type<T>, signal_type<T>) = 0;
     virtual void decimate(const_signal_type<T>, signal_type<T>) = 0;
 };
@@ -27,7 +27,7 @@ template <typename T> class Filter {
 
 template <typename T> class SampleRateConverter {
   public:
-    SampleRateConverter(int P, int hop, ISignalConverter<T> &converter,
+    SampleRateConverter(int P, int hop, SignalConverter<T> &converter,
         typename Filter<T>::Factory &factory)
         : buffer(sizeNarrow<T>(P * hop)), filter{factory.make()},
           converter{converter} {}
@@ -41,7 +41,7 @@ template <typename T> class SampleRateConverter {
   private:
     buffer_type<T> buffer;
     std::shared_ptr<Filter<T>> filter;
-    ISignalConverter<T> &converter;
+    SignalConverter<T> &converter;
 };
 }
 

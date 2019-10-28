@@ -25,7 +25,7 @@ protected:
         assertEqual(y, decimated);
     }
 private:
-    SignalConverter<double> converter;
+    SignalConverterImpl<double> converter;
 };
 
 TEST_F(SignalConverterTests, extractsEveryQthElement) {
