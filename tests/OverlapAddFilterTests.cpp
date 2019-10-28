@@ -10,13 +10,14 @@ void copy(const_signal_type<T> x, signal_type<T> y) {
 
 template<typename T>
 void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
-    x.resize(gsl::narrow_cast<size_t>(y.size()));
+    x.resize(gsl::narrow_cast<typename std::vector<T>::size_type>(y.size()));
 }
 
-class FourierTransformerStub : public FourierTransformer<double> {
-	using complex_buffer_type = std::vector<complex_type<double>>;
-	using real_buffer_type = std::vector<double>;
-    std::vector<std::vector<double>> dftReals_;
+template<typename T>
+class FourierTransformerStub : public FourierTransformer<T> {
+	using complex_buffer_type = std::vector<complex_type<T>>;
+	using real_buffer_type = std::vector<T>;
+    std::vector<std::vector<T>> dftReals_;
     complex_buffer_type dftComplex_;
     complex_buffer_type idftComplex_;
     real_buffer_type dftReal_;
@@ -34,10 +35,10 @@ public:
         return idftComplex_;
     }
 
-    void dft(signal_type<double> x, complex_signal_type<double> y) override {
-        resizeToMatch<double>(dftReal_, x);
-        copy<double>(x, dftReal_);
-        copy<complex_type<double>>(dftComplex_, y);
+    void dft(signal_type<T> x, complex_signal_type<T> y) override {
+        resizeToMatch<T>(dftReal_, x);
+        copy<T>(x, dftReal_);
+        copy<complex_type<T>>(dftComplex_, y);
         dftReals_.push_back(dftReal_);
     }
 
@@ -49,20 +50,20 @@ public:
         idftReal_ = std::move(x);
     }
 
-    void idft(complex_signal_type<double> x, signal_type<double> y) override {
-        resizeToMatch<complex_type<double>>(idftComplex_, x);
-        copy<complex_type<double>>(x, idftComplex_);
-        copy<double>(idftReal_, y);
+    void idft(complex_signal_type<T> x, signal_type<T> y) override {
+        resizeToMatch<complex_type<T>>(idftComplex_, x);
+        copy<complex_type<T>>(x, idftComplex_);
+        copy<T>(idftReal_, y);
     }
 
-    class FactoryStub : public FourierTransformer::Factory {
-        std::shared_ptr<FourierTransformer> transform;
+    class FactoryStub : public FourierTransformer<T>::Factory {
+        std::shared_ptr<FourierTransformer<T>> transform;
         int N_;
     public:
-        explicit FactoryStub(std::shared_ptr<FourierTransformer> transform) :
+        explicit FactoryStub(std::shared_ptr<FourierTransformer<T>> transform) :
             transform{std::move(transform)} {}
 
-        std::shared_ptr<FourierTransformer> make(int N) override {
+        std::shared_ptr<FourierTransformer<T>> make(int N) override {
             N_ = N;
             return transform;
         }
@@ -75,9 +76,9 @@ public:
 
 class OverlapAddFilterTests : public ::testing::Test {
 protected:
-    std::shared_ptr<FourierTransformerStub> fourierTransformer_ =
-        std::make_shared<FourierTransformerStub>();
-    FourierTransformerStub::FactoryStub factory{fourierTransformer_};
+    std::shared_ptr<FourierTransformerStub<double>> fourierTransformer_ =
+        std::make_shared<FourierTransformerStub<double>>();
+    FourierTransformerStub<double>::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
     std::vector<double> signal;
 
@@ -122,8 +123,10 @@ protected:
     }
 };
 
-TEST_F(
-    OverlapAddFilterTests,
+#define OVERLAP_ADD_FILTER_TEST(a)\
+    TEST_F(OverlapAddFilterTests, a)
+
+OVERLAP_ADD_FILTER_TEST(
     constructorCreatesTransformWithSizeGreaterThanTapsNearestPowerTwo
 ) {
     b = { 1, 2, 3 };
@@ -131,8 +134,7 @@ TEST_F(
     assertEqual(4, factory.N());
 }
 
-TEST_F(
-    OverlapAddFilterTests,
+OVERLAP_ADD_FILTER_TEST(
     constructorTransformsTapsZeroPaddedToNearestGreaterPowerTwo
 ) {
     b = { 1, 2, 3 };
@@ -140,7 +142,7 @@ TEST_F(
     assertDftRealEquals({ 1, 2, 3, 0 });
 }
 
-TEST_F(OverlapAddFilterTests, filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
+OVERLAP_ADD_FILTER_TEST(filterPassesEachBlockLSamplesToTransformZeroPaddedToN) {
     setTapCount(4 - 1);
     auto overlapAdd = construct();
     signal = { 5, 6, 7, 8, 9, 10 };
@@ -150,8 +152,7 @@ TEST_F(OverlapAddFilterTests, filterPassesEachBlockLSamplesToTransformZeroPadded
     assertDftRealEquals({9, 10, 0, 0}, 3);
 }
 
-TEST_F(
-    OverlapAddFilterTests,
+OVERLAP_ADD_FILTER_TEST(
     filterPassesEachBlockLSamplesToTransformZeroPaddedToN2
 ) {
     setTapCount(4 - 1);
@@ -162,7 +163,7 @@ TEST_F(
     assertDftRealEquals({7, 0, 0, 0}, 2);
 }
 
-TEST_F(OverlapAddFilterTests, filterPassesTransformProductToInverseTransform) {
+OVERLAP_ADD_FILTER_TEST(filterPassesTransformProductToInverseTransform) {
     setTapCount(4 - 1);
     setDftComplex({ 5, 6, 7, 8 });
     auto overlapAdd = construct();
@@ -172,7 +173,7 @@ TEST_F(OverlapAddFilterTests, filterPassesTransformProductToInverseTransform) {
     assertIdftComplexEquals({ 5*11, 6*12, 7*13, 8*14 });
 }
 
-TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform) {
+OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -182,7 +183,7 @@ TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform) {
     assertXEquals({ 5, 6 });
 }
 
-TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform2) {
+OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform2) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -192,7 +193,7 @@ TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform2) {
     assertXEquals({ 5, 6, 5+7, 6+8 });
 }
 
-TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform3) {
+OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform3) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -205,7 +206,7 @@ TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform3) {
     assertXEquals({ 9+7, 10+8 });
 }
 
-TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform4) {
+OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform4) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
@@ -215,7 +216,7 @@ TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform4) {
     assertXEquals({ 5, 6, 5+7 });
 }
 
-TEST_F(OverlapAddFilterTests, filterOverlapAddsInverseTransform5) {
+OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform5) {
     setTapCount(4 - 1);
     setDftComplex({ 0, 0, 0, 0 });
     auto overlapAdd = construct();
