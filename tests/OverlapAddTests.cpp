@@ -29,11 +29,14 @@ protected:
     }
 };
 
-TEST_F(OverlapAddTests, firstBlockAddedToZeros) {
+#define OVERLAP_ADD_TEST(a)\
+    TEST_F(OverlapAddTests, a)
+
+OVERLAP_ADD_TEST(firstBlockAddedToZeros) {
     assertOverlap({ 1, 2, 3, 4, 5 }, { 1, 2 });
 }
 
-TEST_F(OverlapAddTests, nextBlockOverlapAddedToPrevious) {
+OVERLAP_ADD_TEST(nextBlockOverlapAddedToPrevious) {
     consumeAdd({ 1, 2, 3, 4, 5 });
     assertOverlap({ 6, 7, 8, 9, 10 }, { 3+6, 4+7 });
     assertOverlap({ 0, 0, 0, 0, 0 }, { 5+8, 9 });
