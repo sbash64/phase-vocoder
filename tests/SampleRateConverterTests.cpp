@@ -1,60 +1,10 @@
-#include <phase-vocoder/model.hpp>
-#include <phase-vocoder/utility.hpp>
-#include <memory>
-
-namespace phase_vocoder {
-template<typename T>
-class ISignalConverter {
-public:
-    virtual ~ISignalConverter() = default;
-    virtual void expand(const_signal_type<T>, signal_type<T>) = 0;
-    virtual void decimate(const_signal_type<T>, signal_type<T>) = 0;
-};
-
-template<typename T>
-class Filter {
-public:
-    virtual ~Filter() = default;
-    virtual void filter(signal_type<T>) = 0;
-
-    class Factory {
-    public:
-        virtual ~Factory() = default;
-        virtual std::shared_ptr<Filter> make() = 0;
-    };
-};
-
-template<typename T>
-class SampleRateConverter {
-public:
-    SampleRateConverter(
-        int P,
-        int hop,
-        ISignalConverter<T> &converter,
-        typename Filter<T>::Factory &factory
-    ) :
-        buffer(sizeNarrow<T>(P*hop)),
-        filter{factory.make()},
-        converter{converter} {}
-
-    void convert(const_signal_type<T> x, signal_type<T> y) {
-        converter.expand(x, buffer);
-        filter->filter(buffer);
-        converter.decimate(buffer, y);
-    }
-private:
-    std::vector<T> buffer;
-    std::shared_ptr<Filter<T>> filter;
-    ISignalConverter<T> &converter;
-};
-}
-
 #include "assert-utility.h"
+#include <phase-vocoder/SampleRateConverter.hpp>
 #include <gtest/gtest.h>
 #include <string>
 
 namespace phase_vocoder::test { namespace {
-void append(std::string &s, const std::string &what) {
+static void append(std::string &s, const std::string &what) {
     s += what;
 }
 
@@ -166,7 +116,7 @@ protected:
     auto filterInput() const {
         return shunt->filterInput();
     }
-    
+
 private:
     std::vector<double> x;
     std::vector<double> y;
@@ -197,32 +147,35 @@ private:
 #define ASSERT_FILTER_INPUT_SIZE(a)\
     assertEqual(a, size(filterInput()));
 
-TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
+#define SAMPLE_RATE_CONVERTER_TEST(a)\
+    TEST_F(SampleRateConverterTests, a)
+
+SAMPLE_RATE_CONVERTER_TEST(convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
 }
 
-TEST_F(SampleRateConverterTests, convertPassesInputToExpand) {
+SAMPLE_RATE_CONVERTER_TEST(convertPassesInputToExpand) {
     convert();
     ASSERT_INPUT_PASSED_TO_EXPAND();
 }
 
-TEST_F(SampleRateConverterTests, convertPassesOutputToDecimate) {
+SAMPLE_RATE_CONVERTER_TEST(convertPassesOutputToDecimate) {
     convert();
     ASSERT_OUTPUT_PASSED_TO_DECIMATE();
 }
 
-TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToExpand) {
+SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToExpand) {
     convert();
     ASSERT_EXPAND_OUTPUT_SIZE(3 * 5l);
 }
 
-TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToFilter) {
+SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToFilter) {
     convert();
     ASSERT_FILTER_INPUT_SIZE(3 * 5l);
 }
 
-TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToDecimate) {
+SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToDecimate) {
     convert();
     ASSERT_DECIMATE_INPUT_SIZE(3 * 5l);
 }
