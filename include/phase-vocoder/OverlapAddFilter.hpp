@@ -4,6 +4,7 @@
 #include "model.hpp"
 #include "utility.hpp"
 #include "OverlapAdd.hpp"
+#include "SampleRateConverter.hpp"
 #include <memory>
 
 namespace phase_vocoder {
@@ -20,11 +21,11 @@ template <typename T> class FourierTransformer {
     };
 };
 
-template <typename T> class OverlapAddFilter {
+template <typename T> class OverlapAddFilter : Filter<T> {
   public:
     OverlapAddFilter(const buffer_type<T> &b,
         typename FourierTransformer<T>::Factory &factory);
-    void filter(signal_type<T> x);
+    void filter(signal_type<T> x) override;
 
   private:
     void dft(signal_type<T> x, complex_signal_type<T> X);
