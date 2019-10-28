@@ -1,4 +1,5 @@
 #include <phase-vocoder/model.hpp>
+#include <phase-vocoder/utility.hpp>
 #include <memory>
 
 namespace phase_vocoder {
@@ -27,18 +28,22 @@ template<typename T>
 class SampleRateConverter {
 public:
     SampleRateConverter(
+        int P,
+        int hop,
         ISignalConverter<T> &converter,
         typename Filter<T>::Factory &factory
     ) :
+        buffer(sizeNarrow<T>(P*hop)),
         filter{factory.make()},
         converter{converter} {}
 
     void convert(const_signal_type<T> x, signal_type<T> y) {
-        converter.expand(x, y);
+        converter.expand(x, buffer);
         filter->filter(y);
         converter.decimate(x, y);
     }
 private:
+    std::vector<T> buffer;
     std::shared_ptr<Filter<T>> filter;
     ISignalConverter<T> &converter;
 };
@@ -70,6 +75,10 @@ public:
         return expandInput_;
     }
 
+    auto expandOutput() const {
+        return expandOutput_;
+    }
+
     auto decimateOutput() const {
         return decimateOutput_;
     }
@@ -80,8 +89,9 @@ public:
         decimateOutput_ = y;
     }
 
-    void expand(const_signal_type<T> x, signal_type<T>) override {
+    void expand(const_signal_type<T> x, signal_type<T> y) override {
         expandInput_ = x;
+        expandOutput_ = y;
         append(log_, "expand ");
     }
 
@@ -91,6 +101,7 @@ public:
 private:
     const_signal_type<T> decimateInput_;
     const_signal_type<T> expandInput_;
+    signal_type<T> expandOutput_;
     signal_type<T> decimateOutput_;
     std::string log_;
 };
@@ -108,6 +119,9 @@ public:
 private:
     std::shared_ptr<Filter<T>> filter_;
 };
+
+constexpr auto P = 3;
+constexpr auto hop = 5;
 
 class SampleRateConverterTests : public ::testing::Test {
 protected:
@@ -135,6 +149,10 @@ protected:
         return shunt->expandInput();
     }
 
+    auto expandOutput() const {
+        return shunt->expandOutput();
+    }
+
     auto decimateOutput() const {
         return shunt->decimateOutput();
     }
@@ -145,7 +163,7 @@ private:
     std::shared_ptr<SampleRateConverterShunt<double>> shunt =
         std::make_shared<SampleRateConverterShunt<double>>();
     SampleRateConverterShuntFactory<double> factory{shunt};
-    SampleRateConverter<double> converter{*shunt, factory};
+    SampleRateConverter<double> converter{P, hop, *shunt, factory};
 };
 
 #define ASSERT_EQUAL(a, b)\
@@ -162,6 +180,9 @@ private:
 
 #define ASSERT_OUTPUT_PASSED_TO_DECIMATE()\
     assertEqual(output(), decimateOutput())
+
+#define ASSERT_EXPAND_OUTPUT_SIZE(a)\
+    assertEqual(a, size(expandOutput()));
 
 TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
@@ -181,5 +202,10 @@ TEST_F(SampleRateConverterTests, convertPassesInputToExpand) {
 TEST_F(SampleRateConverterTests, convertPassesOutputToDecimate) {
     convert();
     ASSERT_OUTPUT_PASSED_TO_DECIMATE();
+}
+
+TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToExpand) {
+    convert();
+    ASSERT_EXPAND_OUTPUT_SIZE(3 * 5l);
 }
 }}
