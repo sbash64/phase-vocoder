@@ -6,46 +6,39 @@
 #include <memory>
 
 namespace phase_vocoder {
-template<typename T>
-class ISignalConverter {
-public:
+template <typename T> class ISignalConverter {
+  public:
     virtual ~ISignalConverter() = default;
     virtual void expand(const_signal_type<T>, signal_type<T>) = 0;
     virtual void decimate(const_signal_type<T>, signal_type<T>) = 0;
 };
 
-template<typename T>
-class Filter {
-public:
+template <typename T> class Filter {
+  public:
     virtual ~Filter() = default;
     virtual void filter(signal_type<T>) = 0;
 
     class Factory {
-    public:
+      public:
         virtual ~Factory() = default;
         virtual std::shared_ptr<Filter> make() = 0;
     };
 };
 
-template<typename T>
-class SampleRateConverter {
-public:
-    SampleRateConverter(
-        int P,
-        int hop,
-        ISignalConverter<T> &converter,
-        typename Filter<T>::Factory &factory
-    ) :
-        buffer(sizeNarrow<T>(P*hop)),
-        filter{factory.make()},
-        converter{converter} {}
+template <typename T> class SampleRateConverter {
+  public:
+    SampleRateConverter(int P, int hop, ISignalConverter<T> &converter,
+        typename Filter<T>::Factory &factory)
+        : buffer(sizeNarrow<T>(P * hop)), filter{factory.make()},
+          converter{converter} {}
 
     void convert(const_signal_type<T> x, signal_type<T> y) {
         converter.expand(x, buffer);
         filter->filter(buffer);
         converter.decimate(buffer, y);
     }
-private:
+
+  private:
     buffer_type<T> buffer;
     std::shared_ptr<Filter<T>> filter;
     ISignalConverter<T> &converter;

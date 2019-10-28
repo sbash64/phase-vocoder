@@ -6,8 +6,7 @@
 #include "SampleRateConverter.hpp"
 
 namespace phase_vocoder {
-template<typename T>
-class SignalConverter : public ISignalConverter<T> {
+template <typename T> class SignalConverter : public ISignalConverter<T> {
   public:
     // gsl namespace has function called "at".
     // explicit name resolves ambiguous call.
