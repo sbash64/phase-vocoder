@@ -3,13 +3,14 @@
 
 #include "model.hpp"
 #include "utility.hpp"
+#include "SampleRateConverter.hpp"
 
 namespace phase_vocoder {
-class SignalConverter {
+template<typename T>
+class SignalConverter : public ISignalConverter<T> {
   public:
     // gsl namespace has function called "at".
     // explicit name resolves ambiguous call.
-    template <typename T>
     void expand(const_signal_type<T> x, signal_type<T> y) {
         auto P = y.size() / x.size();
         zero<T>(begin(y), end(y));
@@ -17,7 +18,6 @@ class SignalConverter {
             phase_vocoder::at(y, i * P) = phase_vocoder::at(x, i);
     }
 
-    template <typename T>
     void decimate(const_signal_type<T> x, signal_type<T> y) {
         auto Q = x.size() / y.size();
         for (signal_index_type<T> i{0}; i < size(y); ++i)

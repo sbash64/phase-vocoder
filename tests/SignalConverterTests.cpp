@@ -11,7 +11,7 @@ protected:
         const std::vector<double> &y
     ) {
         std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
-        converter.expand<double>(x, expanded);
+        converter.expand(x, expanded);
         assertEqual(y, expanded);
     }
 
@@ -21,11 +21,11 @@ protected:
         const std::vector<double> &y
     ) {
         std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
-        converter.decimate<double>(x, decimated);
+        converter.decimate(x, decimated);
         assertEqual(y, decimated);
     }
 private:
-    SignalConverter converter;
+    SignalConverter<double> converter;
 };
 
 TEST_F(SignalConverterTests, extractsEveryQthElement) {
