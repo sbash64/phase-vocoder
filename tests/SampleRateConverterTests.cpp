@@ -39,7 +39,7 @@ public:
 
     void convert(const_signal_type<T> x, signal_type<T> y) {
         converter.expand(x, buffer);
-        filter->filter(y);
+        filter->filter(buffer);
         converter.decimate(x, y);
     }
 private:
@@ -83,6 +83,10 @@ public:
         return decimateOutput_;
     }
 
+    auto filterInput() const {
+        return filterInput_;
+    }
+
     void decimate(const_signal_type<T> x, signal_type<T> y) override {
         append(log_, "decimate");
         decimateInput_ = x;
@@ -95,14 +99,16 @@ public:
         append(log_, "expand ");
     }
 
-    void filter(signal_type<T>) override {
+    void filter(signal_type<T> x) override {
         append(log_, "filter ");
+        filterInput_ = x;
     }
 private:
     const_signal_type<T> decimateInput_;
     const_signal_type<T> expandInput_;
     signal_type<T> expandOutput_;
     signal_type<T> decimateOutput_;
+    signal_type<T> filterInput_;
     std::string log_;
 };
 
@@ -156,6 +162,10 @@ protected:
     auto decimateOutput() const {
         return shunt->decimateOutput();
     }
+
+    auto filterInput() const {
+        return shunt->filterInput();
+    }
     
 private:
     std::vector<double> x;
@@ -184,6 +194,9 @@ private:
 #define ASSERT_EXPAND_OUTPUT_SIZE(a)\
     assertEqual(a, size(expandOutput()));
 
+#define ASSERT_FILTER_INPUT_SIZE(a)\
+    assertEqual(a, size(filterInput()));
+
 TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
@@ -207,5 +220,10 @@ TEST_F(SampleRateConverterTests, convertPassesOutputToDecimate) {
 TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToExpand) {
     convert();
     ASSERT_EXPAND_OUTPUT_SIZE(3 * 5l);
+}
+
+TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToFilter) {
+    convert();
+    ASSERT_FILTER_INPUT_SIZE(3 * 5l);
 }
 }}
