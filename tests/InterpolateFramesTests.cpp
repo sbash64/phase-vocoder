@@ -345,6 +345,20 @@ TEST_F(
 	);
 }
 
+TEST_F(
+	InterpolateFramesP1Q1Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase2
+) {
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
+	assertInterpolatedFrames(
+		{ 7. + 8i, 9. + 10i, 11. + 12i },
+		{
+			{ 7. + 8i, 9. + 10i, 11. + 12i }
+		},
+		1e-15
+	);
+}
+
 class InterpolateFramesP1Q2Tests : public ::testing::Test {
 	int P = 1;
 	int Q = 2;
