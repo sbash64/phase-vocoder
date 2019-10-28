@@ -40,7 +40,7 @@ public:
     void convert(const_signal_type<T> x, signal_type<T> y) {
         converter.expand(x, buffer);
         filter->filter(buffer);
-        converter.decimate(x, y);
+        converter.decimate(buffer, y);
     }
 private:
     std::vector<T> buffer;
@@ -182,8 +182,8 @@ private:
 #define ASSERT_CONVERSION_LOG(a)\
     ASSERT_EQUAL(a, conversionLog())
 
-#define ASSERT_INPUT_PASSED_TO_DECIMATE()\
-    assertEqual(input(), decimateInput())
+#define ASSERT_DECIMATE_INPUT_SIZE(a)\
+    assertEqual(a, size(decimateInput()))
 
 #define ASSERT_INPUT_PASSED_TO_EXPAND()\
     assertEqual(input(), expandInput())
@@ -200,11 +200,6 @@ private:
 TEST_F(SampleRateConverterTests, convertPerformsOperationsInOrder) {
     convert();
     ASSERT_CONVERSION_LOG("expand filter decimate");
-}
-
-TEST_F(SampleRateConverterTests, convertPassesInputToDecimate) {
-    convert();
-    ASSERT_INPUT_PASSED_TO_DECIMATE();
 }
 
 TEST_F(SampleRateConverterTests, convertPassesInputToExpand) {
@@ -225,5 +220,10 @@ TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToExpand) {
 TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToFilter) {
     convert();
     ASSERT_FILTER_INPUT_SIZE(3 * 5l);
+}
+
+TEST_F(SampleRateConverterTests, convertPassesBufferOfSizeHopTimesPToDecimate) {
+    convert();
+    ASSERT_DECIMATE_INPUT_SIZE(3 * 5l);
 }
 }}
