@@ -18,20 +18,24 @@ auto exp(const complex_type<double> &x) -> complex_type<double> {
     return std::exp(x);
 }
 
+auto nthPhase(const complex_type<double> &x, int n) -> complex_type<double> {
+    return x * exp(phase(x) * (n - 1) * 1i);
+}
+
 auto doublePhase(const complex_type<double> &x) -> complex_type<double> {
-    return x * exp(phase(x) * 1i);
+    return nthPhase(x, 2);
 }
 
 auto triplePhase(const complex_type<double> &x) -> complex_type<double> {
-    return x * exp(phase(x) * 2i);
+    return nthPhase(x, 3);
 }
 
-auto transform(std::vector<complex_type<double>> a,
+auto transform(std::vector<complex_type<double>> v,
     complex_type<double> (*f)(const complex_type<double> &))
     -> std::vector<complex_type<double>> {
-    std::transform(a.begin(), a.end(), a.begin(),
-        [=](const complex_type<double> &a_) { return (*f)(a_); });
-    return a;
+    std::transform(
+        v.begin(), v.end(), v.begin(), [=](auto x) { return (*f)(x); });
+    return v;
 }
 
 auto doublePhase(std::vector<complex_type<double>> x)
@@ -64,9 +68,7 @@ auto transform(std::vector<complex_type<double>> a,
     complex_type<double> (*f)(const complex_type<double> &,
         const complex_type<double> &)) -> std::vector<complex_type<double>> {
     std::transform(a.begin(), a.end(), b.begin(), a.begin(),
-        [=](const complex_type<double> &a_, const complex_type<double> &b_) {
-            return (*f)(a_, b_);
-        });
+        [=](auto a_, auto b_) { return (*f)(a_, b_); });
     return a;
 }
 
