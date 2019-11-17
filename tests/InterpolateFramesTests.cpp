@@ -72,6 +72,17 @@ auto transform(std::vector<complex_type<double>> a,
     return a;
 }
 
+auto transform(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b,
+	const std::vector<complex_type<double>> &c,
+	complex_type<double> (*f)(const complex_type<double> &,
+        const complex_type<double> &, const complex_type<double> &
+	)) -> std::vector<complex_type<double>> {
+	for (std::size_t i = 0; i < a.size(); ++i)
+		a.at(i) = (*f)(a.at(i), b.at(i), c.at(i));
+    return a;
+}
+
 auto averageMagnitudesAndSumPhases(std::vector<complex_type<double>> a,
     const std::vector<complex_type<double>> &b)
     -> std::vector<complex_type<double>> {
@@ -89,6 +100,13 @@ auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
     const complex_type<double> &a, const complex_type<double> &b)
     -> complex_type<double> {
     return complex((2 * magnitude(a) + magnitude(b)) / 3, 2 * phase(a));
+}
+
+auto twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird(
+    const complex_type<double> &a, const complex_type<double> &b,
+	const complex_type<double> &c)
+    -> complex_type<double> {
+    return complex((2 * magnitude(c) + magnitude(b)) / 3, phase(a) + phase(c));
 }
 
 auto magnitudeSecondAndSummedPhase(const complex_type<double> &a,
@@ -119,6 +137,15 @@ auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
     -> std::vector<complex_type<double>> {
     return transform(std::move(a), b,
         twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst);
+}
+
+auto twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird(
+	std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b,
+    const std::vector<complex_type<double>> &c
+) -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, c,
+        twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird);
 }
 
 auto magnitudeSecondAndSummedPhase(std::vector<complex_type<double>> a,
@@ -406,6 +433,25 @@ TEST_F(
 			magnitudeSecondAndSummedPhase(
 				{ 1. + 2i, 3. + 4i, 5. + 6i },
 				{ 7. + 8i, 9. + 10i, 11. + 12i }
+			)
+		},
+		1e-15
+	);
+}
+
+TEST_F(
+	InterpolateFramesP2Q3Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase3
+) {
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
+	consumeAdd({ 7. + 8i, 9. + 10i, 11. + 12i });
+	assertInterpolatedFrames(
+		{ 13. + 14i, 15. + 16i, 17. + 18i },
+		{
+			twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird(
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i },
+				{ 13. + 14i, 15. + 16i, 17. + 18i }
 			)
 		},
 		1e-15
