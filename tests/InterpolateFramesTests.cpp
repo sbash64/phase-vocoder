@@ -2,335 +2,242 @@
 #include <phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test { namespace {
+namespace phase_vocoder::test {
+namespace {
 using std::complex_literals::operator""i;
 
- auto magnitude(const complex_type<double> &x) -> double {
-	return std::abs(x);
+auto magnitude(const complex_type<double> &x) -> double { return std::abs(x); }
+
+auto phase(const complex_type<double> &x) -> double { return std::arg(x); }
+
+auto complex(double magnitude, double radians) -> complex_type<double> {
+    return std::polar(magnitude, radians);
 }
 
- auto phase(const complex_type<double> &x) -> double {
-	return std::arg(x);
+auto exp(const complex_type<double> &x) -> complex_type<double> {
+    return std::exp(x);
 }
 
- auto complex(double magnitude, double radians) -> complex_type<double> {
-	return std::polar(magnitude, radians);
+auto doublePhase(const complex_type<double> &x) -> complex_type<double> {
+    return x * exp(phase(x) * 1i);
 }
 
- auto exp(const complex_type<double> &x) -> complex_type<double> {
-	return std::exp(x);
+auto triplePhase(const complex_type<double> &x) -> complex_type<double> {
+    return x * exp(phase(x) * 2i);
 }
 
- auto doublePhase(const complex_type<double> &x) -> complex_type<double> {
-	return x * exp(phase(x) * 1i);
+auto transform(std::vector<complex_type<double>> a,
+    complex_type<double> (*f)(const complex_type<double> &))
+    -> std::vector<complex_type<double>> {
+    std::transform(a.begin(), a.end(), a.begin(),
+        [=](const complex_type<double> &a_) { return (*f)(a_); });
+    return a;
 }
 
- auto triplePhase(const complex_type<double> &x) -> complex_type<double> {
-	return x * exp(phase(x) * 2i);
+auto doublePhase(std::vector<complex_type<double>> x)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(x), doublePhase);
 }
 
- auto transform(
-	std::vector<complex_type<double>> a,
-	complex_type<double>(*f)(const complex_type<double> &)
-) -> std::vector<complex_type<double>> {
-	std::transform(
-		a.begin(),
-		a.end(),
-		a.begin(),
-		[=](const complex_type<double> &a_) { return (*f)(a_); }
-	);
-	return a;
+auto triplePhase(std::vector<complex_type<double>> x)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(x), triplePhase);
 }
 
- auto doublePhase(
-	std::vector<complex_type<double>> x
-) -> std::vector<complex_type<double>> {
-	return transform(std::move(x), doublePhase);
+auto averageMagnitude(
+    const complex_type<double> &a, const complex_type<double> &b) -> double {
+    return (magnitude(a) + magnitude(b)) / 2;
 }
 
- auto triplePhase(
-	std::vector<complex_type<double>> x
-) -> std::vector<complex_type<double>> {
-	return transform(std::move(x), triplePhase);
+auto summedPhase(const complex_type<double> &a, const complex_type<double> &b)
+    -> double {
+    return phase(a) + phase(b);
 }
 
- auto averageMagnitude(
-	const complex_type<double> &a,
-	const complex_type<double> &b
-) -> double {
-	return (magnitude(a) + magnitude(b)) / 2;
+auto averageMagnitudesAndSumPhases(const complex_type<double> &a,
+    const complex_type<double> &b) -> complex_type<double> {
+    return complex(averageMagnitude(a, b), summedPhase(a, b));
 }
 
- auto summedPhase(
-	const complex_type<double> &a,
-	const complex_type<double> &b
-) -> double {
-	return phase(a) + phase(b);
+auto transform(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b,
+    complex_type<double> (*f)(const complex_type<double> &,
+        const complex_type<double> &)) -> std::vector<complex_type<double>> {
+    std::transform(a.begin(), a.end(), b.begin(), a.begin(),
+        [=](const complex_type<double> &a_, const complex_type<double> &b_) {
+            return (*f)(a_, b_);
+        });
+    return a;
 }
 
- auto averageMagnitudesAndSumPhases(
-	const complex_type<double> &a,
-	const complex_type<double> &b
-) -> complex_type<double> {
-	return complex(averageMagnitude(a, b), summedPhase(a, b));
+auto averageMagnitudesAndSumPhases(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, averageMagnitudesAndSumPhases);
 }
 
- auto transform(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>> &b,
-	complex_type<double>(*f)(
-		const complex_type<double> &,
-		const complex_type<double> &
-	)
-) -> std::vector<complex_type<double>> {
-	std::transform(
-		a.begin(),
-		a.end(),
-		b.begin(),
-		a.begin(),
-		[=](
-			const complex_type<double> &a_,
-			const complex_type<double> &b_
-		) { return (*f)(a_, b_); }
-	);
-	return a;
+auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
+    const complex_type<double> &a, const complex_type<double> &b)
+    -> complex_type<double> {
+    return complex(
+        (2 * magnitude(a) + magnitude(b)) / 3, 2 * phase(a) + phase(b));
 }
 
- auto averageMagnitudesAndSumPhases(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>> &b
-) -> std::vector<complex_type<double>> {
-	return transform(std::move(a), b, averageMagnitudesAndSumPhases);
+auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
+    const complex_type<double> &a, const complex_type<double> &b)
+    -> complex_type<double> {
+    return complex((2 * magnitude(a) + magnitude(b)) / 3, 2 * phase(a));
 }
 
- auto
-twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(
-		(2*magnitude(a) + magnitude(b)) / 3,
-		2*phase(a) + phase(b)
-	);
+auto magnitudeSecondAndSummedPhase(const complex_type<double> &a,
+    const complex_type<double> &b) -> complex_type<double> {
+    return complex(magnitude(b), summedPhase(a, b));
 }
 
- auto
-twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(
-		(2 * magnitude(a) + magnitude(b)) / 3,
-		2 * phase(a)
-	);
+auto oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+    const complex_type<double> &a, const complex_type<double> &b)
+    -> complex_type<double> {
+    return complex(
+        (magnitude(a) + 2 * magnitude(b)) / 3, phase(a) + 2 * phase(b));
 }
 
- auto magnitudeSecondAndSummedPhase(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(magnitude(b), summedPhase(a, b));
+auto magnitudeSecondAndPhaseFirst(const complex_type<double> &a,
+    const complex_type<double> &b) -> complex_type<double> {
+    return complex(magnitude(b), phase(a));
 }
 
- auto
-oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(
-		(magnitude(a) + 2 * magnitude(b)) / 3,
-		phase(a) + 2 * phase(b)
-	);
+auto averageMagnitudesAndPhaseFirst(const complex_type<double> &a,
+    const complex_type<double> &b) -> complex_type<double> {
+    return complex(averageMagnitude(a, b), phase(a));
 }
 
- auto magnitudeSecondAndPhaseFirst(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(magnitude(b), phase(a));
+auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
+    std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b,
+        twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst);
 }
 
- auto averageMagnitudesAndPhaseFirst(
-	const complex_type<double>& a,
-	const complex_type<double>& b
-) -> complex_type<double> {
-	return complex(averageMagnitude(a, b), phase(a));
+auto magnitudeSecondAndSummedPhase(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, magnitudeSecondAndSummedPhase);
 }
 
- auto
-twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>> &b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst
-	);
+auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
+    std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b,
+        twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond);
 }
 
- auto magnitudeSecondAndSummedPhase(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>> &b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		magnitudeSecondAndSummedPhase
-	);
+auto oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
+    std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b,
+        oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond);
 }
 
- auto
-twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>>& b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirstPlusSecond
-	);
+auto magnitudeSecondAndPhaseFirst(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, magnitudeSecondAndPhaseFirst);
 }
 
- auto
-oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>>& b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		oneThirdMagnitudeFirstPlusTwoThirdsSecondAndPhaseFirstPlusDoubleSecond
-	);
-}
-
- auto magnitudeSecondAndPhaseFirst(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>>& b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		magnitudeSecondAndPhaseFirst
-	);
-}
-
- auto averageMagnitudesAndPhaseFirst(
-	std::vector<complex_type<double>> a,
-	const std::vector<complex_type<double>>& b
-) -> std::vector<complex_type<double>> {
-	return transform(
-		std::move(a),
-		b,
-		averageMagnitudesAndPhaseFirst
-	);
+auto averageMagnitudesAndPhaseFirst(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, averageMagnitudesAndPhaseFirst);
 }
 
 class InterpolateFramesFacade {
-	InterpolateFrames<double> interpolate;
-	int N;
-public:
-	InterpolateFramesFacade(int P, int Q, int N) :
-		interpolate{ P, Q, N },
-		N{ N } {}
+    InterpolateFrames<double> interpolate;
+    int N;
 
-	void assertYieldsNoFrames(
-		const std::vector<complex_type<double>> &x
-	) {
-		add(x);
-		assertDoesNotHaveNext();
-	}
+  public:
+    InterpolateFramesFacade(int P, int Q, int N) : interpolate{P, Q, N}, N{N} {}
 
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>> &x,
-		const std::vector<std::vector<complex_type<double>>> &frames,
-		double tolerance
-	) {
-		add(x);
-		for (const auto& frame : frames) {
-			assertHasNext();
-			assertNextEquals(frame, tolerance);
-		}
-		assertDoesNotHaveNext();
-	}
+    void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
+        add(x);
+        assertDoesNotHaveNext();
+    }
 
-	void assertHasNext() {
-		EXPECT_TRUE(hasNext());
-	}
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
+        add(x);
+        for (const auto &frame : frames) {
+            assertHasNext();
+            assertNextEquals(frame, tolerance);
+        }
+        assertDoesNotHaveNext();
+    }
 
-	void assertDoesNotHaveNext() {
-		EXPECT_FALSE(hasNext());
-	}
+    void assertHasNext() { EXPECT_TRUE(hasNext()); }
 
-	auto hasNext() -> bool {
-		return interpolate.hasNext();
-	}
+    void assertDoesNotHaveNext() { EXPECT_FALSE(hasNext()); }
 
-	void add(const std::vector<complex_type<double>> &x) {
-		interpolate.add(x);
-	}
+    auto hasNext() -> bool { return interpolate.hasNext(); }
 
-	void consumeAdd(const std::vector<complex_type<double>> &x) {
-		add(x);
-		while (hasNext())
-			next();
-	}
+    void add(const std::vector<complex_type<double>> &x) { interpolate.add(x); }
 
-	auto next() -> std::vector<complex_type<double>> {
-		std::vector<complex_type<double>> out(gsl::narrow_cast<size_t>(N));
-		interpolate.next(out);
-		return out;
-	}
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
+        add(x);
+        while (hasNext())
+            next();
+    }
 
-	void assertNextEquals(
-		const std::vector<complex_type<double>> &expected,
-		double tolerance
-	) {
-		assertEqual(expected, next(), tolerance);
-	}
+    auto next() -> std::vector<complex_type<double>> {
+        std::vector<complex_type<double>> out(gsl::narrow_cast<size_t>(N));
+        interpolate.next(out);
+        return out;
+    }
+
+    void assertNextEquals(
+        const std::vector<complex_type<double>> &expected, double tolerance) {
+        assertEqual(expected, next(), tolerance);
+    }
 };
 
- void consumeAdd(
-	InterpolateFramesFacade &interpolate,
-	const std::vector<complex_type<double>>& x
-) {
-	interpolate.consumeAdd(x);
+void consumeAdd(InterpolateFramesFacade &interpolate,
+    const std::vector<complex_type<double>> &x) {
+    interpolate.consumeAdd(x);
 }
 
- void assertInterpolatedFrames(
-	InterpolateFramesFacade& interpolate,
-	const std::vector<complex_type<double>>& x,
-	const std::vector<std::vector<complex_type<double>>>& frames,
-	double tolerance
-) {
-	interpolate.assertInterpolatedFrames(x, frames, tolerance);
+void assertInterpolatedFrames(InterpolateFramesFacade &interpolate,
+    const std::vector<complex_type<double>> &x,
+    const std::vector<std::vector<complex_type<double>>> &frames,
+    double tolerance) {
+    interpolate.assertInterpolatedFrames(x, frames, tolerance);
 }
 
- void assertYieldsNoFrames(
-	InterpolateFramesFacade& interpolate,
-	const std::vector<complex_type<double>>& x
-) {
-	interpolate.assertYieldsNoFrames(x);
+void assertYieldsNoFrames(InterpolateFramesFacade &interpolate,
+    const std::vector<complex_type<double>> &x) {
+    interpolate.assertYieldsNoFrames(x);
 }
 
 class InterpolateFramesP1Q1Tests : public ::testing::Test {
-	int P = 1;
-	int Q = 1;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>> &x,
-		const std::vector<std::vector<complex_type<double>>> &frames,
-		double tolerance
-	) {
-		test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+    int P = 1;
+    int Q = 1;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
 
-	void consumeAdd(const std::vector<complex_type<double>> &x) {
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
+        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+    }
+
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP1Q1Tests,
@@ -374,24 +281,27 @@ TEST_F(
 	);
 }
 
-class InterpolateFramesP1Q2Tests : public ::testing::Test {
-	int P = 1;
-	int Q = 2;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>> &x,
-		const std::vector<std::vector<complex_type<double>>> &frames,
-		double tolerance
-	) {
-		test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+// clang-format on
 
-	void consumeAdd(const std::vector<complex_type<double>> &x) {
+class InterpolateFramesP1Q2Tests : public ::testing::Test {
+    int P = 1;
+    int Q = 2;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
+
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
+        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+    }
+
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP1Q2Tests,
@@ -444,24 +354,27 @@ TEST_F(
 	);
 }
 
-class InterpolateFramesP2Q3Tests : public ::testing::Test {
-	int P = 2;
-	int Q = 3;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>>& x,
-		const std::vector<std::vector<complex_type<double>>>& frames,
-		double tolerance
-	) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+// clang-format on
 
-	void consumeAdd(const std::vector<complex_type<double>>& x) {
+class InterpolateFramesP2Q3Tests : public ::testing::Test {
+    int P = 2;
+    int Q = 3;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
+
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
+        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+    }
+
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP2Q3Tests,
@@ -497,24 +410,27 @@ TEST_F(
 	);
 }
 
-class InterpolateFramesP1Q3Tests : public ::testing::Test {
-	int P = 1;
-	int Q = 3;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>>& x,
-		const std::vector<std::vector<complex_type<double>>>& frames,
-		double tolerance
-	) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+// clang-format on
 
-	void consumeAdd(const std::vector<complex_type<double>>& x) {
+class InterpolateFramesP1Q3Tests : public ::testing::Test {
+    int P = 1;
+    int Q = 3;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
+
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
+        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+    }
+
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP1Q3Tests,
@@ -553,30 +469,31 @@ TEST_F(
 	);
 }
 
+// clang-format on
+
 class InterpolateFramesP2Q1Tests : public ::testing::Test {
-	int P = 2;
-	int Q = 1;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>>& x,
-		const std::vector<std::vector<complex_type<double>>>& frames,
-		double tolerance
-	) {
+    int P = 2;
+    int Q = 1;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
+
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
         test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+    }
 
-	void assertYieldsNoFrames(
-		const std::vector<complex_type<double>>& x
-	) {
+    void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
         test::assertYieldsNoFrames(interpolate, x);
-	}
+    }
 
-	void consumeAdd(const std::vector<complex_type<double>>& x) {
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP2Q1Tests,
@@ -609,30 +526,31 @@ TEST_F(
 	);
 }
 
+// clang-format on
+
 class InterpolateFramesP3Q2Tests : public ::testing::Test {
-	int P = 3;
-	int Q = 2;
-	int N = 3;
-	InterpolateFramesFacade interpolate{ P, Q, N };
-protected:
-	void assertInterpolatedFrames(
-		const std::vector<complex_type<double>>& x,
-		const std::vector<std::vector<complex_type<double>>>& frames,
-		double tolerance
-	) {
+    int P = 3;
+    int Q = 2;
+    int N = 3;
+    InterpolateFramesFacade interpolate{P, Q, N};
+
+  protected:
+    void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
+        const std::vector<std::vector<complex_type<double>>> &frames,
+        double tolerance) {
         test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
-	}
+    }
 
-	void assertYieldsNoFrames(
-		const std::vector<complex_type<double>>& x
-	) {
+    void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
         test::assertYieldsNoFrames(interpolate, x);
-	}
+    }
 
-	void consumeAdd(const std::vector<complex_type<double>>& x) {
+    void consumeAdd(const std::vector<complex_type<double>> &x) {
         test::consumeAdd(interpolate, x);
-	}
+    }
 };
+
+// clang-format off
 
 TEST_F(
 	InterpolateFramesP3Q2Tests,
@@ -664,5 +582,7 @@ TEST_F(
 		1e-15
 	);
 }
+
+// clang-format on
 }
 }
