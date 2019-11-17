@@ -74,12 +74,12 @@ auto transform(std::vector<complex_type<double>> a,
 
 auto transform(std::vector<complex_type<double>> a,
     const std::vector<complex_type<double>> &b,
-	const std::vector<complex_type<double>> &c,
-	complex_type<double> (*f)(const complex_type<double> &,
-        const complex_type<double> &, const complex_type<double> &
-	)) -> std::vector<complex_type<double>> {
-	for (std::size_t i = 0; i < a.size(); ++i)
-		a.at(i) = (*f)(a.at(i), b.at(i), c.at(i));
+    const std::vector<complex_type<double>> &c,
+    complex_type<double> (*f)(const complex_type<double> &,
+        const complex_type<double> &, const complex_type<double> &))
+    -> std::vector<complex_type<double>> {
+    for (std::size_t i = 0; i < a.size(); ++i)
+        a.at(i) = (*f)(a.at(i), b.at(i), c.at(i));
     return a;
 }
 
@@ -104,8 +104,7 @@ auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
 
 auto twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird(
     const complex_type<double> &a, const complex_type<double> &b,
-	const complex_type<double> &c)
-    -> complex_type<double> {
+    const complex_type<double> &c) -> complex_type<double> {
     return complex((2 * magnitude(c) + magnitude(b)) / 3, phase(a) + phase(c));
 }
 
@@ -140,10 +139,10 @@ auto twoThirdsMagnitudeFirstPlusOneThirdSecondAndDoublePhaseFirst(
 }
 
 auto twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird(
-	std::vector<complex_type<double>> a,
+    std::vector<complex_type<double>> a,
     const std::vector<complex_type<double>> &b,
-    const std::vector<complex_type<double>> &c
-) -> std::vector<complex_type<double>> {
+    const std::vector<complex_type<double>> &c)
+    -> std::vector<complex_type<double>> {
     return transform(std::move(a), b, c,
         twoThirdsMagnitudeThirdPlusOneThirdSecondAndPhaseFirstPlusThird);
 }

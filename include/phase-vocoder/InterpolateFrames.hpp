@@ -9,20 +9,22 @@ template <typename T> class InterpolateFrames {
   public:
     InterpolateFrames(int P, int Q, int N);
     void add(const_complex_signal_type<T> x);
-    bool hasNext();
+    auto hasNext() -> bool;
     void next(complex_signal_type<T> x);
 
   private:
-    void updateSkip();
+    void updatePhaseAccumulationSkip();
     void accumulatePhaseIfNeeded();
-    void checkIfNeedMore();
-    T phaseDifference(const complex_type<T> &a, const complex_type<T> &b);
-    T phase(const complex_type<T> &x);
-    T magnitude(const complex_type<T> &x);
+    void updateHasNext();
+    auto phaseDifference(const complex_type<T> &a, const complex_type<T> &b)
+        -> T;
+    auto phase(const complex_type<T> &x) -> T;
+    auto magnitude(const complex_type<T> &x) -> T;
     void transformFrames(buffer_type<T> &out,
         T (InterpolateFrames::*f)(
             const complex_type<T> &, const complex_type<T> &));
-    T resampleMagnitude(const complex_type<T> &a, const complex_type<T> &b);
+    auto resampleMagnitude(const complex_type<T> &a, const complex_type<T> &b)
+        -> T;
     void resampleMagnitude();
     void accumulatePhase();
 
@@ -36,8 +38,8 @@ template <typename T> class InterpolateFrames {
     int P;
     int Q;
     bool hasNext_{true};
-    bool first_{true};
-    bool skip_{};
+    bool hasAdded{};
+    bool skipPhaseAccumulation{};
 };
 }
 

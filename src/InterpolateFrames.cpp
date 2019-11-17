@@ -17,13 +17,14 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     copy(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
     accumulatePhaseIfNeeded();
-    if (P == Q || (P > Q && first_))
+    if (P == Q || (P > Q && !hasAdded))
         accumulatePhase();
-    first_ = false;
+    hasAdded = true;
 
-    updateSkip();
+    updatePhaseAccumulationSkip();
+
     hasNext_ = true;
-    checkIfNeedMore();
+    updateHasNext();
 }
 
 template <typename T> auto InterpolateFrames<T>::hasNext() -> bool {
@@ -38,20 +39,20 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
         [](T magnitude, T phase) { return std::polar(magnitude, phase); });
     accumulatePhaseIfNeeded();
     numerator += P;
-    updateSkip();
-    checkIfNeedMore();
+    updatePhaseAccumulationSkip();
+    updateHasNext();
 }
 
-template <typename T> void InterpolateFrames<T>::updateSkip() {
-    skip_ = Q < numerator && numerator < Q + P;
+template <typename T> void InterpolateFrames<T>::updatePhaseAccumulationSkip() {
+    skipPhaseAccumulation = Q < numerator && numerator < Q + P;
 }
 
 template <typename T> void InterpolateFrames<T>::accumulatePhaseIfNeeded() {
-    if (numerator != Q && !skip_)
+    if (numerator != Q && !skipPhaseAccumulation)
         accumulatePhase();
 }
 
-template <typename T> void InterpolateFrames<T>::checkIfNeedMore() {
+template <typename T> void InterpolateFrames<T>::updateHasNext() {
     if (numerator > Q) {
         numerator -= Q;
         hasNext_ = false;
