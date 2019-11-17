@@ -16,6 +16,10 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     copy(currentFrame, previousFrame);
     copy(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
+    if (P == Q) {
+        accumulatePhase();
+        first_ = false;
+    }
     if (P >= Q && first_) {
         accumulatePhase();
         first_ = false;
@@ -26,7 +30,9 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     checkIfNeedMore();
 }
 
-template <typename T> bool InterpolateFrames<T>::hasNext() { return hasNext_; }
+template <typename T> auto InterpolateFrames<T>::hasNext() -> bool {
+    return hasNext_;
+}
 
 template <typename T>
 void InterpolateFrames<T>::next(complex_signal_type<T> x) {
@@ -57,17 +63,18 @@ template <typename T> void InterpolateFrames<T>::checkIfNeedMore() {
 }
 
 template <typename T>
-T InterpolateFrames<T>::phaseDifference(
-    const complex_type<T> &a, const complex_type<T> &b) {
+auto InterpolateFrames<T>::phaseDifference(
+    const complex_type<T> &a, const complex_type<T> &b) -> T {
     return phase(b) - phase(a);
 }
 
-template <typename T> T InterpolateFrames<T>::phase(const complex_type<T> &x) {
+template <typename T>
+auto InterpolateFrames<T>::phase(const complex_type<T> &x) -> T {
     return std::arg(x);
 }
 
 template <typename T>
-T InterpolateFrames<T>::magnitude(const complex_type<T> &x) {
+auto InterpolateFrames<T>::magnitude(const complex_type<T> &x) -> T {
     return std::abs(x);
 }
 
@@ -81,8 +88,8 @@ void InterpolateFrames<T>::transformFrames(buffer_type<T> &out,
 }
 
 template <typename T>
-T InterpolateFrames<T>::resampleMagnitude(
-    const complex_type<T> &a, const complex_type<T> &b) {
+auto InterpolateFrames<T>::resampleMagnitude(
+    const complex_type<T> &a, const complex_type<T> &b) -> T {
     T denominator = Q;
     auto ratio = numerator / denominator;
     return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
