@@ -425,6 +425,25 @@ TEST_F(
 	);
 }
 
+TEST_F(
+	InterpolateFramesP1Q2Tests,
+	interpolatesComplexMagnitudesAndAdvancesPhase3
+) {
+	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
+	consumeAdd({ 7. + 8i, 9. + 10i, 11. + 12i });
+	assertInterpolatedFrames(
+		{ 13. + 14i, 15. + 16i, 17. + 18i },
+		{
+			averageMagnitudesAndSumPhases(
+				{ 7. + 8i, 9. + 10i, 11. + 12i },
+				{ 13. + 14i, 15. + 16i, 17. + 18i }
+			),
+			doublePhase({ 13. + 14i, 15. + 16i, 17. + 18i })
+		},
+		1e-15
+	);
+}
+
 class InterpolateFramesP2Q3Tests : public ::testing::Test {
 	int P = 2;
 	int Q = 3;
