@@ -17,7 +17,7 @@ template <typename T> class FourierTransformer {
     class Factory {
       public:
         virtual ~Factory() = default;
-        virtual std::shared_ptr<FourierTransformer> make(int N) = 0;
+        virtual auto make(int N) -> std::shared_ptr<FourierTransformer> = 0;
     };
 };
 

@@ -21,7 +21,7 @@ template <typename T> class Filter {
     class Factory {
       public:
         virtual ~Factory() = default;
-        virtual std::shared_ptr<Filter> make() = 0;
+        virtual auto make() -> std::shared_ptr<Filter> = 0;
     };
 };
 

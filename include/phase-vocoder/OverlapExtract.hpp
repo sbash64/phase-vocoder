@@ -9,7 +9,7 @@ template <typename T> class OverlapExtract {
   public:
     OverlapExtract(int N, int hop);
     void add(const_signal_type<T> x);
-    bool hasNext();
+    auto hasNext() -> bool;
     void next(signal_type<T> out);
 
   private:

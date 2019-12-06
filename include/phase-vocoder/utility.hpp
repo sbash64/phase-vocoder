@@ -71,21 +71,21 @@ template <typename T> auto size(const const_signal_type<T> &x) {
 template <typename T> auto size(const buffer_type<T> &x) { return x.size(); }
 
 template <typename T>
-auto &at(const signal_type<T> &x, signal_index_type<T> i) {
+auto at(const signal_type<T> &x, signal_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
 template <typename T>
-auto &at(const const_signal_type<T> &x, signal_index_type<T> i) {
+auto at(const const_signal_type<T> &x, signal_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
-template <typename T> auto &at(buffer_type<T> &x, buffer_index_type<T> i) {
+template <typename T> auto at(buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
 template <typename T>
-auto &at(const buffer_type<T> &x, buffer_index_type<T> i) {
+auto at(const buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
