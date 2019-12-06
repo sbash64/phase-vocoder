@@ -3,39 +3,24 @@
 #include <gtest/gtest.h>
 #include <string>
 
-namespace phase_vocoder::test { namespace {
-static void append(std::string &s, const std::string &what) {
-    s += what;
-}
+namespace phase_vocoder::test {
+namespace {
+void append(std::string &s, const std::string &what) { s += what; }
 
-template<typename T>
-class SampleRateConverterShunt :
-    public SignalConverter<T>,
-    public Filter<T> {
-public:
-    auto log() const {
-        return log_;
-    }
+template <typename T>
+class SampleRateConverterShunt : public SignalConverter<T>, public Filter<T> {
+  public:
+    [[nodiscard]] auto log() const { return log_; }
 
-    auto decimateInput() const {
-        return decimateInput_;
-    }
+    [[nodiscard]] auto decimateInput() const { return decimateInput_; }
 
-    auto expandInput() const {
-        return expandInput_;
-    }
+    [[nodiscard]] auto expandInput() const { return expandInput_; }
 
-    auto expandOutput() const {
-        return expandOutput_;
-    }
+    [[nodiscard]] auto expandOutput() const { return expandOutput_; }
 
-    auto decimateOutput() const {
-        return decimateOutput_;
-    }
+    [[nodiscard]] auto decimateOutput() const { return decimateOutput_; }
 
-    auto filterInput() const {
-        return filterInput_;
-    }
+    [[nodiscard]] auto filterInput() const { return filterInput_; }
 
     void decimate(const_signal_type<T> x, signal_type<T> y) override {
         append(log_, "decimate");
@@ -53,7 +38,8 @@ public:
         append(log_, "filter ");
         filterInput_ = x;
     }
-private:
+
+  private:
     const_signal_type<T> decimateInput_;
     const_signal_type<T> expandInput_;
     signal_type<T> expandOutput_;
@@ -62,17 +48,15 @@ private:
     std::string log_;
 };
 
-template<typename T>
+template <typename T>
 class SampleRateConverterShuntFactory : public Filter<T>::Factory {
-public:
-    std::shared_ptr<Filter<T>> make() override {
-        return filter_;
-    }
+  public:
+    auto make() -> std::shared_ptr<Filter<T>> override { return filter_; }
 
-    explicit SampleRateConverterShuntFactory(std::shared_ptr<Filter<T>> f) :
-        filter_{std::move(f)} {}
+    explicit SampleRateConverterShuntFactory(std::shared_ptr<Filter<T>> f)
+        : filter_{std::move(f)} {}
 
-private:
+  private:
     std::shared_ptr<Filter<T>> filter_;
 };
 
@@ -80,44 +64,28 @@ constexpr auto P = 3;
 constexpr auto hop = 5;
 
 class SampleRateConverterTests : public ::testing::Test {
-protected:
-    void convert() {
-        converter.convert(x, y);
-    }
+  protected:
+    void convert() { converter.convert(x, y); }
 
-    auto conversionLog() const {
-        return shunt->log();
-    }
+    [[nodiscard]] auto conversionLog() const { return shunt->log(); }
 
-    auto input() const {
-        return x;
-    }
+    [[nodiscard]] auto input() const { return x; }
 
-    auto output() const {
-        return y;
-    }
+    [[nodiscard]] auto output() const { return y; }
 
-    auto decimateInput() const {
-        return shunt->decimateInput();
-    }
+    [[nodiscard]] auto decimateInput() const { return shunt->decimateInput(); }
 
-    auto expandInput() const {
-        return shunt->expandInput();
-    }
+    [[nodiscard]] auto expandInput() const { return shunt->expandInput(); }
 
-    auto expandOutput() const {
-        return shunt->expandOutput();
-    }
+    [[nodiscard]] auto expandOutput() const { return shunt->expandOutput(); }
 
-    auto decimateOutput() const {
+    [[nodiscard]] auto decimateOutput() const {
         return shunt->decimateOutput();
     }
 
-    auto filterInput() const {
-        return shunt->filterInput();
-    }
+    [[nodiscard]] auto filterInput() const { return shunt->filterInput(); }
 
-private:
+  private:
     std::vector<double> x;
     std::vector<double> y;
     std::shared_ptr<SampleRateConverterShunt<double>> shunt =
@@ -125,6 +93,8 @@ private:
     SampleRateConverterShuntFactory<double> factory{shunt};
     SampleRateConverter<double> converter{P, hop, *shunt, factory};
 };
+
+// clang-format off
 
 #define ASSERT_EQUAL(a, b)\
     EXPECT_EQ(a, b)
@@ -179,4 +149,8 @@ SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToDecimate) {
     convert();
     ASSERT_DECIMATE_INPUT_SIZE(3 * 5l);
 }
-}}
+
+// clang-format on
+
+}
+}

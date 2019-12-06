@@ -2,31 +2,29 @@
 #include <phase-vocoder/SignalConverter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test { namespace {
+namespace phase_vocoder::test {
+namespace {
 class SignalConverterTests : public ::testing::Test {
-protected:
+  protected:
     void assertExpanded(
-        const std::vector<double> &x,
-        int P,
-        const std::vector<double> &y
-    ) {
+        const std::vector<double> &x, int P, const std::vector<double> &y) {
         std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
         converter.expand(x, expanded);
         assertEqual(y, expanded);
     }
 
     void assertDecimated(
-        const std::vector<double> &x,
-        int Q,
-        const std::vector<double> &y
-    ) {
-        std::vector<double> decimated(x.size()/gsl::narrow_cast<size_t>(Q));
+        const std::vector<double> &x, int Q, const std::vector<double> &y) {
+        std::vector<double> decimated(x.size() / gsl::narrow_cast<size_t>(Q));
         converter.decimate(x, decimated);
         assertEqual(y, decimated);
     }
-private:
+
+  private:
     SignalConverterImpl<double> converter;
 };
+
+// clang-format off
 
 TEST_F(SignalConverterTests, extractsEveryQthElement) {
     assertDecimated(
@@ -51,4 +49,8 @@ TEST_F(SignalConverterTests, insertsNoZerosWhenPIsOne) {
         { 1, 2, 3, 4, 5 }
     );
 }
-}}
+
+// clang-format on
+
+}
+}
