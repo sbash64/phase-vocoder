@@ -2,49 +2,44 @@
 #include <phase-vocoder/OverlapExtract.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test { namespace {
+namespace phase_vocoder::test {
+namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapExtractTests : public ::testing::Test {
-protected:
-	OverlapExtract<int> extract{N, hop};
-	std::vector<int> buffer{std::vector<int>(N)};
+  protected:
+    OverlapExtract<int> extract{N, hop};
+    std::vector<int> buffer{std::vector<int>(N)};
 
-	void assertSegments(
-		std::vector<int> x,
-		std::vector<std::vector<int>> segments
-	) {
-		add(std::move(x));
-		for (auto &segment : segments) {
-			assertHasNext();
-			assertNextEquals(std::move(segment));
-		}
-		assertDoesNotHaveNext();
-	}
+    void assertSegments(
+        std::vector<int> x, const std::vector<std::vector<int>>& segments) {
+        add(std::move(x));
+        for (auto &segment : segments) {
+            assertHasNext();
+            assertNextEquals(segment);
+        }
+        assertDoesNotHaveNext();
+    }
 
-	void assertHasNext() {
-		EXPECT_TRUE(hasNext());
-	}
+    void assertHasNext() { EXPECT_TRUE(hasNext()); }
 
-	void assertDoesNotHaveNext() {
-		EXPECT_FALSE(hasNext());
-	}
+    void assertDoesNotHaveNext() { EXPECT_FALSE(hasNext()); }
 
-	bool hasNext() {
-		return extract.hasNext();
-	}
+    auto hasNext() -> bool { return extract.hasNext(); }
 
-	void add(std::vector<int> x) {
-		buffer = std::move(x);
-		extract.add(buffer);
-	}
+    void add(std::vector<int> x) {
+        buffer = std::move(x);
+        extract.add(buffer);
+    }
 
-	void assertNextEquals(std::vector<int> expected) {
-		std::vector<int> out(N);
-		extract.next(out);
-		assertEqual(std::move(expected), std::move(out));
-	}
+    void assertNextEquals(const std::vector<int>& expected) {
+        std::vector<int> out(N);
+        extract.next(out);
+        assertEqual(expected, out);
+    }
 };
+
+// clang-format off
 
 #define OVERLAP_EXTRACT_TEST(a)\
     TEST_F(OverlapExtractTests, a)
@@ -87,4 +82,8 @@ OVERLAP_EXTRACT_TEST(addsToExisting) {
 		{ { 1, 2, 3, 4, 5 } }
 	);
 }
-}}
+
+// clang-format on
+
+}
+}
