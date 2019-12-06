@@ -71,21 +71,22 @@ template <typename T> auto size(const const_signal_type<T> &x) {
 template <typename T> auto size(const buffer_type<T> &x) { return x.size(); }
 
 template <typename T>
-auto at(const signal_type<T> &x, signal_index_type<T> i) -> auto & {
+auto element(const signal_type<T> &x, signal_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
 template <typename T>
-auto at(const const_signal_type<T> &x, signal_index_type<T> i) -> auto & {
-    return x.at(i);
-}
-
-template <typename T> auto at(buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
+auto element(const const_signal_type<T> &x, signal_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
 template <typename T>
-auto at(const buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
+auto element(buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
+    return x.at(i);
+}
+
+template <typename T>
+auto element(const buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
     return x.at(i);
 }
 
@@ -120,9 +121,7 @@ template <typename T> constexpr auto sizeNarrow(signal_index_type<T> x) {
 template <typename T> void shift(buffer_type<T> &x, signal_index_type<T> n) {
     auto n_ = sizeNarrow<T>(n);
     for (buffer_index_type<T> i{0}; i < size(x) - n_; ++i)
-        // gsl namespace has function called "at".
-        // explicit name resolves ambiguous call.
-        phase_vocoder::at(x, i) = phase_vocoder::at(x, i + n_);
+        element(x, i) = element(x, i + n_);
     zero<T>(rbegin(x), rbegin(x) + n);
 }
 
