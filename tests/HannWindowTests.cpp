@@ -4,37 +4,27 @@
 #include <vector>
 #include <cmath>
 
-namespace phase_vocoder::test { namespace {
-std::vector<double> sixSamples(
-    double a,
-    double b,
-    double c,
-    double d,
-    double e,
-    double f
-) {
+namespace phase_vocoder::test {
+namespace {
+auto sixSamples(double a, double b, double c, double d, double e, double f)
+    -> std::vector<double> {
     return {a, b, c, d, e, f};
 }
 
-std::vector<double> fiveSamples(
-    double a,
-    double b,
-    double c,
-    double d,
-    double e
-) {
+auto fiveSamples(double a, double b, double c, double d, double e)
+    -> std::vector<double> {
     return {a, b, c, d, e};
 }
 
-double pi() {
-    return std::acos(-1.);
-}
+auto pi() -> double { return std::acos(-1.); }
 
-double sinSquared(double x) {
-    return std::sin(x) * std::sin(x);
-}
+auto squared(double x) -> double { return x * x; }
+
+auto sinSquared(double x) -> double { return squared(std::sin(x)); }
 
 class HannWindowTests : public ::testing::Test {};
+
+// clang-format off
 
 #define ASSERT_YIELDS_SIX_WINDOW_SAMPLES(a, b, c, d, e, f, g)\
     assertEqual(sixSamples(b, c, d, e, f, g), hannWindow<double>(a), 1e-15)
@@ -67,4 +57,7 @@ HANN_WINDOW_TEST(odd) {
         sinSquared(pi() * 4. / 5.)
     );
 }
-}}
+
+// clang-format on
+}
+}
