@@ -20,6 +20,12 @@ template <typename T> auto N(const buffer_type<T> &b) -> int {
 }
 
 template <typename T>
+void multiplyFirstToSecond(
+    const complex_buffer_type<T> &a, complex_buffer_type<T> &b) {
+    std::transform(begin(b), end(b), begin(a), begin(b), std::multiplies<>{});
+}
+
+template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
     const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
     : overlap{N(b)}, complexBuffer(sizeNarrow<complex_type<T>>(N(b))),
@@ -46,8 +52,7 @@ template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
     zero<T>(begin(realBuffer) + size(x), end(realBuffer));
     copyFirstToSecond<T>(x, realBuffer);
     dft(realBuffer, complexBuffer);
-    std::transform(begin(complexBuffer), end(complexBuffer), begin(H),
-        begin(complexBuffer), std::multiplies<>{});
+    multiplyFirstToSecond(H, complexBuffer);
     transformer->idft(complexBuffer, realBuffer);
     overlap.add(realBuffer);
     overlap.next(x);
