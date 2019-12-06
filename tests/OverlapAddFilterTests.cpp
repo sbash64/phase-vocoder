@@ -2,38 +2,33 @@
 #include <phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test { namespace {
-template<typename T>
-void copy(const_signal_type<T> x, signal_type<T> y) {
+namespace phase_vocoder::test {
+namespace {
+template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());
 }
 
-template<typename T>
+template <typename T>
 void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
     x.resize(gsl::narrow_cast<typename std::vector<T>::size_type>(y.size()));
 }
 
-template<typename T>
+template <typename T>
 class FourierTransformerStub : public FourierTransformer<T> {
-	using complex_buffer_type = std::vector<complex_type<T>>;
-	using real_buffer_type = std::vector<T>;
+    using complex_buffer_type = std::vector<complex_type<T>>;
+    using real_buffer_type = std::vector<T>;
     std::vector<std::vector<T>> dftReals_;
     complex_buffer_type dftComplex_;
     complex_buffer_type idftComplex_;
     real_buffer_type dftReal_;
     real_buffer_type idftReal_;
-public:
-    auto dftReal() const {
-        return dftReal_;
-    }
 
-    auto dftReals(size_t n) const {
-        return dftReals_.at(n);
-    }
+  public:
+    [[nodiscard]] auto dftReal() const { return dftReal_; }
 
-    auto idftComplex() const {
-        return idftComplex_;
-    }
+    [[nodiscard]] auto dftReals(size_t n) const { return dftReals_.at(n); }
+
+    [[nodiscard]] auto idftComplex() const { return idftComplex_; }
 
     void dft(signal_type<T> x, complex_signal_type<T> y) override {
         resizeToMatch<T>(dftReal_, x);
@@ -42,13 +37,9 @@ public:
         dftReals_.push_back(dftReal_);
     }
 
-    void setDftComplex(complex_buffer_type x) {
-        dftComplex_ = std::move(x);
-    }
+    void setDftComplex(complex_buffer_type x) { dftComplex_ = std::move(x); }
 
-    void setIdftReal(real_buffer_type x) {
-        idftReal_ = std::move(x);
-    }
+    void setIdftReal(real_buffer_type x) { idftReal_ = std::move(x); }
 
     void idft(complex_signal_type<T> x, signal_type<T> y) override {
         resizeToMatch<complex_type<T>>(idftComplex_, x);
@@ -58,33 +49,30 @@ public:
 
     class FactoryStub : public FourierTransformer<T>::Factory {
         std::shared_ptr<FourierTransformer<T>> transform;
-        int N_;
-    public:
-        explicit FactoryStub(std::shared_ptr<FourierTransformer<T>> transform) :
-            transform{std::move(transform)} {}
+        int N_{};
 
-        std::shared_ptr<FourierTransformer<T>> make(int N) override {
+      public:
+        explicit FactoryStub(std::shared_ptr<FourierTransformer<T>> transform)
+            : transform{std::move(transform)} {}
+
+        auto make(int N) -> std::shared_ptr<FourierTransformer<T>> override {
             N_ = N;
             return transform;
         }
 
-        auto N() const {
-            return N_;
-        }
+        [[nodiscard]] auto N() const { return N_; }
     };
 };
 
 class OverlapAddFilterTests : public ::testing::Test {
-protected:
+  protected:
     std::shared_ptr<FourierTransformerStub<double>> fourierTransformer_ =
         std::make_shared<FourierTransformerStub<double>>();
     FourierTransformerStub<double>::FactoryStub factory{fourierTransformer_};
     std::vector<double> b;
     std::vector<double> signal;
 
-    phase_vocoder::OverlapAddFilter<double> construct() {
-        return {b, factory};
-    }
+    auto construct() -> OverlapAddFilter<double> { return {b, factory}; }
 
     void assertDftRealEquals(const std::vector<double> &x) {
         assertEqual(x, fourierTransformer_->dftReal());
@@ -94,9 +82,7 @@ protected:
         assertEqual(x, fourierTransformer_->idftComplex());
     }
 
-    void setTapCount(size_t n) {
-        b.resize(n);
-    }
+    void setTapCount(size_t n) { b.resize(n); }
 
     void setDftComplex(std::vector<complex_type<double>> x) {
         fourierTransformer_->setDftComplex(std::move(x));
@@ -106,7 +92,7 @@ protected:
         fourierTransformer_->setIdftReal(std::move(x));
     }
 
-    void filter(phase_vocoder::OverlapAddFilter<double> &overlapAdd) {
+    void filter(OverlapAddFilter<double> &overlapAdd) {
         overlapAdd.filter(signal);
     }
 
@@ -114,14 +100,14 @@ protected:
         assertEqual(x_, signal);
     }
 
-    void resizeX(size_t n) {
-        signal.resize(n);
-    }
+    void resizeX(size_t n) { signal.resize(n); }
 
     void assertDftRealEquals(const std::vector<double> &x, size_t n) {
         assertEqual(x, fourierTransformer_->dftReals(n));
     }
 };
+
+// clang-format off
 
 #define OVERLAP_ADD_FILTER_TEST(a)\
     TEST_F(OverlapAddFilterTests, a)
@@ -228,4 +214,6 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform5) {
     filter(overlapAdd);
     assertXEquals({ 6+8+9, 7+10, 8+11+9 });
 }
-}}
+// clang-format on
+}
+}
