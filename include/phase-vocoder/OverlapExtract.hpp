@@ -13,8 +13,8 @@ template <typename T> class OverlapExtract {
     void next(signal_type<T> out);
 
   private:
-    buffer_type<T> cached;
-    const_signal_type<T> signal;
+    buffer_type<T> buffer;
+    const_signal_type<T> onDeck;
     signal_index_type<T> head;
     int hop;
     int N;
