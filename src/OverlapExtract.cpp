@@ -22,7 +22,7 @@ template <typename T> void OverlapExtract<T>::add(const_signal_type<T> x) {
 template <typename T> bool OverlapExtract<T>::hasNext() { return head == N; }
 
 template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
-    copy(cached, out);
+    copyFirstToSecond(cached, out);
     shift(cached, hop);
     head = N - hop;
     add_(signal, N, head, cached, signal);

@@ -13,8 +13,8 @@ InterpolateFrames<T>::InterpolateFrames(int P, int Q, int N)
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
-    copy(currentFrame, previousFrame);
-    copy(x, currentFrame);
+    copyFirstToSecond(currentFrame, previousFrame);
+    copyFirstToSecond(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
     accumulatePhaseIfNeeded();
     if (P == Q || (P > Q && !hasAdded))

@@ -9,7 +9,7 @@ template <typename T> void OverlapAdd<T>::add(const_signal_type<T> x) {
 }
 
 template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {
-    copy(buffer, y, size(y));
+    copyFirstToSecond(buffer, y, size(y));
     shift(buffer, size(y));
 }
 

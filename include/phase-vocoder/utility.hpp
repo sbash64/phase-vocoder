@@ -142,64 +142,67 @@ void addFirstToSecond(const buffer_type<T> &x, buffer_type<T> &y) {
 }
 
 template <typename T>
-void copy(const_signal_iterator_type<T> sourceBegin,
+void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
     signal_iterator_type<T> destination) {
     std::copy(sourceBegin, sourceEnd, destination);
 }
 
 template <typename T>
-void copy(const_buffer_iterator_type<T> sourceBegin,
+void copyFirstToSecond(const_buffer_iterator_type<T> sourceBegin,
     const_buffer_iterator_type<T> sourceEnd,
     signal_iterator_type<T> destination) {
     std::copy(sourceBegin, sourceEnd, destination);
 }
 
 template <typename T>
-void copy(const_buffer_iterator_type<T> sourceBegin,
+void copyFirstToSecond(const_buffer_iterator_type<T> sourceBegin,
     const_buffer_iterator_type<T> sourceEnd,
     buffer_iterator_type<T> destination) {
     std::copy(sourceBegin, sourceEnd, destination);
 }
 
 template <typename T>
-void copy(const_complex_signal_iterator_type<T> sourceBegin,
+void copyFirstToSecond(const_complex_signal_iterator_type<T> sourceBegin,
     const_complex_signal_iterator_type<T> sourceEnd,
     complex_buffer_iterator_type<T> destination) {
     std::copy(sourceBegin, sourceEnd, destination);
 }
 
 template <typename T>
-void copy(const_signal_type<T> source, signal_type<T> destination) {
-    copy<T>(begin(source), end(source), begin(destination));
+void copyFirstToSecond(
+    const_signal_type<T> source, signal_type<T> destination) {
+    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
 }
 
 template <typename T>
-void copy(const buffer_type<T> &source, signal_type<T> destination) {
-    copy<T>(begin(source), end(source), begin(destination));
+void copyFirstToSecond(
+    const buffer_type<T> &source, signal_type<T> destination) {
+    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
 }
 
 template <typename T>
-void copy(const buffer_type<T> &source, buffer_type<T> &destination) {
-    copy<T>(begin(source), end(source), begin(destination));
+void copyFirstToSecond(
+    const buffer_type<T> &source, buffer_type<T> &destination) {
+    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
 }
 
 template <typename T>
-void copy(
+void copyFirstToSecond(
     const_complex_signal_type<T> source, complex_buffer_type<T> &destination) {
-    copy<T>(begin(source), end(source), begin(destination));
+    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
 }
 
 template <typename T>
-void copy(const_signal_type<T> source, signal_type<T> destination,
+void copyFirstToSecond(const_signal_type<T> source, signal_type<T> destination,
     signal_size_type<T> n) {
-    copy(begin(source), begin(source) + n, begin(destination));
+    copyFirstToSecond(begin(source), begin(source) + n, begin(destination));
 }
 
 template <typename T>
-void copy(const buffer_type<T> &source, signal_type<T> destination,
+void copyFirstToSecond(const buffer_type<T> &source, signal_type<T> destination,
     signal_size_type<T> n) {
-    copy<T>(begin(source), begin(source) + n, begin(destination));
+    copyFirstToSecond<T>(begin(source), begin(source) + n, begin(destination));
 }
 
 template <typename T>

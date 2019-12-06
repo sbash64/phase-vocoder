@@ -24,7 +24,7 @@ OverlapAddFilter<T>::OverlapAddFilter(
     transformer = factory.make(N);
     L = N - gsl::narrow_cast<int>(M) + 1;
     resize(realBuffer, sizeNarrow<T>(N));
-    copy(b, realBuffer);
+    copyFirstToSecond(b, realBuffer);
     resize(H, sizeNarrow<complex_type<T>>(N));
     resize(complexBuffer, sizeNarrow<complex_type<T>>(N));
     dft(realBuffer, H);
@@ -44,7 +44,7 @@ void OverlapAddFilter<T>::dft(signal_type<T> x, complex_signal_type<T> X) {
 
 template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
     zero<T>(begin(realBuffer) + size(x), end(realBuffer));
-    copy<T>(x, realBuffer);
+    copyFirstToSecond<T>(x, realBuffer);
     dft(realBuffer, complexBuffer);
     std::transform(begin(complexBuffer), end(complexBuffer), begin(H),
         begin(complexBuffer), std::multiplies<>{});
