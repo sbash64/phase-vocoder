@@ -4,9 +4,9 @@
 #include <functional>
 
 namespace phase_vocoder {
-constexpr int nearestGreaterPowerTwo(std::size_t n) {
+constexpr auto nearestGreaterPowerTwo(std::size_t n) -> int {
     int power{1};
-    while (n >>= 1)
+    while ((n >>= 1) != 0U)
         ++power;
     return 1 << power;
 }
@@ -15,18 +15,18 @@ template <typename T> void resize(buffer_type<T> &x, std::size_t n) {
     x.resize(n);
 }
 
+template <typename T> auto N(const buffer_type<T> &b) -> int {
+    return nearestGreaterPowerTwo(size(b));
+}
+
 template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
     const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
-    : overlap{nearestGreaterPowerTwo(size(b))} {
-    auto M = size(b);
-    auto N = nearestGreaterPowerTwo(M);
-    transformer = factory.make(N);
-    L = N - gsl::narrow_cast<int>(M) + 1;
-    resize(realBuffer, sizeNarrow<T>(N));
+    : overlap{N(b)}, complexBuffer(sizeNarrow<complex_type<T>>(N(b))),
+      H(sizeNarrow<complex_type<T>>(N(b))), realBuffer(sizeNarrow<T>(N(b))),
+      transformer{factory.make(N(b))}, L{N(b) - gsl::narrow_cast<int>(size(b)) +
+                                           1} {
     copyFirstToSecond(b, realBuffer);
-    resize(H, sizeNarrow<complex_type<T>>(N));
-    resize(complexBuffer, sizeNarrow<complex_type<T>>(N));
     dft(realBuffer, H);
 }
 
