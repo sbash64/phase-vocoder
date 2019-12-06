@@ -29,4 +29,5 @@ template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
 }
 
 template class OverlapExtract<int>;
+template class OverlapExtract<float>;
 }

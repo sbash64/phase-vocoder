@@ -14,4 +14,5 @@ template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {
 }
 
 template class OverlapAdd<double>;
+template class OverlapAdd<float>;
 }

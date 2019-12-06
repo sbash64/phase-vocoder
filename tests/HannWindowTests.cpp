@@ -47,24 +47,24 @@ class HannWindowTests : public ::testing::Test {};
 
 HANN_WINDOW_TEST(even) {
     ASSERT_YIELDS_SIX_WINDOW_SAMPLES(
-        5,
-        sinSquared(pi() * 0. / 5.),
-        sinSquared(pi() * 1. / 5.),
-        sinSquared(pi() * 2. / 5.),
-        sinSquared(pi() * 3. / 5.),
-        sinSquared(pi() * 4. / 5.),
-        sinSquared(pi() * 5. / 5.)
+        6,
+        sinSquared(pi() * 0. / 6.),
+        sinSquared(pi() * 1. / 6.),
+        sinSquared(pi() * 2. / 6.),
+        sinSquared(pi() * 3. / 6.),
+        sinSquared(pi() * 4. / 6.),
+        sinSquared(pi() * 5. / 6.)
     );
 }
 
 HANN_WINDOW_TEST(odd) {
     ASSERT_YIELDS_FIVE_WINDOW_SAMPLES(
-        4,
-        sinSquared(pi() * 0. / 4.),
-        sinSquared(pi() * 1. / 4.),
-        sinSquared(pi() * 2. / 4.),
-        sinSquared(pi() * 3. / 4.),
-        sinSquared(pi() * 4. / 4.)
+        5,
+        sinSquared(pi() * 0. / 5.),
+        sinSquared(pi() * 1. / 5.),
+        sinSquared(pi() * 2. / 5.),
+        sinSquared(pi() * 3. / 5.),
+        sinSquared(pi() * 4. / 5.)
     );
 }
 }}

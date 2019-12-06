@@ -101,4 +101,5 @@ template <typename T> void InterpolateFrames<T>::accumulatePhase() {
 }
 
 template class InterpolateFrames<double>;
+template class InterpolateFrames<float>;
 }
