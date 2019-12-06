@@ -118,7 +118,8 @@ template <typename T> constexpr auto sizeNarrow(signal_index_type<T> x) {
     return gsl::narrow_cast<buffer_size_type<T>>(x);
 }
 
-template <typename T> void shift(buffer_type<T> &x, signal_index_type<T> n) {
+template <typename T>
+void shiftLeft(buffer_type<T> &x, signal_index_type<T> n) {
     auto n_ = sizeNarrow<T>(n);
     for (buffer_index_type<T> i{0}; i < size(x) - n_; ++i)
         element(x, i) = element(x, i + n_);
