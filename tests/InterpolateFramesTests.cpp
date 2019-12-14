@@ -64,11 +64,6 @@ auto doublePhaseSecondMinusFirst(
     return 2 * phase(b) - phase(a);
 }
 
-auto averageMagnitudesAndSumPhases(const complex_type<double> &a,
-    const complex_type<double> &b) -> complex_type<double> {
-    return complex(averageMagnitude(a, b), summedPhase(a, b));
-}
-
 auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
     const complex_type<double> &a, const complex_type<double> &b)
     -> complex_type<double> {
@@ -100,18 +95,27 @@ auto transform(std::vector<complex_type<double>> a,
     return a;
 }
 
-auto averageMagnitudesAndSumPhases(std::vector<complex_type<double>> a,
-    const std::vector<complex_type<double>> &b)
-    -> std::vector<complex_type<double>> {
-    return transform(std::move(a), b, averageMagnitudesAndSumPhases);
-}
-
 auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
     std::vector<complex_type<double>> a,
     const std::vector<complex_type<double>> &b)
     -> std::vector<complex_type<double>> {
     return transform(
         std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
+}
+
+auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
+    const complex_type<double> &a, const complex_type<double> &b,
+    const complex_type<double> &c) -> complex_type<double> {
+    return complex((magnitude(b) + magnitude(c)) / 2, phase(b) + phase(c) - phase(a));
+}
+
+auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
+    std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b,
+    const std::vector<complex_type<double>> &c)
+    -> std::vector<complex_type<double>> {
+    return transform(
+        std::move(a), b, c, averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst);
 }
 
 auto averageMagnitudesAndPhaseSecond(std::vector<complex_type<double>> a,
@@ -413,11 +417,15 @@ TEST_F(
 	assertInterpolatedFrames(
 		{ 13. + 14i, 15. + 16i, 17. + 18i },
 		{
-			averageMagnitudesAndSumPhases(
+			averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
+                { 1. + 2i, 3. + 4i, 5. + 6i },
 				{ 7. + 8i, 9. + 10i, 11. + 12i },
 				{ 13. + 14i, 15. + 16i, 17. + 18i }
 			),
-			doublePhase({ 13. + 14i, 15. + 16i, 17. + 18i })
+			magnitudeSecondAndDoublePhaseSecondMinusFirst(
+                { 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 13. + 14i, 15. + 16i, 17. + 18i }
+			),
 		},
 		1e-15
 	);
