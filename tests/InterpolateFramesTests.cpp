@@ -59,9 +59,25 @@ auto summedPhase(const complex_type<double> &a, const complex_type<double> &b)
     return phase(a) + phase(b);
 }
 
+auto doublePhaseSecondMinusFirst(
+    const complex_type<double> &a, const complex_type<double> &b) -> double {
+    return 2 * phase(b) - phase(a);
+}
+
 auto averageMagnitudesAndSumPhases(const complex_type<double> &a,
     const complex_type<double> &b) -> complex_type<double> {
     return complex(averageMagnitude(a, b), summedPhase(a, b));
+}
+
+auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
+    const complex_type<double> &a, const complex_type<double> &b)
+    -> complex_type<double> {
+    return complex(magnitude(b), doublePhaseSecondMinusFirst(a, b));
+}
+
+auto averageMagnitudesAndPhaseSecond(const complex_type<double> &a,
+    const complex_type<double> &b) -> complex_type<double> {
+    return complex(averageMagnitude(a, b), phase(b));
 }
 
 auto transform(std::vector<complex_type<double>> a,
@@ -90,10 +106,24 @@ auto averageMagnitudesAndSumPhases(std::vector<complex_type<double>> a,
     return transform(std::move(a), b, averageMagnitudesAndSumPhases);
 }
 
+auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
+    std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(
+        std::move(a), b, magnitudeSecondAndDoublePhaseSecondMinusFirst);
+}
+
+auto averageMagnitudesAndPhaseSecond(std::vector<complex_type<double>> a,
+    const std::vector<complex_type<double>> &b)
+    -> std::vector<complex_type<double>> {
+    return transform(std::move(a), b, averageMagnitudesAndPhaseSecond);
+}
+
 auto halfMagnitudeZeroPhase(std::vector<complex_type<double>> a)
     -> std::vector<complex_type<double>> {
     for (auto &x_ : a)
-        x_ = complex(magnitude(x_)/2, phase(0));
+        x_ = complex(magnitude(x_) / 2, phase(0));
     return a;
 }
 
@@ -355,17 +385,20 @@ TEST_F(
 
 TEST_F(
 	InterpolateFramesP1Q2Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase2
+	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(
 		{ 7. + 8i, 9. + 10i, 11. + 12i },
 		{
-			averageMagnitudesAndSumPhases(
+			averageMagnitudesAndPhaseSecond(
 				{ 1. + 2i, 3. + 4i, 5. + 6i },
 				{ 7. + 8i, 9. + 10i, 11. + 12i }
 			),
-			doublePhase({ 7. + 8i, 9. + 10i, 11. + 12i })
+			magnitudeSecondAndDoublePhaseSecondMinusFirst(
+				{ 1. + 2i, 3. + 4i, 5. + 6i },
+				{ 7. + 8i, 9. + 10i, 11. + 12i }
+			),
 		},
 		1e-15
 	);
