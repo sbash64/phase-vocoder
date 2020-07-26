@@ -19,4 +19,5 @@ void SignalConverterImpl<T>::decimate(
 }
 
 template class SignalConverterImpl<double>;
+template class SignalConverterImpl<float>;
 }
