@@ -4,18 +4,18 @@
 #include <functional>
 
 namespace phase_vocoder {
-constexpr auto nearestGreaterPowerTwo(std::size_t n) -> index_type {
+constexpr auto nearestGreaterPowerTwo(index_type n) -> index_type {
     int power{1};
     while ((n >>= 1) != 0U)
         ++power;
     return 1 << power;
 }
 
-template <typename T> void resize(buffer_type<T> &x, std::size_t n) {
+template <typename T> void resize(buffer_type<T> &x, index_type n) {
     x.resize(n);
 }
 
-template <typename T> auto N(const buffer_type<T> &b) -> int {
+template <typename T> auto N(const buffer_type<T> &b) -> index_type {
     return nearestGreaterPowerTwo(size(b));
 }
 
@@ -37,7 +37,7 @@ OverlapAddFilter<T>::OverlapAddFilter(
 template <typename T> void OverlapAddFilter<T>::filter(signal_type<T> x) {
     for (index_type j{0}; j < size(x) / L; ++j)
         filter_(x.subspan(j * L, L));
-    if (auto left = size(x) % L)
+    if (auto left{size(x) % L})
         filter_(x.last(left));
 }
 

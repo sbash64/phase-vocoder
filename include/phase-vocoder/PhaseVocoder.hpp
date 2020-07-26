@@ -21,7 +21,7 @@ constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
 template <typename T>
 auto lowPassFilter(T cutoff, index_type taps) -> buffer_type<T> {
-    buffer_type<T> coefficients(sizeNarrow<T>(taps));
+    buffer_type<T> coefficients(taps);
     std::generate(phase_vocoder::begin(coefficients),
         phase_vocoder::end(coefficients), [=, n = 0]() mutable {
             auto something = (pi<T>() * (n++ - (taps - 1) / 2));
@@ -64,14 +64,11 @@ template <typename T> class PhaseVocoder {
         typename FourierTransformer<T>::Factory &factory)
         : interpolateFrames{P, Q, N / 2 + 1}, overlapExtract{N, hop(N)},
           filter{lowPassFilter(T{0.5} / std::max(P, Q), 501), factory},
-          overlappedOutput{N},
-          nextFrame(sizeNarrow<complex_type<T>>(N / 2 + 1)),
-          expanded(sizeNarrow<T>(hop(N) * P)),
-          decimated(sizeNarrow<T>(hop(N) * P / Q)),
-          inputBuffer(sizeNarrow<T>(N)),
-          outputBuffer(sizeNarrow<T>(hop(N))), window{hannWindow<T>(N)},
+          overlappedOutput{N}, nextFrame(N / 2 + 1), expanded(hop(N) * P),
+          decimated(hop(N) * P / Q), inputBuffer(N),
+          outputBuffer(hop(N)), window{hannWindow<T>(N)},
           transform{factory.make(N)}, P{P}, Q{Q}, N{N} {
-        buffer_type<T> delayedStart(sizeNarrow<T>(N - hop(N)), T{0});
+        buffer_type<T> delayedStart(N - hop(N), T{0});
         overlapExtract.add(delayedStart);
     }
 

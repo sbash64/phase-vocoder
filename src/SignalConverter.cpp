@@ -4,7 +4,7 @@
 namespace phase_vocoder {
 template <typename T>
 void SignalConverterImpl<T>::expand(const_signal_type<T> x, signal_type<T> y) {
-    auto P = y.size() / x.size();
+    const auto P{size(y) / size(x)};
     zero<T>(begin(y), end(y));
     for (index_type i{0}; i < size(x); ++i)
         element(y, i * P) = element(x, i);
@@ -13,7 +13,7 @@ void SignalConverterImpl<T>::expand(const_signal_type<T> x, signal_type<T> y) {
 template <typename T>
 void SignalConverterImpl<T>::decimate(
     const_signal_type<T> x, signal_type<T> y) {
-    auto Q = x.size() / y.size();
+    const auto Q{size(x) / size(y)};
     for (index_type i{0}; i < size(y); ++i)
         element(y, i) = element(x, i * Q);
 }

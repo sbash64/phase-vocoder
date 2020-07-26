@@ -33,4 +33,5 @@ template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
 
 template class OverlapExtract<index_type>;
 template class OverlapExtract<float>;
+template class OverlapExtract<double>;
 }
