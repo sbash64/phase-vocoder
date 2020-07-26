@@ -2,7 +2,6 @@ add_executable(
   tests
   OverlapExtractTests.cpp
   InterpolateFramesTests.cpp
-  FirFilterTests.cpp
   OverlapAddFilterTests.cpp
   OverlapAddTests.cpp
   SignalConverterTests.cpp
