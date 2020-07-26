@@ -19,7 +19,7 @@ jobs:
           cd /tmp/fftw*/
           ./configure
           make
-          make install
+          sudo make install
       - uses: actions/checkout@v2
       - name: generate build system
         env:
