@@ -456,7 +456,7 @@ class InterpolateFramesP2Q3Tests : public ::testing::Test {
 
 TEST_F(
 	InterpolateFramesP2Q3Tests,
-	interpolatesComplexMagnitudesAndAdvancesPhase
+	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
 		{ 1. + 2i, 3. + 4i, 5. + 6i },

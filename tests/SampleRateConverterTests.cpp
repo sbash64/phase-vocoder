@@ -137,17 +137,17 @@ SAMPLE_RATE_CONVERTER_TEST(convertPassesOutputToDecimate) {
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToExpand) {
     convert();
-    ASSERT_EXPAND_OUTPUT_SIZE(3 * 5l);
+    ASSERT_EXPAND_OUTPUT_SIZE(signal_size_type<double>{3 * 5});
 }
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToFilter) {
     convert();
-    ASSERT_FILTER_INPUT_SIZE(3 * 5l);
+    ASSERT_FILTER_INPUT_SIZE(signal_size_type<double>{3 * 5});
 }
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToDecimate) {
     convert();
-    ASSERT_DECIMATE_INPUT_SIZE(3 * 5l);
+    ASSERT_DECIMATE_INPUT_SIZE(signal_size_type<double>{3 * 5});
 }
 
 // clang-format on

@@ -72,12 +72,12 @@ template <typename T> auto size(const buffer_type<T> &x) { return x.size(); }
 
 template <typename T>
 auto element(const signal_type<T> &x, signal_index_type<T> i) -> auto & {
-    return x.at(i);
+    return gsl::at(x, i);
 }
 
 template <typename T>
 auto element(const const_signal_type<T> &x, signal_index_type<T> i) -> auto & {
-    return x.at(i);
+    return gsl::at(x, i);
 }
 
 template <typename T>

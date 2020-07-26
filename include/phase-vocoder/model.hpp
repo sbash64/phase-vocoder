@@ -9,8 +9,7 @@ template <typename T> using signal_type = gsl::span<T>;
 
 template <typename T> using const_signal_type = signal_type<const T>;
 
-template <typename T>
-using signal_index_type = typename signal_type<T>::index_type;
+template <typename T> using signal_index_type = typename gsl::index;
 
 template <typename T>
 using signal_iterator_type = typename signal_type<T>::iterator;

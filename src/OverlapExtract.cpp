@@ -1,4 +1,5 @@
 #include "OverlapExtract.hpp"
+#include <gsl/gsl>
 #include <algorithm>
 
 namespace phase_vocoder {
@@ -9,7 +10,7 @@ OverlapExtract<T>::OverlapExtract(int N, int hop)
 template <typename T>
 void add_(const_signal_type<T> x, int N, signal_index_type<T> &head,
     buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
-    auto toFill = std::min(N - head, size(x));
+    auto toFill = std::min(N - head, gsl::narrow<gsl::index>(size(x)));
     std::copy(begin(x), begin(x) + toFill, begin(buffer) + head);
     onDeck = x.last(size(x) - toFill);
     head += toFill;
