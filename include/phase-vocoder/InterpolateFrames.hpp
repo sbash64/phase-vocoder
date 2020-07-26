@@ -41,6 +41,9 @@ template <typename T> class InterpolateFrames {
     bool hasAdded{};
     bool skipPhaseAccumulation{};
 };
+
+extern template class InterpolateFrames<float>;
+extern template class InterpolateFrames<double>;
 }
 
 #endif

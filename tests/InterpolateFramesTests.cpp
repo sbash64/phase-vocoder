@@ -106,7 +106,8 @@ auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
 auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
     const complex_type<double> &a, const complex_type<double> &b,
     const complex_type<double> &c) -> complex_type<double> {
-    return complex((magnitude(b) + magnitude(c)) / 2, phase(b) + phase(c) - phase(a));
+    return complex(
+        (magnitude(b) + magnitude(c)) / 2, phase(b) + phase(c) - phase(a));
 }
 
 auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
@@ -114,8 +115,8 @@ auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
     const std::vector<complex_type<double>> &b,
     const std::vector<complex_type<double>> &c)
     -> std::vector<complex_type<double>> {
-    return transform(
-        std::move(a), b, c, averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst);
+    return transform(std::move(a), b, c,
+        averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst);
 }
 
 auto averageMagnitudesAndPhaseSecond(std::vector<complex_type<double>> a,
@@ -410,7 +411,7 @@ TEST_F(
 
 TEST_F(
 	InterpolateFramesP1Q2Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase3
+	interpolatesComplexMagnitudesAndAdvancesPhase3
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	consumeAdd({ 7. + 8i, 9. + 10i, 11. + 12i });
@@ -455,7 +456,7 @@ class InterpolateFramesP2Q3Tests : public ::testing::Test {
 
 TEST_F(
 	InterpolateFramesP2Q3Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase
+	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
 		{ 1. + 2i, 3. + 4i, 5. + 6i },
