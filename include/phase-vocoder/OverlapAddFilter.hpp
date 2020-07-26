@@ -38,6 +38,9 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     std::shared_ptr<FourierTransformer<T>> transformer;
     int L;
 };
+
+extern template class OverlapAddFilter<float>;
+extern template class OverlapAddFilter<double>;
 }
 
 #endif

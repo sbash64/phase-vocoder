@@ -14,6 +14,9 @@ template <typename T> class OverlapAdd {
   private:
     buffer_type<T> buffer;
 };
+
+extern template class OverlapAdd<float>;
+extern template class OverlapAdd<double>;
 }
 
 #endif

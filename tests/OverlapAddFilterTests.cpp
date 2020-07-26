@@ -150,28 +150,28 @@ OVERLAP_ADD_FILTER_TEST(
 }
 
 OVERLAP_ADD_FILTER_TEST(filterPassesTransformProductToInverseTransform) {
-    setTapCount(4 - 1);
-    setDftComplex({ 5, 6, 7, 8 });
+    setTapCount(8 - 1);
+    setDftComplex({ 5, 6, 7, 8, 9 });
     auto overlapAdd = construct();
-    setDftComplex({ 11, 12, 13, 14 });
+    setDftComplex({ 11, 12, 13, 14, 15 });
     resizeX(2);
     filter(overlapAdd);
-    assertIdftComplexEquals({ 5*11, 6*12, 7*13, 8*14 });
+    assertIdftComplexEquals({ 5*11, 6*12, 7*13, 8*14, 9*15 });
 }
 
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform) {
-    setTapCount(4 - 1);
-    setDftComplex({ 0, 0, 0, 0 });
+    setTapCount(8 - 1);
+    setDftComplex({ 0, 0, 0, 0, 0 });
     auto overlapAdd = construct();
     resizeX(2);
-    setIdftReal({5, 6, 7, 8});
+    setIdftReal({5, 6, 7, 8, 9, 10, 11, 12});
     filter(overlapAdd);
     assertXEquals({ 5, 6 });
 }
 
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform2) {
     setTapCount(4 - 1);
-    setDftComplex({ 0, 0, 0, 0 });
+    setDftComplex({ 0, 0, 0 });
     auto overlapAdd = construct();
     resizeX(4);
     setIdftReal({5, 6, 7, 8});
@@ -181,7 +181,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform2) {
 
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform3) {
     setTapCount(4 - 1);
-    setDftComplex({ 0, 0, 0, 0 });
+    setDftComplex({ 0, 0, 0 });
     auto overlapAdd = construct();
     resizeX(2);
     setIdftReal({5, 6, 7, 8});
@@ -194,7 +194,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform3) {
 
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform4) {
     setTapCount(4 - 1);
-    setDftComplex({ 0, 0, 0, 0 });
+    setDftComplex({ 0, 0, 0 });
     auto overlapAdd = construct();
     resizeX(3);
     setIdftReal({5, 6, 7, 8});
@@ -204,7 +204,7 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform4) {
 
 OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform5) {
     setTapCount(4 - 1);
-    setDftComplex({ 0, 0, 0, 0 });
+    setDftComplex({ 0, 0, 0 });
     auto overlapAdd = construct();
     resizeX(3);
     setIdftReal({5, 6, 7, 8});

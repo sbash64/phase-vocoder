@@ -49,8 +49,8 @@ template <typename T> class FftwTransformer : public FourierTransformer<T> {
 
   public:
     explicit FftwTransformer(int N)
-        : dftComplex_(sizeNarrow<complex_type<T>>(N)),
-          idftComplex_(sizeNarrow<complex_type<T>>(N)),
+        : dftComplex_(sizeNarrow<complex_type<T>>(N / 2 + 1)),
+          idftComplex_(sizeNarrow<complex_type<T>>(N / 2 + 1)),
           dftReal_(sizeNarrow<T>(N)),
           idftReal_(sizeNarrow<T>(N)), dftPlan{make_fftw_plan(N, data(dftReal_),
                                            to_fftw_complex(dftComplex_),

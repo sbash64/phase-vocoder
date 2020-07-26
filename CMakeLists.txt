@@ -22,6 +22,7 @@ add_library(
   src/InterpolateFrames.cpp src/SignalConverter.cpp)
 target_include_directories(phase-vocoder PUBLIC include)
 target_include_directories(phase-vocoder PRIVATE include/phase-vocoder)
+target_compile_options(phase-vocoder PRIVATE ${PHASE_VOCODER_WARNINGS})
 target_link_libraries(phase-vocoder GSL)
 
 FetchContent_Declare(

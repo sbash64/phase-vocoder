@@ -28,10 +28,10 @@ void multiplyFirstToSecond(
 template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
     const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
-    : overlap{N(b)}, complexBuffer(sizeNarrow<complex_type<T>>(N(b)/2+1)),
-      H(sizeNarrow<complex_type<T>>(N(b)/2+1)), realBuffer(sizeNarrow<T>(N(b))),
-      transformer{factory.make(N(b))}, L{N(b) - gsl::narrow_cast<int>(size(b)) +
-                                           1} {
+    : overlap{N(b)}, complexBuffer(sizeNarrow<complex_type<T>>(N(b) / 2 + 1)),
+      H(sizeNarrow<complex_type<T>>(N(b) / 2 + 1)),
+      realBuffer(sizeNarrow<T>(N(b))), transformer{factory.make(N(b))},
+      L{N(b) - gsl::narrow_cast<int>(size(b)) + 1} {
     copyFirstToSecond(b, realBuffer);
     dft(realBuffer, H);
 }
