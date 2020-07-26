@@ -38,7 +38,7 @@ template <typename T> class SampleRateConverter {
     }
 
   private:
-    buffer_type<T> buffer;
+    impl::buffer_type<T> buffer;
     std::shared_ptr<Filter<T>> filter;
     SignalConverter<T> &converter;
 };

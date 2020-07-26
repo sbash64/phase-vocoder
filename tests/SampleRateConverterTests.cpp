@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 void append(std::string &s, const std::string &what) { s += what; }
 

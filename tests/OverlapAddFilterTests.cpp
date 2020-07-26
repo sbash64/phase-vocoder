@@ -2,7 +2,7 @@
 #include <phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());

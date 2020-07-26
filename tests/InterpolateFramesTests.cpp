@@ -3,7 +3,7 @@
 #include <phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 using std::complex_literals::operator""i;
 
@@ -302,11 +302,12 @@ class InterpolateFramesP1Q1Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -366,11 +367,12 @@ class InterpolateFramesP1Q2Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -446,11 +448,12 @@ class InterpolateFramesP2Q3Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -521,11 +524,12 @@ class InterpolateFramesP1Q3Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -580,15 +584,16 @@ class InterpolateFramesP2Q1Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
-        test::assertYieldsNoFrames(interpolate, x);
+        phase_vocoder::assertYieldsNoFrames(interpolate, x);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -637,15 +642,16 @@ class InterpolateFramesP3Q2Tests : public ::testing::Test {
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
-        test::assertYieldsNoFrames(interpolate, x);
+        phase_vocoder::assertYieldsNoFrames(interpolate, x);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 

@@ -9,10 +9,10 @@ OverlapExtract<T>::OverlapExtract(index_type N, index_type hop)
 
 template <typename T>
 void add_(const_signal_type<T> x, index_type N, index_type &head,
-    buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
-    auto toFill = std::min(N - head, gsl::narrow<gsl::index>(size(x)));
+    impl::buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
+    auto toFill = std::min(N - head, impl::size(x));
     std::copy(begin(x), begin(x) + toFill, begin(buffer) + head);
-    onDeck = x.last(size(x) - toFill);
+    onDeck = x.last(impl::size(x) - toFill);
     head += toFill;
 }
 
@@ -25,8 +25,8 @@ template <typename T> auto OverlapExtract<T>::hasNext() -> bool {
 }
 
 template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
-    copyFirstToSecond(buffer, out);
-    shiftLeft(buffer, hop);
+    impl::copyFirstToSecond(buffer, out);
+    impl::shiftLeft(buffer, hop);
     head = N - hop;
     add_(onDeck, N, head, buffer, onDeck);
 }

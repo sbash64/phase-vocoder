@@ -12,7 +12,7 @@ template <typename T> class OverlapAdd {
     void next(signal_type<T> y);
 
   private:
-    buffer_type<T> buffer;
+    impl::buffer_type<T> buffer;
 };
 
 extern template class OverlapAdd<float>;

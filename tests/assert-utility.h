@@ -6,7 +6,7 @@
 #include <complex>
 #include <vector>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 template <typename T> void assertEqual(T expected, T actual) {
     EXPECT_EQ(expected, actual);
 }

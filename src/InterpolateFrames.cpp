@@ -12,8 +12,8 @@ InterpolateFrames<T>::InterpolateFrames(
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
-    copyFirstToSecond(currentFrame, previousFrame);
-    copyFirstToSecond(x, currentFrame);
+    impl::copyFirstToSecond(currentFrame, previousFrame);
+    impl::copyFirstToSecond(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
     if (P == Q || hasAdded)
         accumulatePhase();
@@ -66,12 +66,12 @@ auto InterpolateFrames<T>::magnitude(const complex_type<T> &x) -> T {
 }
 
 template <typename T>
-void InterpolateFrames<T>::transformFrames(buffer_type<T> &out,
+void InterpolateFrames<T>::transformFrames(impl::buffer_type<T> &out,
     T (InterpolateFrames::*f)(
         const complex_type<T> &, const complex_type<T> &)) {
     std::function<T(const complex_type<T> &a, const complex_type<T> &b)> f_ =
         [&](auto a, auto b) { return (this->*f)(a, b); };
-    phase_vocoder::transform(previousFrame, currentFrame, out, f_);
+    impl::transform(previousFrame, currentFrame, out, f_);
 }
 
 template <typename T>
@@ -86,7 +86,7 @@ template <typename T> void InterpolateFrames<T>::resampleMagnitude() {
 }
 
 template <typename T> void InterpolateFrames<T>::accumulatePhase() {
-    addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
+    impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
 }
 
 template class InterpolateFrames<double>;

@@ -7,7 +7,7 @@
 #include <functional>
 #include <vector>
 
-namespace phase_vocoder {
+namespace phase_vocoder::impl {
 template <typename T> using buffer_type = std::vector<T>;
 
 template <typename T>

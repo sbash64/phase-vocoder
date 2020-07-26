@@ -2,7 +2,7 @@
 #include <phase-vocoder/OverlapExtract.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
@@ -14,7 +14,7 @@ class OverlapExtractTests : public ::testing::Test {
     void assertSegments(std::vector<index_type> x,
         const std::vector<std::vector<index_type>> &segments) {
         add(std::move(x));
-        for (auto &segment : segments) {
+        for (const auto &segment : segments) {
             assertHasNext();
             assertNextEquals(segment);
         }

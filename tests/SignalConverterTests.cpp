@@ -2,7 +2,7 @@
 #include <phase-vocoder/SignalConverter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 class SignalConverterTests : public ::testing::Test {
   protected:
