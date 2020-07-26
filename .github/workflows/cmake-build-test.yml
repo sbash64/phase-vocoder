@@ -13,13 +13,6 @@ jobs:
         compiler: [g++, clang++]
         os: [ubuntu-latest, macOS-latest]
     steps:
-      - name: build and install fftw
-        run: |
-          wget -qO- "http://www.fftw.org/fftw-3.3.8.tar.gz" | tar -xz -C /tmp 
-          cd /tmp/fftw*/
-          ./configure
-          make
-          sudo make install
       - uses: actions/checkout@v2
       - name: generate build system
         env:
