@@ -19,7 +19,8 @@ auto exp(const complex_type<double> &x) -> complex_type<double> {
     return std::exp(x);
 }
 
-auto nthPhase(const complex_type<double> &x, int n) -> complex_type<double> {
+auto nthPhase(const complex_type<double> &x, index_type n)
+    -> complex_type<double> {
     return x * exp(phase(x) * (n - 1) * 1i);
 }
 
@@ -226,10 +227,11 @@ auto averageMagnitudesAndPhaseFirst(std::vector<complex_type<double>> a,
 
 class InterpolateFramesFacade {
     InterpolateFrames<double> interpolate;
-    int N;
+    index_type N;
 
   public:
-    InterpolateFramesFacade(int P, int Q, int N) : interpolate{P, Q, N}, N{N} {}
+    InterpolateFramesFacade(index_type P, index_type Q, index_type N)
+        : interpolate{P, Q, N}, N{N} {}
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
         add(x);
@@ -291,9 +293,9 @@ void assertYieldsNoFrames(InterpolateFramesFacade &interpolate,
 }
 
 class InterpolateFramesP1Q1Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 1;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 1;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
@@ -355,9 +357,9 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP1Q2Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 2;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 2;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
@@ -435,9 +437,9 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP2Q3Tests : public ::testing::Test {
-    int P = 2;
-    int Q = 3;
-    int N = 3;
+    index_type P = 2;
+    index_type Q = 3;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
@@ -510,9 +512,9 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP1Q3Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 3;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 3;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
@@ -569,9 +571,9 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP2Q1Tests : public ::testing::Test {
-    int P = 2;
-    int Q = 1;
-    int N = 3;
+    index_type P = 2;
+    index_type Q = 1;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
@@ -626,9 +628,9 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP3Q2Tests : public ::testing::Test {
-    int P = 3;
-    int Q = 2;
-    int N = 3;
+    index_type P = 3;
+    index_type Q = 2;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:

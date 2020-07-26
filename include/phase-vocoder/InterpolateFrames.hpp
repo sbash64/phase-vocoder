@@ -7,7 +7,7 @@
 namespace phase_vocoder {
 template <typename T> class InterpolateFrames {
   public:
-    InterpolateFrames(int P, int Q, int N);
+    InterpolateFrames(index_type P, index_type Q, index_type N);
     void add(const_complex_signal_type<T> x);
     auto hasNext() -> bool;
     void next(complex_signal_type<T> x);
@@ -34,9 +34,9 @@ template <typename T> class InterpolateFrames {
     buffer_type<T> accumulatedPhase;
     buffer_type<T> phaseAdvance;
     buffer_type<T> resampledMagnitude;
-    int numerator;
-    int P;
-    int Q;
+    index_type numerator;
+    index_type P;
+    index_type Q;
     bool hasNext_{true};
     bool hasAdded{};
     bool skipPhaseAccumulation{};

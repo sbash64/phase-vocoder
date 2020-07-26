@@ -4,7 +4,7 @@
 #include <functional>
 
 namespace phase_vocoder {
-constexpr auto nearestGreaterPowerTwo(std::size_t n) -> int {
+constexpr auto nearestGreaterPowerTwo(std::size_t n) -> index_type {
     int power{1};
     while ((n >>= 1) != 0U)
         ++power;
@@ -28,16 +28,14 @@ void multiplyFirstToSecond(
 template <typename T>
 OverlapAddFilter<T>::OverlapAddFilter(
     const buffer_type<T> &b, typename FourierTransformer<T>::Factory &factory)
-    : overlap{N(b)}, complexBuffer(sizeNarrow<complex_type<T>>(N(b) / 2 + 1)),
-      H(sizeNarrow<complex_type<T>>(N(b) / 2 + 1)),
-      realBuffer(sizeNarrow<T>(N(b))), transformer{factory.make(N(b))},
-      L{N(b) - gsl::narrow_cast<int>(size(b)) + 1} {
+    : overlap{N(b)}, complexBuffer(N(b) / 2 + 1), H(N(b) / 2 + 1),
+      realBuffer(N(b)), transformer{factory.make(N(b))}, L{N(b) - size(b) + 1} {
     copyFirstToSecond(b, realBuffer);
     dft(realBuffer, H);
 }
 
 template <typename T> void OverlapAddFilter<T>::filter(signal_type<T> x) {
-    for (signal_index_type<T> j{0}; j < size(x) / L; ++j)
+    for (index_type j{0}; j < size(x) / L; ++j)
         filter_(x.subspan(j * L, L));
     if (auto left = size(x) % L)
         filter_(x.last(left));

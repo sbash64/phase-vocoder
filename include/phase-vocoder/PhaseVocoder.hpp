@@ -17,9 +17,10 @@
 #include <iostream>
 
 namespace phase_vocoder {
-constexpr auto hop(int N) -> int { return N / 4; }
+constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
-template <typename T> auto lowPassFilter(T cutoff, int taps) -> buffer_type<T> {
+template <typename T>
+auto lowPassFilter(T cutoff, index_type taps) -> buffer_type<T> {
     buffer_type<T> coefficients(sizeNarrow<T>(taps));
     std::generate(phase_vocoder::begin(coefficients),
         phase_vocoder::end(coefficients), [=, n = 0]() mutable {
@@ -54,13 +55,13 @@ template <typename T> class PhaseVocoder {
     buffer_type<T> outputBuffer;
     buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
-    int P;
-    int Q;
-    int N;
+    index_type P;
+    index_type Q;
+    index_type N;
 
   public:
-    PhaseVocoder(
-        int P, int Q, int N, typename FourierTransformer<T>::Factory &factory)
+    PhaseVocoder(index_type P, index_type Q, index_type N,
+        typename FourierTransformer<T>::Factory &factory)
         : interpolateFrames{P, Q, N / 2 + 1}, overlapExtract{N, hop(N)},
           filter{lowPassFilter(T{0.5} / std::max(P, Q), 501), factory},
           overlappedOutput{N},

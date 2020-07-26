@@ -6,15 +6,15 @@ namespace phase_vocoder::test {
 namespace {
 class SignalConverterTests : public ::testing::Test {
   protected:
-    void assertExpanded(
-        const std::vector<double> &x, int P, const std::vector<double> &y) {
+    void assertExpanded(const std::vector<double> &x, index_type P,
+        const std::vector<double> &y) {
         std::vector<double> expanded(x.size() * gsl::narrow_cast<size_t>(P), 1);
         converter.expand(x, expanded);
         assertEqual(y, expanded);
     }
 
-    void assertDecimated(
-        const std::vector<double> &x, int Q, const std::vector<double> &y) {
+    void assertDecimated(const std::vector<double> &x, index_type Q,
+        const std::vector<double> &y) {
         std::vector<double> decimated(x.size() / gsl::narrow_cast<size_t>(Q));
         converter.decimate(x, decimated);
         assertEqual(y, decimated);

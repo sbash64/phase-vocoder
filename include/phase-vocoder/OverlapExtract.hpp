@@ -7,7 +7,7 @@
 namespace phase_vocoder {
 template <typename T> class OverlapExtract {
   public:
-    OverlapExtract(int N, int hop);
+    OverlapExtract(index_type N, index_type hop);
     void add(const_signal_type<T> x);
     auto hasNext() -> bool;
     void next(signal_type<T> out);
@@ -15,9 +15,9 @@ template <typename T> class OverlapExtract {
   private:
     buffer_type<T> buffer;
     const_signal_type<T> onDeck;
-    signal_index_type<T> head;
-    int hop;
-    int N;
+    index_type head;
+    index_type hop;
+    index_type N;
 };
 }
 

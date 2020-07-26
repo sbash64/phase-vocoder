@@ -49,13 +49,14 @@ class FourierTransformerStub : public FourierTransformer<T> {
 
     class FactoryStub : public FourierTransformer<T>::Factory {
         std::shared_ptr<FourierTransformer<T>> transform;
-        int N_{};
+        index_type N_{};
 
       public:
         explicit FactoryStub(std::shared_ptr<FourierTransformer<T>> transform)
             : transform{std::move(transform)} {}
 
-        auto make(int N) -> std::shared_ptr<FourierTransformer<T>> override {
+        auto make(index_type N)
+            -> std::shared_ptr<FourierTransformer<T>> override {
             N_ = N;
             return transform;
         }
@@ -117,7 +118,7 @@ OVERLAP_ADD_FILTER_TEST(
 ) {
     b = { 1, 2, 3 };
     construct();
-    assertEqual(4, factory.N());
+    assertEqual(index_type{4}, factory.N());
 }
 
 OVERLAP_ADD_FILTER_TEST(

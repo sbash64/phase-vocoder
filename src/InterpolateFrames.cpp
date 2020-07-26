@@ -1,15 +1,14 @@
 #include "InterpolateFrames.hpp"
+#include <gsl/gsl>
 #include <algorithm>
 #include <functional>
 
 namespace phase_vocoder {
 template <typename T>
-InterpolateFrames<T>::InterpolateFrames(int P, int Q, int N)
-    : previousFrame(sizeNarrow<complex_type<T>>(N)),
-      currentFrame(sizeNarrow<complex_type<T>>(N)),
-      accumulatedPhase(sizeNarrow<T>(N)), phaseAdvance(sizeNarrow<T>(N)),
-      resampledMagnitude(sizeNarrow<T>(N)), numerator{std::min(P, Q)}, P{P},
-      Q{Q} {}
+InterpolateFrames<T>::InterpolateFrames(
+    index_type P, index_type Q, index_type N)
+    : previousFrame(N), currentFrame(N), accumulatedPhase(N), phaseAdvance(N),
+      resampledMagnitude(N), numerator{std::min(P, Q)}, P{P}, Q{Q} {}
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
@@ -78,8 +77,7 @@ void InterpolateFrames<T>::transformFrames(buffer_type<T> &out,
 template <typename T>
 auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
-    T denominator = Q;
-    auto ratio = numerator / denominator;
+    auto ratio = numerator / gsl::narrow_cast<T>(Q);
     return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
 }
 

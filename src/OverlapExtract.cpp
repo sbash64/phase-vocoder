@@ -4,11 +4,11 @@
 
 namespace phase_vocoder {
 template <typename T>
-OverlapExtract<T>::OverlapExtract(int N, int hop)
-    : buffer(sizeNarrow<T>(N)), head{0}, hop{hop}, N{N} {}
+OverlapExtract<T>::OverlapExtract(index_type N, index_type hop)
+    : buffer(N), head{0}, hop{hop}, N{N} {}
 
 template <typename T>
-void add_(const_signal_type<T> x, int N, signal_index_type<T> &head,
+void add_(const_signal_type<T> x, index_type N, index_type &head,
     buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
     auto toFill = std::min(N - head, gsl::narrow<gsl::index>(size(x)));
     std::copy(begin(x), begin(x) + toFill, begin(buffer) + head);
@@ -31,6 +31,6 @@ template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
     add_(onDeck, N, head, buffer, onDeck);
 }
 
-template class OverlapExtract<int>;
+template class OverlapExtract<index_type>;
 template class OverlapExtract<float>;
 }
