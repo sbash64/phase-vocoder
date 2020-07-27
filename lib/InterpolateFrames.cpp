@@ -21,6 +21,9 @@ InterpolateFrames<T>::InterpolateFrames(
     } else if (P == 1 && Q == 3) {
         preliminaryPhaseSequenceComplete = true;
         phaseSequence = {true, true, true, false};
+    } else if (P == 3 && Q == 2) {
+        preliminaryPhaseSequenceComplete = true;
+        phaseSequence = {true, false, true, false, false};
     }
 }
 

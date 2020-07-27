@@ -659,7 +659,7 @@ class InterpolateFramesP3Q2Tests : public ::testing::Test {
 
 TEST_F(
 	InterpolateFramesP3Q2Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase
+	interpolatesComplexMagnitudesAndAdvancesPhase
 ) {
 	assertInterpolatedFrames(
 		{ 1. + 2i, 3. + 4i, 5. + 6i },
@@ -672,7 +672,7 @@ TEST_F(
 
 TEST_F(
 	InterpolateFramesP3Q2Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase2
+	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertYieldsNoFrames({ 7. + 8i, 9. + 10i, 11. + 12i });
