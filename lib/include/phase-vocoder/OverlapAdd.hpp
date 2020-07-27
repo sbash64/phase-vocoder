@@ -7,12 +7,12 @@
 namespace phase_vocoder {
 template <typename T> class OverlapAdd {
   public:
-    explicit OverlapAdd(int N);
+    explicit OverlapAdd(index_type N);
     void add(const_signal_type<T> x);
     void next(signal_type<T> y);
 
   private:
-    buffer_type<T> buffer;
+    impl::buffer_type<T> buffer;
 };
 
 extern template class OverlapAdd<float>;

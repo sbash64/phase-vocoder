@@ -3,7 +3,7 @@
 #include <phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 using std::complex_literals::operator""i;
 
@@ -19,7 +19,8 @@ auto exp(const complex_type<double> &x) -> complex_type<double> {
     return std::exp(x);
 }
 
-auto nthPhase(const complex_type<double> &x, int n) -> complex_type<double> {
+auto nthPhase(const complex_type<double> &x, index_type n)
+    -> complex_type<double> {
     return x * exp(phase(x) * (n - 1) * 1i);
 }
 
@@ -106,7 +107,8 @@ auto magnitudeSecondAndDoublePhaseSecondMinusFirst(
 auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
     const complex_type<double> &a, const complex_type<double> &b,
     const complex_type<double> &c) -> complex_type<double> {
-    return complex((magnitude(b) + magnitude(c)) / 2, phase(b) + phase(c) - phase(a));
+    return complex(
+        (magnitude(b) + magnitude(c)) / 2, phase(b) + phase(c) - phase(a));
 }
 
 auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
@@ -114,8 +116,8 @@ auto averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst(
     const std::vector<complex_type<double>> &b,
     const std::vector<complex_type<double>> &c)
     -> std::vector<complex_type<double>> {
-    return transform(
-        std::move(a), b, c, averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst);
+    return transform(std::move(a), b, c,
+        averageMagnitudesSecondAndThirdAndSumPhasesSecondAndThirdMinusFirst);
 }
 
 auto averageMagnitudesAndPhaseSecond(std::vector<complex_type<double>> a,
@@ -225,10 +227,11 @@ auto averageMagnitudesAndPhaseFirst(std::vector<complex_type<double>> a,
 
 class InterpolateFramesFacade {
     InterpolateFrames<double> interpolate;
-    int N;
+    index_type N;
 
   public:
-    InterpolateFramesFacade(int P, int Q, int N) : interpolate{P, Q, N}, N{N} {}
+    InterpolateFramesFacade(index_type P, index_type Q, index_type N)
+        : interpolate{P, Q, N}, N{N} {}
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
         add(x);
@@ -290,20 +293,21 @@ void assertYieldsNoFrames(InterpolateFramesFacade &interpolate,
 }
 
 class InterpolateFramesP1Q1Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 1;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 1;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -354,20 +358,21 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP1Q2Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 2;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 2;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -410,7 +415,7 @@ TEST_F(
 
 TEST_F(
 	InterpolateFramesP1Q2Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase3
+	interpolatesComplexMagnitudesAndAdvancesPhase3
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	consumeAdd({ 7. + 8i, 9. + 10i, 11. + 12i });
@@ -434,20 +439,21 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP2Q3Tests : public ::testing::Test {
-    int P = 2;
-    int Q = 3;
-    int N = 3;
+    index_type P = 2;
+    index_type Q = 3;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -509,20 +515,21 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP1Q3Tests : public ::testing::Test {
-    int P = 1;
-    int Q = 3;
-    int N = 3;
+    index_type P = 1;
+    index_type Q = 3;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -568,24 +575,25 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP2Q1Tests : public ::testing::Test {
-    int P = 2;
-    int Q = 1;
-    int N = 3;
+    index_type P = 2;
+    index_type Q = 1;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
-        test::assertYieldsNoFrames(interpolate, x);
+        phase_vocoder::assertYieldsNoFrames(interpolate, x);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 
@@ -625,24 +633,25 @@ TEST_F(
 // clang-format on
 
 class InterpolateFramesP3Q2Tests : public ::testing::Test {
-    int P = 3;
-    int Q = 2;
-    int N = 3;
+    index_type P = 3;
+    index_type Q = 2;
+    index_type N = 3;
     InterpolateFramesFacade interpolate{P, Q, N};
 
   protected:
     void assertInterpolatedFrames(const std::vector<complex_type<double>> &x,
         const std::vector<std::vector<complex_type<double>>> &frames,
         double tolerance) {
-        test::assertInterpolatedFrames(interpolate, x, frames, tolerance);
+        phase_vocoder::assertInterpolatedFrames(
+            interpolate, x, frames, tolerance);
     }
 
     void assertYieldsNoFrames(const std::vector<complex_type<double>> &x) {
-        test::assertYieldsNoFrames(interpolate, x);
+        phase_vocoder::assertYieldsNoFrames(interpolate, x);
     }
 
     void consumeAdd(const std::vector<complex_type<double>> &x) {
-        test::consumeAdd(interpolate, x);
+        phase_vocoder::consumeAdd(interpolate, x);
     }
 };
 

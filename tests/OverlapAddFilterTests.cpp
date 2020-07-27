@@ -2,7 +2,7 @@
 #include <phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());
@@ -10,7 +10,7 @@ template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
 
 template <typename T>
 void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
-    x.resize(gsl::narrow_cast<typename std::vector<T>::size_type>(y.size()));
+    x.resize(size(y));
 }
 
 template <typename T>
@@ -49,13 +49,14 @@ class FourierTransformerStub : public FourierTransformer<T> {
 
     class FactoryStub : public FourierTransformer<T>::Factory {
         std::shared_ptr<FourierTransformer<T>> transform;
-        int N_{};
+        index_type N_{};
 
       public:
         explicit FactoryStub(std::shared_ptr<FourierTransformer<T>> transform)
             : transform{std::move(transform)} {}
 
-        auto make(int N) -> std::shared_ptr<FourierTransformer<T>> override {
+        auto make(index_type N)
+            -> std::shared_ptr<FourierTransformer<T>> override {
             N_ = N;
             return transform;
         }
@@ -117,7 +118,7 @@ OVERLAP_ADD_FILTER_TEST(
 ) {
     b = { 1, 2, 3 };
     construct();
-    assertEqual(4, factory.N());
+    assertEqual(index_type{4}, factory.N());
 }
 
 OVERLAP_ADD_FILTER_TEST(

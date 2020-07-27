@@ -6,21 +6,18 @@ on:
 
 jobs:
   test:
-    name: Test ${{ matrix.compiler }} on ${{ matrix.os }}
+    name: ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        compiler: [g++, clang++]
-        os: [ubuntu-latest, macOS-latest]
+        os: [ubuntu-latest, macOS-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        env:
-          CXX: ${{ matrix.compiler }}
         run: cmake -S . -B build -DENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=Release
       - name: build
-        run: cmake --build build
+        run: cmake --build build --config Release
       - name: test
         run: |
           cd build 
-          ctest
+          ctest -C Release

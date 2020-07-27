@@ -17,13 +17,14 @@ template <typename T> class FourierTransformer {
     class Factory {
       public:
         virtual ~Factory() = default;
-        virtual auto make(int N) -> std::shared_ptr<FourierTransformer> = 0;
+        virtual auto make(index_type N)
+            -> std::shared_ptr<FourierTransformer> = 0;
     };
 };
 
 template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
-    OverlapAddFilter(const buffer_type<T> &b,
+    OverlapAddFilter(const impl::buffer_type<T> &b,
         typename FourierTransformer<T>::Factory &factory);
     void filter(signal_type<T> x) override;
 
@@ -32,11 +33,11 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     void filter_(signal_type<T> x);
 
     OverlapAdd<T> overlap;
-    complex_buffer_type<T> complexBuffer;
-    complex_buffer_type<T> H;
-    buffer_type<T> realBuffer;
+    impl::complex_buffer_type<T> complexBuffer;
+    impl::complex_buffer_type<T> H;
+    impl::buffer_type<T> realBuffer;
     std::shared_ptr<FourierTransformer<T>> transformer;
-    int L;
+    index_type L;
 };
 
 extern template class OverlapAddFilter<float>;

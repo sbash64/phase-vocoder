@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace phase_vocoder {
+namespace impl {
 template <typename T> using buffer_type = std::vector<T>;
 
 template <typename T>
@@ -15,12 +16,6 @@ using buffer_iterator_type = typename buffer_type<T>::iterator;
 
 template <typename T>
 using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
-
-template <typename T>
-using buffer_size_type = typename buffer_type<T>::size_type;
-
-template <typename T>
-using buffer_index_type = typename buffer_type<T>::size_type;
 
 template <typename T> using complex_buffer_type = buffer_type<complex_type<T>>;
 
@@ -38,55 +33,38 @@ template <typename T> auto begin(complex_buffer_type<T> &x) {
     return x.begin();
 }
 
-template <typename T> auto begin(const const_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const const_complex_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const signal_type<T> &x) { return x.begin(); }
-
 template <typename T> auto end(const buffer_type<T> &x) { return x.end(); }
 
 template <typename T> auto end(buffer_type<T> &x) { return x.end(); }
 
-template <typename T> auto end(const const_complex_signal_type<T> &x) {
-    return x.end();
-}
-
-template <typename T> auto end(const const_signal_type<T> &x) {
-    return x.end();
-}
-
-template <typename T> auto end(const signal_type<T> &x) { return x.end(); }
-
-template <typename T> auto size(const signal_type<T> &x) { return x.size(); }
-
-template <typename T> auto size(const const_signal_type<T> &x) {
+template <typename T> auto size(const buffer_type<T> &x) -> index_type {
     return x.size();
 }
 
-template <typename T> auto size(const buffer_type<T> &x) { return x.size(); }
+template <typename T> auto size(const signal_type<T> &x) -> index_type {
+    return x.size();
+}
+
+template <typename T> auto size(const const_signal_type<T> &x) -> index_type {
+    return x.size();
+}
 
 template <typename T>
-auto element(const signal_type<T> &x, signal_index_type<T> i) -> auto & {
+auto element(const signal_type<T> &x, index_type i) -> T & {
+    return gsl::at(x, i);
+}
+
+template <typename T>
+auto element(const const_signal_type<T> &x, index_type i) -> const T & {
+    return gsl::at(x, i);
+}
+
+template <typename T> auto element(buffer_type<T> &x, index_type i) -> T & {
     return x.at(i);
 }
 
 template <typename T>
-auto element(const const_signal_type<T> &x, signal_index_type<T> i) -> auto & {
-    return x.at(i);
-}
-
-template <typename T>
-auto element(buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
-    return x.at(i);
-}
-
-template <typename T>
-auto element(const buffer_type<T> &x, buffer_index_type<T> i) -> auto & {
+auto element(const buffer_type<T> &x, index_type i) -> const T & {
     return x.at(i);
 }
 
@@ -114,15 +92,9 @@ void zero(
     std::fill(b, e, T{0});
 }
 
-template <typename T> constexpr auto sizeNarrow(signal_index_type<T> x) {
-    return gsl::narrow_cast<buffer_size_type<T>>(x);
-}
-
-template <typename T>
-void shiftLeft(buffer_type<T> &x, signal_index_type<T> n) {
-    auto n_ = sizeNarrow<T>(n);
-    for (buffer_index_type<T> i{0}; i < size(x) - n_; ++i)
-        element(x, i) = element(x, i + n_);
+template <typename T> void shiftLeft(buffer_type<T> &x, index_type n) {
+    for (index_type i{0}; i < gsl::narrow<index_type>(size(x)) - n; ++i)
+        element(x, i) = element(x, i + n);
     zero<T>(rbegin(x), rbegin(x) + n);
 }
 
@@ -194,14 +166,14 @@ void copyFirstToSecond(
 }
 
 template <typename T>
-void copyFirstToSecond(const_signal_type<T> source, signal_type<T> destination,
-    signal_size_type<T> n) {
+void copyFirstToSecond(
+    const_signal_type<T> source, signal_type<T> destination, index_type n) {
     copyFirstToSecond(begin(source), begin(source) + n, begin(destination));
 }
 
 template <typename T>
-void copyFirstToSecond(const buffer_type<T> &source, signal_type<T> destination,
-    signal_size_type<T> n) {
+void copyFirstToSecond(
+    const buffer_type<T> &source, signal_type<T> destination, index_type n) {
     copyFirstToSecond<T>(begin(source), begin(source) + n, begin(destination));
 }
 
@@ -210,6 +182,7 @@ void transform(const complex_buffer_type<T> &first,
     const complex_buffer_type<T> &second, buffer_type<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
     std::transform(begin(first), end(first), begin(second), begin(out), f);
+}
 }
 }
 

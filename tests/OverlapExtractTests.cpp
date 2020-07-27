@@ -2,19 +2,19 @@
 #include <phase-vocoder/OverlapExtract.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;
 class OverlapExtractTests : public ::testing::Test {
   protected:
-    OverlapExtract<int> extract{N, hop};
-    std::vector<int> buffer{std::vector<int>(N)};
+    OverlapExtract<index_type> extract{N, hop};
+    std::vector<index_type> buffer{std::vector<index_type>(N)};
 
-    void assertSegments(
-        std::vector<int> x, const std::vector<std::vector<int>>& segments) {
+    void assertSegments(std::vector<index_type> x,
+        const std::vector<std::vector<index_type>> &segments) {
         add(std::move(x));
-        for (auto &segment : segments) {
+        for (const auto &segment : segments) {
             assertHasNext();
             assertNextEquals(segment);
         }
@@ -27,13 +27,13 @@ class OverlapExtractTests : public ::testing::Test {
 
     auto hasNext() -> bool { return extract.hasNext(); }
 
-    void add(std::vector<int> x) {
+    void add(std::vector<index_type> x) {
         buffer = std::move(x);
         extract.add(buffer);
     }
 
-    void assertNextEquals(const std::vector<int>& expected) {
-        std::vector<int> out(N);
+    void assertNextEquals(const std::vector<index_type> &expected) {
+        std::vector<index_type> out(N);
         extract.next(out);
         assertEqual(expected, out);
     }

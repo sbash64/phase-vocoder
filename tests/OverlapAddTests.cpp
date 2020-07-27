@@ -2,7 +2,7 @@
 #include <phase-vocoder/OverlapAdd.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;

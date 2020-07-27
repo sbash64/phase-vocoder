@@ -17,10 +17,11 @@
 #include <iostream>
 
 namespace phase_vocoder {
-constexpr auto hop(int N) -> int { return N / 4; }
+constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
-template <typename T> auto lowPassFilter(T cutoff, int taps) -> buffer_type<T> {
-    buffer_type<T> coefficients(sizeNarrow<T>(taps));
+template <typename T>
+auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
+    impl::buffer_type<T> coefficients(taps);
     std::generate(phase_vocoder::begin(coefficients),
         phase_vocoder::end(coefficients), [=, n = 0]() mutable {
             auto something = (pi<T>() * (n++ - (taps - 1) / 2));
@@ -47,30 +48,27 @@ template <typename T> class PhaseVocoder {
     OverlapAddFilter<T> filter;
     OverlapAdd<T> overlappedOutput;
     SignalConverterImpl<T> signalConverter;
-    complex_buffer_type<T> nextFrame;
-    buffer_type<T> expanded;
-    buffer_type<T> decimated;
-    buffer_type<T> inputBuffer;
-    buffer_type<T> outputBuffer;
-    buffer_type<T> window;
+    impl::complex_buffer_type<T> nextFrame;
+    impl::buffer_type<T> expanded;
+    impl::buffer_type<T> decimated;
+    impl::buffer_type<T> inputBuffer;
+    impl::buffer_type<T> outputBuffer;
+    impl::buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
-    int P;
-    int Q;
-    int N;
+    index_type P;
+    index_type Q;
+    index_type N;
 
   public:
-    PhaseVocoder(
-        int P, int Q, int N, typename FourierTransformer<T>::Factory &factory)
+    PhaseVocoder(index_type P, index_type Q, index_type N,
+        typename FourierTransformer<T>::Factory &factory)
         : interpolateFrames{P, Q, N / 2 + 1}, overlapExtract{N, hop(N)},
           filter{lowPassFilter(T{0.5} / std::max(P, Q), 501), factory},
-          overlappedOutput{N},
-          nextFrame(sizeNarrow<complex_type<T>>(N / 2 + 1)),
-          expanded(sizeNarrow<T>(hop(N) * P)),
-          decimated(sizeNarrow<T>(hop(N) * P / Q)),
-          inputBuffer(sizeNarrow<T>(N)),
-          outputBuffer(sizeNarrow<T>(hop(N))), window{hannWindow<T>(N)},
+          overlappedOutput{N}, nextFrame(N / 2 + 1), expanded(hop(N) * P),
+          decimated(hop(N) * P / Q), inputBuffer(N),
+          outputBuffer(hop(N)), window{hannWindow<T>(N)},
           transform{factory.make(N)}, P{P}, Q{Q}, N{N} {
-        buffer_type<T> delayedStart(sizeNarrow<T>(N - hop(N)), T{0});
+        impl::buffer_type<T> delayedStart(N - hop(N), T{0});
         overlapExtract.add(delayedStart);
     }
 

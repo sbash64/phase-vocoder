@@ -27,10 +27,9 @@ template <typename T> class Filter {
 
 template <typename T> class SampleRateConverter {
   public:
-    SampleRateConverter(int P, int hop, SignalConverter<T> &converter,
-        typename Filter<T>::Factory &factory)
-        : buffer(sizeNarrow<T>(P * hop)), filter{factory.make()},
-          converter{converter} {}
+    SampleRateConverter(index_type P, index_type hop,
+        SignalConverter<T> &converter, typename Filter<T>::Factory &factory)
+        : buffer(P * hop), filter{factory.make()}, converter{converter} {}
 
     void convert(const_signal_type<T> x, signal_type<T> y) {
         converter.expand(x, buffer);
@@ -39,7 +38,7 @@ template <typename T> class SampleRateConverter {
     }
 
   private:
-    buffer_type<T> buffer;
+    impl::buffer_type<T> buffer;
     std::shared_ptr<Filter<T>> filter;
     SignalConverter<T> &converter;
 };

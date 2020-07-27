@@ -4,7 +4,7 @@
 #include <vector>
 #include <cmath>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 auto sixSamples(double a, double b, double c, double d, double e, double f)
     -> std::vector<double> {

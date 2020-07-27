@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
-namespace phase_vocoder::test {
+namespace phase_vocoder {
 namespace {
 void append(std::string &s, const std::string &what) { s += what; }
 
@@ -137,17 +137,17 @@ SAMPLE_RATE_CONVERTER_TEST(convertPassesOutputToDecimate) {
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToExpand) {
     convert();
-    ASSERT_EXPAND_OUTPUT_SIZE(3 * 5l);
+    ASSERT_EXPAND_OUTPUT_SIZE(index_type{3 * 5});
 }
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToFilter) {
     convert();
-    ASSERT_FILTER_INPUT_SIZE(3 * 5l);
+    ASSERT_FILTER_INPUT_SIZE(index_type{3 * 5});
 }
 
 SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToDecimate) {
     convert();
-    ASSERT_DECIMATE_INPUT_SIZE(3 * 5l);
+    ASSERT_DECIMATE_INPUT_SIZE(index_type{3 * 5});
 }
 
 // clang-format on
