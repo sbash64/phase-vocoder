@@ -14,7 +14,6 @@
 #include <functional>
 #include <algorithm>
 #include <vector>
-#include <iostream>
 
 namespace phase_vocoder {
 constexpr auto hop(index_type N) -> index_type { return N / 4; }
@@ -22,21 +21,20 @@ constexpr auto hop(index_type N) -> index_type { return N / 4; }
 template <typename T>
 auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
     impl::buffer_type<T> coefficients(taps);
-    std::generate(phase_vocoder::begin(coefficients),
-        phase_vocoder::end(coefficients), [=, n = 0]() mutable {
-            auto something = (pi<T>() * (n++ - (taps - 1) / 2));
+    std::generate(impl::begin(coefficients), impl::end(coefficients),
+        [=, n = 0]() mutable {
+            const auto something{pi<T>() * (n++ - (taps - 1) / 2)};
             return something == 0
                 ? T{1}
                 : std::sin(2 * cutoff * something) / something;
         });
 
-    auto window = hannWindow<T>(taps);
-    std::transform(phase_vocoder::begin(coefficients),
-        phase_vocoder::end(coefficients), phase_vocoder::begin(window),
-        phase_vocoder::begin(coefficients), std::multiplies<>{});
+    const auto window{hannWindow<T>(taps)};
+    std::transform(impl::begin(coefficients), impl::end(coefficients),
+        impl::begin(window), impl::begin(coefficients), std::multiplies<>{});
 
-    auto sum = std::accumulate(phase_vocoder::begin(coefficients),
-        phase_vocoder::end(coefficients), T{0});
+    const auto sum{std::accumulate(
+        impl::begin(coefficients), impl::end(coefficients), T{0})};
     for (auto &x : coefficients)
         x /= sum;
     return coefficients;
@@ -96,9 +94,8 @@ template <typename T> class PhaseVocoder {
     }
 
     void applyWindow() {
-        std::transform(phase_vocoder::begin(inputBuffer),
-            phase_vocoder::end(inputBuffer), phase_vocoder::begin(window),
-            phase_vocoder::begin(inputBuffer), std::multiplies<>{});
+        std::transform(impl::begin(inputBuffer), impl::end(inputBuffer),
+            impl::begin(window), impl::begin(inputBuffer), std::multiplies<>{});
     }
 };
 }

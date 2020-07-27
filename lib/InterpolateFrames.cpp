@@ -15,7 +15,7 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     impl::copyFirstToSecond(currentFrame, previousFrame);
     impl::copyFirstToSecond(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
-    if (P == Q || hasAdded)
+    if (P >= Q || hasAdded)
         accumulatePhase();
     hasAdded = true;
     hasNext_ = true;
@@ -30,8 +30,7 @@ template <typename T>
 void InterpolateFrames<T>::next(complex_signal_type<T> x) {
     resampleMagnitude();
     std::transform(begin(resampledMagnitude), end(resampledMagnitude),
-        begin(accumulatedPhase), begin(x),
-        [](T magnitude, T phase) { return std::polar(magnitude, phase); });
+        begin(accumulatedPhase), begin(x), std::polar<T>);
     accumulatePhaseIfNeeded();
     numerator += P;
     updateHasNext();
