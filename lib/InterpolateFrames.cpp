@@ -8,15 +8,41 @@ template <typename T>
 InterpolateFrames<T>::InterpolateFrames(
     index_type P, index_type Q, index_type N)
     : previousFrame(N), currentFrame(N), accumulatedPhase(N), phaseAdvance(N),
-      resampledMagnitude(N), numerator{std::min(P, Q)}, P{P}, Q{Q} {}
+      resampledMagnitude(N), numerator{std::min(P, Q)}, P{P}, Q{Q} {
+    if (P == 1 && Q == 1) {
+        preliminaryPhaseSequenceComplete = true;
+        patternPhaseSequence = {true, false};
+    } else if (P == 1 && Q == 2) {
+        preliminaryPhaseSequence = {false, true, false};
+        patternPhaseSequence = {true, true, false};
+    } else if (P == 2 && Q == 1) {
+        preliminaryPhaseSequence = {true, false};
+        patternPhaseSequence = {true, false, false};
+    }
+}
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     impl::copyFirstToSecond(currentFrame, previousFrame);
     impl::copyFirstToSecond(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
-    if (P >= Q || hasAdded)
-        accumulatePhase();
+    if (preliminaryPhaseSequenceComplete) {
+        if (patternPhaseSequence.at(phaseSequenceHead)) {
+            accumulatePhase();
+        }
+        ++phaseSequenceHead;
+        if (phaseSequenceHead == patternPhaseSequence.size())
+            phaseSequenceHead = 0;
+    } else {
+        if (preliminaryPhaseSequence.at(phaseSequenceHead)) {
+            accumulatePhase();
+        }
+        ++phaseSequenceHead;
+        if (phaseSequenceHead == preliminaryPhaseSequence.size()) {
+            preliminaryPhaseSequenceComplete = true;
+            phaseSequenceHead = 0;
+        }
+    }
     hasAdded = true;
     hasNext_ = true;
     updateHasNext();
@@ -31,7 +57,23 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
     resampleMagnitude();
     std::transform(begin(resampledMagnitude), end(resampledMagnitude),
         begin(accumulatedPhase), begin(x), std::polar<T>);
-    accumulatePhaseIfNeeded();
+    if (preliminaryPhaseSequenceComplete) {
+        if (patternPhaseSequence.at(phaseSequenceHead)) {
+            accumulatePhase();
+        }
+        ++phaseSequenceHead;
+        if (phaseSequenceHead == patternPhaseSequence.size())
+            phaseSequenceHead = 0;
+    } else {
+        if (preliminaryPhaseSequence.at(phaseSequenceHead)) {
+            accumulatePhase();
+        }
+        ++phaseSequenceHead;
+        if (phaseSequenceHead == preliminaryPhaseSequence.size()) {
+            preliminaryPhaseSequenceComplete = true;
+            phaseSequenceHead = 0;
+        }
+    }
     numerator += P;
     updateHasNext();
 }
