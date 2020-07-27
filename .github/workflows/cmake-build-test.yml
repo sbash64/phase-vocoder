@@ -16,7 +16,7 @@ jobs:
       - name: generate build system
         run: cmake -S . -B build -DENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=Release
       - name: build
-        run: cmake --build build
+        run: cmake --build build --config Release
       - name: test
         run: |
           cd build 
