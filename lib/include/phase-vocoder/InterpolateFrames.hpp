@@ -35,15 +35,13 @@ template <typename T> class InterpolateFrames {
     impl::buffer_type<T> accumulatedPhase;
     impl::buffer_type<T> phaseAdvance;
     impl::buffer_type<T> resampledMagnitude;
-    std::vector<bool> preliminaryPhaseSequence;
     std::vector<bool> patternPhaseSequence;
+    std::vector<bool> phaseSequence;
     index_type phaseSequenceHead{0};
     index_type numerator;
     index_type P;
     index_type Q;
-    bool hasNext_{true};
-    bool hasAdded{};
-    bool skipPhaseAccumulation{};
+    bool hasNext_{};
     bool preliminaryPhaseSequenceComplete{};
 };
 

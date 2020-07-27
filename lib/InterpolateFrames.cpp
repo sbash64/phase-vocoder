@@ -12,12 +12,13 @@ InterpolateFrames<T>::InterpolateFrames(
     if (P == 1 && Q == 1) {
         preliminaryPhaseSequenceComplete = true;
         patternPhaseSequence = {true, false};
+        phaseSequence = {true, false};
     } else if (P == 1 && Q == 2) {
-        preliminaryPhaseSequence = {false, true, false};
         patternPhaseSequence = {true, true, false};
+        phaseSequence = {false, true, false};
     } else if (P == 2 && Q == 1) {
-        preliminaryPhaseSequence = {true, false};
         patternPhaseSequence = {true, false, false};
+        phaseSequence = {true, false};
     }
 }
 
@@ -26,24 +27,7 @@ void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     impl::copyFirstToSecond(currentFrame, previousFrame);
     impl::copyFirstToSecond(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
-    if (preliminaryPhaseSequenceComplete) {
-        if (patternPhaseSequence.at(phaseSequenceHead)) {
-            accumulatePhase();
-        }
-        ++phaseSequenceHead;
-        if (phaseSequenceHead == patternPhaseSequence.size())
-            phaseSequenceHead = 0;
-    } else {
-        if (preliminaryPhaseSequence.at(phaseSequenceHead)) {
-            accumulatePhase();
-        }
-        ++phaseSequenceHead;
-        if (phaseSequenceHead == preliminaryPhaseSequence.size()) {
-            preliminaryPhaseSequenceComplete = true;
-            phaseSequenceHead = 0;
-        }
-    }
-    hasAdded = true;
+    accumulatePhaseIfNeeded();
     hasNext_ = true;
     updateHasNext();
 }
@@ -57,30 +41,21 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
     resampleMagnitude();
     std::transform(begin(resampledMagnitude), end(resampledMagnitude),
         begin(accumulatedPhase), begin(x), std::polar<T>);
-    if (preliminaryPhaseSequenceComplete) {
-        if (patternPhaseSequence.at(phaseSequenceHead)) {
-            accumulatePhase();
-        }
-        ++phaseSequenceHead;
-        if (phaseSequenceHead == patternPhaseSequence.size())
-            phaseSequenceHead = 0;
-    } else {
-        if (preliminaryPhaseSequence.at(phaseSequenceHead)) {
-            accumulatePhase();
-        }
-        ++phaseSequenceHead;
-        if (phaseSequenceHead == preliminaryPhaseSequence.size()) {
-            preliminaryPhaseSequenceComplete = true;
-            phaseSequenceHead = 0;
-        }
-    }
+    accumulatePhaseIfNeeded();
     numerator += P;
     updateHasNext();
 }
 
 template <typename T> void InterpolateFrames<T>::accumulatePhaseIfNeeded() {
-    if (numerator != Q)
+    if (phaseSequence.at(phaseSequenceHead))
         accumulatePhase();
+    if (++phaseSequenceHead == phaseSequence.size()) {
+        if (!preliminaryPhaseSequenceComplete) {
+            preliminaryPhaseSequenceComplete = true;
+            phaseSequence = patternPhaseSequence;
+        }
+        phaseSequenceHead = 0;
+    }
 }
 
 template <typename T> void InterpolateFrames<T>::updateHasNext() {
