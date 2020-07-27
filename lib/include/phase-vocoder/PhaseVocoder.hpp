@@ -48,11 +48,12 @@ template <typename T> class PhaseVocoder {
     SignalConverterImpl<T> signalConverter;
     impl::complex_buffer_type<T> nextFrame;
     impl::buffer_type<T> expanded;
-    impl::buffer_type<T> decimated;
+    impl::buffer_type<T> decimatedBuffer;
     impl::buffer_type<T> inputBuffer;
     impl::buffer_type<T> outputBuffer;
     impl::buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
+    index_type decimatedHead{};
     index_type P;
     index_type Q;
     index_type N;
@@ -63,7 +64,7 @@ template <typename T> class PhaseVocoder {
         : interpolateFrames{P, Q, N / 2 + 1}, overlapExtract{N, hop(N)},
           filter{lowPassFilter(T{0.5} / std::max(P, Q), 501), factory},
           overlappedOutput{N}, nextFrame(N / 2 + 1), expanded(hop(N) * P),
-          decimated(hop(N) * P / Q), inputBuffer(N),
+          decimatedBuffer(hop(N) * P), inputBuffer(N),
           outputBuffer(hop(N)), window{hannWindow<T>(N)},
           transform{factory.make(N)}, P{P}, Q{Q}, N{N} {
         impl::buffer_type<T> delayedStart(N - hop(N), T{0});
@@ -86,9 +87,19 @@ template <typename T> class PhaseVocoder {
                 overlappedOutput.next(outputBuffer);
                 signalConverter.expand(outputBuffer, expanded);
                 filter.filter(expanded);
-                signalConverter.decimate(expanded, decimated);
-                std::copy(decimated.begin(), decimated.end(), head);
-                head += hop(N) * P / Q;
+                signalConverter.decimate(expanded,
+                    {decimatedBuffer.data() + decimatedHead,
+                        gsl::narrow<typename gsl::span<T>::size_type>(
+                            hop(N) * P / Q)});
+                decimatedHead += hop(N) * P / Q;
+                auto toCopy{std::min(std::distance(head, x.end()),
+                    std::distance(decimatedBuffer.begin(),
+                        decimatedBuffer.begin() + decimatedHead))};
+                std::copy(decimatedBuffer.begin(),
+                    decimatedBuffer.begin() + toCopy, head);
+                impl::shiftLeft(decimatedBuffer, toCopy);
+                head += toCopy;
+                decimatedHead -= toCopy;
             }
         }
     }
