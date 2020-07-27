@@ -18,6 +18,9 @@ option(ENABLE_TESTS "Enable tests" OFF)
 if(${ENABLE_TESTS})
   enable_testing()
 
+  set(gtest_force_shared_crt
+      ON
+      CACHE BOOL "" FORCE)
   FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest
