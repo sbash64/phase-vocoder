@@ -19,6 +19,9 @@ InterpolateFrames<T>::InterpolateFrames(
     } else if (P == 2 && Q == 1) {
         patternPhaseSequence = {true, false, false};
         phaseSequence = {true, false};
+    } else if (P == 1 && Q == 3) {
+        preliminaryPhaseSequenceComplete = true;
+        phaseSequence = {true, true, true, false};
     }
 }
 
