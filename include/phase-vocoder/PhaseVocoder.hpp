@@ -20,8 +20,8 @@ namespace phase_vocoder {
 constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
 template <typename T>
-auto lowPassFilter(T cutoff, index_type taps) -> buffer_type<T> {
-    buffer_type<T> coefficients(taps);
+auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
+    impl::buffer_type<T> coefficients(taps);
     std::generate(phase_vocoder::begin(coefficients),
         phase_vocoder::end(coefficients), [=, n = 0]() mutable {
             auto something = (pi<T>() * (n++ - (taps - 1) / 2));
@@ -48,12 +48,12 @@ template <typename T> class PhaseVocoder {
     OverlapAddFilter<T> filter;
     OverlapAdd<T> overlappedOutput;
     SignalConverterImpl<T> signalConverter;
-    complex_buffer_type<T> nextFrame;
-    buffer_type<T> expanded;
-    buffer_type<T> decimated;
-    buffer_type<T> inputBuffer;
-    buffer_type<T> outputBuffer;
-    buffer_type<T> window;
+    impl::complex_buffer_type<T> nextFrame;
+    impl::buffer_type<T> expanded;
+    impl::buffer_type<T> decimated;
+    impl::buffer_type<T> inputBuffer;
+    impl::buffer_type<T> outputBuffer;
+    impl::buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
     index_type P;
     index_type Q;
@@ -68,7 +68,7 @@ template <typename T> class PhaseVocoder {
           decimated(hop(N) * P / Q), inputBuffer(N),
           outputBuffer(hop(N)), window{hannWindow<T>(N)},
           transform{factory.make(N)}, P{P}, Q{Q}, N{N} {
-        buffer_type<T> delayedStart(N - hop(N), T{0});
+        impl::buffer_type<T> delayedStart(N - hop(N), T{0});
         overlapExtract.add(delayedStart);
     }
 

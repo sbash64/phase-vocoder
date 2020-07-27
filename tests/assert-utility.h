@@ -34,7 +34,7 @@ template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
 }
 
-template <typename T> auto at(const std::vector<T> &x, std::size_t n) {
+template <typename T> auto at(const std::vector<T> &x, index_type n) {
     return x.at(n);
 }
 
@@ -42,7 +42,7 @@ template <typename T>
 void assertEqual(const std::vector<complex_type<T>> &expected,
     const std::vector<complex_type<T>> &actual, T tolerance) {
     assertEqual(size(expected), size(actual));
-    for (std::size_t i = 0; i < size(expected); ++i)
+    for (index_type i{0}; i < size(expected); ++i)
         assertEqual(at(expected, i), at(actual, i), tolerance);
 }
 
@@ -50,14 +50,14 @@ template <typename T>
 void assertEqual(
     const std::vector<T> &expected, const std::vector<T> &actual, T tolerance) {
     assertEqual(size(expected), size(actual));
-    for (std::size_t i = 0; i < size(expected); ++i)
+    for (index_type i{0}; i < size(expected); ++i)
         EXPECT_NEAR(at(expected, i), at(actual, i), tolerance);
 }
 
 template <typename T>
 void assertEqual(const std::vector<T> &expected, const std::vector<T> &actual) {
     assertEqual(size(expected), size(actual));
-    for (std::size_t i = 0; i < size(expected); ++i)
+    for (index_type i{0}; i < size(expected); ++i)
         assertEqual(at(expected, i), at(actual, i));
 }
 

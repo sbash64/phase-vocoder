@@ -8,16 +8,16 @@ OverlapExtract<T>::OverlapExtract(index_type N, index_type hop)
     : buffer(N), head{0}, hop{hop}, N{N} {}
 
 template <typename T>
-void add_(const_signal_type<T> x, index_type N, index_type &head,
+void add(const_signal_type<T> x, index_type N, index_type &head,
     impl::buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
-    auto toFill = std::min(N - head, impl::size(x));
+    const auto toFill{std::min(N - head, impl::size(x))};
     std::copy(begin(x), begin(x) + toFill, begin(buffer) + head);
     onDeck = x.last(impl::size(x) - toFill);
     head += toFill;
 }
 
 template <typename T> void OverlapExtract<T>::add(const_signal_type<T> x) {
-    add_(x, N, head, buffer, onDeck);
+    phase_vocoder::add(x, N, head, buffer, onDeck);
 }
 
 template <typename T> auto OverlapExtract<T>::hasNext() -> bool {
@@ -28,7 +28,7 @@ template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
     impl::copyFirstToSecond(buffer, out);
     impl::shiftLeft(buffer, hop);
     head = N - hop;
-    add_(onDeck, N, head, buffer, onDeck);
+    phase_vocoder::add(onDeck, N, head, buffer, onDeck);
 }
 
 template class OverlapExtract<index_type>;

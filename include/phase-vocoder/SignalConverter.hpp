@@ -10,6 +10,9 @@ template <typename T> class SignalConverterImpl : public SignalConverter<T> {
     void expand(const_signal_type<T> x, signal_type<T> y) override;
     void decimate(const_signal_type<T> x, signal_type<T> y) override;
 };
+
+extern template class SignalConverterImpl<double>;
+extern template class SignalConverterImpl<float>;
 }
 
 #endif

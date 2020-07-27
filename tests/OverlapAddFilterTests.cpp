@@ -10,7 +10,7 @@ template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
 
 template <typename T>
 void resizeToMatch(std::vector<T> &x, const_signal_type<T> y) {
-    x.resize(gsl::narrow_cast<typename std::vector<T>::size_type>(y.size()));
+    x.resize(size(y));
 }
 
 template <typename T>

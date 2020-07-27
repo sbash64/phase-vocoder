@@ -7,7 +7,8 @@
 #include <functional>
 #include <vector>
 
-namespace phase_vocoder::impl {
+namespace phase_vocoder {
+namespace impl {
 template <typename T> using buffer_type = std::vector<T>;
 
 template <typename T>
@@ -32,29 +33,13 @@ template <typename T> auto begin(complex_buffer_type<T> &x) {
     return x.begin();
 }
 
-template <typename T> auto begin(const const_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const const_complex_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const signal_type<T> &x) { return x.begin(); }
-
 template <typename T> auto end(const buffer_type<T> &x) { return x.end(); }
 
 template <typename T> auto end(buffer_type<T> &x) { return x.end(); }
 
-template <typename T> auto end(const const_complex_signal_type<T> &x) {
-    return x.end();
+template <typename T> auto size(const buffer_type<T> &x) -> index_type {
+    return x.size();
 }
-
-template <typename T> auto end(const const_signal_type<T> &x) {
-    return x.end();
-}
-
-template <typename T> auto end(const signal_type<T> &x) { return x.end(); }
 
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
@@ -64,26 +49,22 @@ template <typename T> auto size(const const_signal_type<T> &x) -> index_type {
     return x.size();
 }
 
-template <typename T> auto size(const buffer_type<T> &x) -> index_type {
-    return x.size();
-}
-
 template <typename T>
-auto element(const signal_type<T> &x, index_type i) -> auto & {
+auto element(const signal_type<T> &x, index_type i) -> T & {
     return gsl::at(x, i);
 }
 
 template <typename T>
-auto element(const const_signal_type<T> &x, index_type i) -> auto & {
+auto element(const const_signal_type<T> &x, index_type i) -> const T & {
     return gsl::at(x, i);
 }
 
-template <typename T> auto element(buffer_type<T> &x, index_type i) -> auto & {
+template <typename T> auto element(buffer_type<T> &x, index_type i) -> T & {
     return x.at(i);
 }
 
 template <typename T>
-auto element(const buffer_type<T> &x, index_type i) -> auto & {
+auto element(const buffer_type<T> &x, index_type i) -> const T & {
     return x.at(i);
 }
 
@@ -201,6 +182,7 @@ void transform(const complex_buffer_type<T> &first,
     const complex_buffer_type<T> &second, buffer_type<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
     std::transform(begin(first), end(first), begin(second), begin(out), f);
+}
 }
 }
 

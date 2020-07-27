@@ -19,6 +19,10 @@ template <typename T> class OverlapExtract {
     index_type hop;
     index_type N;
 };
+
+extern template class OverlapExtract<index_type>;
+extern template class OverlapExtract<float>;
+extern template class OverlapExtract<double>;
 }
 
 #endif
