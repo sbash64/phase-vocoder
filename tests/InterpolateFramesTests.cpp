@@ -552,7 +552,7 @@ TEST_F(
 
 TEST_F(
 	InterpolateFramesP1Q3Tests,
-	DISABLED_interpolatesComplexMagnitudesAndAdvancesPhase2
+	interpolatesComplexMagnitudesAndAdvancesPhase2
 ) {
 	consumeAdd({ 1. + 2i, 3. + 4i, 5. + 6i });
 	assertInterpolatedFrames(

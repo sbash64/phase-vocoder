@@ -11,7 +11,6 @@ InterpolateFrames<T>::InterpolateFrames(
       resampledMagnitude(N), numerator{std::min(P, Q)}, P{P}, Q{Q} {
     if (P == 1 && Q == 1) {
         preliminaryPhaseSequenceComplete = true;
-        patternPhaseSequence = {true, false};
         phaseSequence = {true, false};
     } else if (P == 1 && Q == 2) {
         patternPhaseSequence = {true, true, false};
