@@ -56,8 +56,6 @@ auto element(const buffer_type<T> &x, index_type i) -> const T & {
     return x.at(i);
 }
 
-template <typename T> auto rbegin(buffer_type<T> &x) { return x.rbegin(); }
-
 template <typename T>
 void zero(
     signal_reverse_iterator_type<T> b, signal_reverse_iterator_type<T> e) {
@@ -156,12 +154,6 @@ void copyFirstToSecond(
 template <typename T>
 void copyFirstToSecond(
     const_signal_type<T> source, signal_type<T> destination, index_type n) {
-    copyFirstToSecond(begin(source), begin(source) + n, begin(destination));
-}
-
-template <typename T>
-void copyFirstToSecond(
-    const buffer_type<T> &source, signal_type<T> destination, index_type n) {
     copyFirstToSecond<T>(begin(source), begin(source) + n, begin(destination));
 }
 
