@@ -40,6 +40,13 @@ auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
     return coefficients;
 }
 
+template <typename T>
+void multiplyFirstToSecond(
+    const impl::buffer_type<T> &window, impl::buffer_type<T> &inputBuffer) {
+    std::transform(impl::begin(inputBuffer), impl::end(inputBuffer),
+        impl::begin(window), impl::begin(inputBuffer), std::multiplies<>{});
+}
+
 template <typename T> class PhaseVocoder {
     InterpolateFrames<T> interpolateFrames;
     OverlapExtract<T> overlapExtract;
@@ -53,7 +60,7 @@ template <typename T> class PhaseVocoder {
     impl::buffer_type<T> outputBuffer;
     impl::buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
-    index_type decimatedHead{};
+    impl::buffer_iterator_type<T> decimatedHead;
     index_type P;
     index_type Q;
     index_type N;
@@ -64,49 +71,45 @@ template <typename T> class PhaseVocoder {
         : interpolateFrames{P, Q, N / 2 + 1}, overlapExtract{N, hop(N)},
           filter{lowPassFilter(T{0.5} / std::max(P, Q), 501), factory},
           overlappedOutput{N}, nextFrame(N / 2 + 1), expanded(hop(N) * P),
-          decimatedBuffer(hop(N) * P), inputBuffer(N),
-          outputBuffer(hop(N)), window{hannWindow<T>(N)},
-          transform{factory.make(N)}, P{P}, Q{Q}, N{N} {
+          decimatedBuffer(hop(N) * P), inputBuffer(N), outputBuffer(hop(N)),
+          window{hannWindow<T>(N)}, transform{factory.make(N)},
+          decimatedHead{decimatedBuffer.begin()}, P{P}, Q{Q}, N{N} {
         impl::buffer_type<T> delayedStart(N - hop(N), T{0});
         overlapExtract.add(delayedStart);
     }
 
     void vocode(signal_type<T> x) {
         overlapExtract.add(x);
-        auto head = x.begin();
+        auto head{x.begin()};
         while (overlapExtract.hasNext()) {
             overlapExtract.next(inputBuffer);
-            applyWindow();
+            multiplyFirstToSecond(window, inputBuffer);
             transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
             while (interpolateFrames.hasNext()) {
                 interpolateFrames.next(nextFrame);
                 transform->idft(nextFrame, inputBuffer);
-                applyWindow();
+                multiplyFirstToSecond(window, inputBuffer);
                 overlappedOutput.add(inputBuffer);
                 overlappedOutput.next(outputBuffer);
                 signalConverter.expand(outputBuffer, expanded);
                 filter.filter(expanded);
+                const auto toDecimate{hop(N) * P / Q};
                 signalConverter.decimate(expanded,
-                    {decimatedBuffer.data() + decimatedHead,
-                        gsl::narrow<typename gsl::span<T>::size_type>(
-                            hop(N) * P / Q)});
-                decimatedHead += hop(N) * P / Q;
-                auto toCopy{std::min(std::distance(head, x.end()),
-                    std::distance(decimatedBuffer.begin(),
-                        decimatedBuffer.begin() + decimatedHead))};
-                std::copy(decimatedBuffer.begin(),
-                    decimatedBuffer.begin() + toCopy, head);
+                    {&(*decimatedHead),
+                        static_cast<typename signal_type<T>::size_type>(
+                            toDecimate)});
+                decimatedHead += toDecimate;
+                const auto toCopy{std::min(std::distance(head, x.end()),
+                    std::distance(
+                        impl::begin(decimatedBuffer), decimatedHead))};
+                std::copy(impl::begin(decimatedBuffer),
+                    impl::begin(decimatedBuffer) + toCopy, head);
                 impl::shiftLeft(decimatedBuffer, toCopy);
                 head += toCopy;
                 decimatedHead -= toCopy;
             }
         }
-    }
-
-    void applyWindow() {
-        std::transform(impl::begin(inputBuffer), impl::end(inputBuffer),
-            impl::begin(window), impl::begin(inputBuffer), std::multiplies<>{});
     }
 };
 }
