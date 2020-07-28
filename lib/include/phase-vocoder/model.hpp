@@ -33,26 +33,6 @@ using complex_signal_iterator_type = typename complex_signal_type<T>::iterator;
 template <typename T>
 using const_complex_signal_iterator_type =
     typename const_complex_signal_type<T>::iterator;
-
-template <typename T> auto begin(const const_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const const_complex_signal_type<T> &x) {
-    return x.begin();
-}
-
-template <typename T> auto begin(const signal_type<T> &x) { return x.begin(); }
-
-template <typename T> auto end(const const_complex_signal_type<T> &x) {
-    return x.end();
-}
-
-template <typename T> auto end(const const_signal_type<T> &x) {
-    return x.end();
-}
-
-template <typename T> auto end(const signal_type<T> &x) { return x.end(); }
 }
 
 #endif

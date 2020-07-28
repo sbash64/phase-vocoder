@@ -54,8 +54,7 @@ void OverlapAddFilter<T>::dft(signal_type<T> x, complex_signal_type<T> X) {
 }
 
 template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
-    impl::zero<T>(
-        impl::begin(realBuffer) + impl::size(x), impl::end(realBuffer));
+    impl::zero<T>(begin(realBuffer) + impl::size(x), end(realBuffer));
     impl::copyFirstToSecond<T>(x, realBuffer);
     dft(realBuffer, complexBuffer);
     multiplyFirstToSecond(H, complexBuffer);
