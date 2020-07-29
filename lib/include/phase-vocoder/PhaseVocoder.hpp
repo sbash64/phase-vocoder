@@ -28,21 +28,12 @@ auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
     });
 
     const auto window{hannWindow<T>(taps)};
-    std::transform(begin(coefficients), end(coefficients), begin(window),
-        begin(coefficients), std::multiplies<>{});
-
+    impl::multiplyFirstToSecond<T>(window, coefficients);
     const auto sum{
         std::accumulate(begin(coefficients), end(coefficients), T{0})};
     for (auto &x : coefficients)
         x /= sum;
     return coefficients;
-}
-
-template <typename T>
-void multiplyFirstToSecond(
-    const impl::buffer_type<T> &window, impl::buffer_type<T> &inputBuffer) {
-    std::transform(begin(inputBuffer), end(inputBuffer), begin(window),
-        begin(inputBuffer), std::multiplies<>{});
 }
 
 template <typename T> class PhaseVocoder {
@@ -81,13 +72,13 @@ template <typename T> class PhaseVocoder {
         auto head{x.begin()};
         while (overlapExtract.hasNext()) {
             overlapExtract.next(inputBuffer);
-            multiplyFirstToSecond(window, inputBuffer);
+            impl::multiplyFirstToSecond<T>(window, inputBuffer);
             transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
             while (interpolateFrames.hasNext()) {
                 interpolateFrames.next(nextFrame);
                 transform->idft(nextFrame, inputBuffer);
-                multiplyFirstToSecond(window, inputBuffer);
+                impl::multiplyFirstToSecond<T>(window, inputBuffer);
                 overlappedOutput.add(inputBuffer);
                 overlappedOutput.next(outputBuffer);
                 signalConverter.expand(outputBuffer, expanded);
@@ -99,11 +90,10 @@ template <typename T> class PhaseVocoder {
                             toDecimate)});
                 decimatedHead += toDecimate;
                 const auto toCopy{std::min(std::distance(head, x.end()),
-                    std::distance(
-                        impl::begin(decimatedBuffer), decimatedHead))};
-                std::copy(impl::begin(decimatedBuffer),
-                    impl::begin(decimatedBuffer) + toCopy, head);
-                impl::shiftLeft(decimatedBuffer, toCopy);
+                    std::distance(begin(decimatedBuffer), decimatedHead))};
+                std::copy(begin(decimatedBuffer),
+                    begin(decimatedBuffer) + toCopy, head);
+                impl::shiftLeft<T>(decimatedBuffer, toCopy);
                 head += toCopy;
                 decimatedHead -= toCopy;
             }
