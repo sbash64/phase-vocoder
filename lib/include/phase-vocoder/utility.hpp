@@ -2,7 +2,6 @@
 #define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_HPP_
 
 #include "model.hpp"
-#include <gsl/gsl>
 #include <algorithm>
 #include <functional>
 #include <vector>
