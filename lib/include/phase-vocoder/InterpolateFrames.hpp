@@ -24,7 +24,6 @@ template <typename T> class InterpolateFrames {
             const complex_type<T> &, const complex_type<T> &));
     auto resampleMagnitude(const complex_type<T> &a, const complex_type<T> &b)
         -> T;
-    void resampleMagnitude();
     void accumulatePhase();
 
     using frame_type = impl::complex_buffer_type<T>;

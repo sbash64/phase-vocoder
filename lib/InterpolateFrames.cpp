@@ -43,8 +43,8 @@ template <typename T> auto InterpolateFrames<T>::hasNext() -> bool {
 
 template <typename T>
 void InterpolateFrames<T>::next(complex_signal_type<T> x) {
-    resampleMagnitude();
-    std::transform(begin(resampledMagnitude), end(resampledMagnitude),
+    transformFrames(resampledMagnitude, &InterpolateFrames::resampleMagnitude);
+    transform(begin(resampledMagnitude), end(resampledMagnitude),
         begin(accumulatedPhase), begin(x), std::polar<T>);
     accumulatePhaseIfNeeded();
     numerator += P;
@@ -103,10 +103,6 @@ auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     const auto ratio{gsl::narrow_cast<T>(numerator) / gsl::narrow_cast<T>(Q)};
     return scaledMagnitude(a, 1 - ratio) + scaledMagnitude(b, ratio);
-}
-
-template <typename T> void InterpolateFrames<T>::resampleMagnitude() {
-    transformFrames(resampledMagnitude, &InterpolateFrames::resampleMagnitude);
 }
 
 template <typename T> void InterpolateFrames<T>::accumulatePhase() {
