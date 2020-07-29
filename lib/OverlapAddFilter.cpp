@@ -25,12 +25,6 @@ auto dftBufferLength(const impl::buffer_type<T> &b) -> index_type {
 }
 
 template <typename T>
-void multiplyFirstToSecond(
-    const impl::complex_buffer_type<T> &a, impl::complex_buffer_type<T> &b) {
-    transform(begin(b), end(b), begin(a), begin(b), std::multiplies<>{});
-}
-
-template <typename T>
 void dft(const std::shared_ptr<FourierTransformer<T>> &transformer,
     signal_type<T> x, complex_signal_type<T> X) {
     transformer->dft(x, X);
@@ -58,7 +52,7 @@ template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
     impl::zero<T>(begin(realBuffer) + impl::size(x), end(realBuffer));
     impl::copyFirstToSecond<T>(x, realBuffer);
     dft<T>(transformer, realBuffer, complexBuffer);
-    multiplyFirstToSecond(H, complexBuffer);
+    impl::multiplyFirstToSecond<complex_type<T>>(H, complexBuffer);
     transformer->idft(complexBuffer, realBuffer);
     overlap.add(realBuffer);
     overlap.next(x);

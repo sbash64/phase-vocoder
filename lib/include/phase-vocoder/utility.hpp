@@ -69,6 +69,11 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 }
 
 template <typename T>
+void multiplyFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
+    std::transform(begin(y), end(y), begin(x), begin(y), std::multiplies<>{});
+}
+
+template <typename T>
 void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
     signal_iterator_type<T> destination) {

@@ -21,20 +21,18 @@ constexpr auto hop(index_type N) -> index_type { return N / 4; }
 template <typename T>
 auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
     impl::buffer_type<T> coefficients(taps);
-    std::generate(impl::begin(coefficients), impl::end(coefficients),
-        [=, n = 0]() mutable {
-            const auto something{pi<T>() * (n++ - (taps - 1) / 2)};
-            return something == 0
-                ? T{1}
-                : std::sin(2 * cutoff * something) / something;
-        });
+    std::generate(begin(coefficients), end(coefficients), [=, n = 0]() mutable {
+        const auto something{pi<T>() * (n++ - (taps - 1) / 2)};
+        return something == 0 ? T{1}
+                              : std::sin(2 * cutoff * something) / something;
+    });
 
     const auto window{hannWindow<T>(taps)};
-    std::transform(impl::begin(coefficients), impl::end(coefficients),
-        impl::begin(window), impl::begin(coefficients), std::multiplies<>{});
+    std::transform(begin(coefficients), end(coefficients), begin(window),
+        begin(coefficients), std::multiplies<>{});
 
-    const auto sum{std::accumulate(
-        impl::begin(coefficients), impl::end(coefficients), T{0})};
+    const auto sum{
+        std::accumulate(begin(coefficients), end(coefficients), T{0})};
     for (auto &x : coefficients)
         x /= sum;
     return coefficients;
@@ -43,8 +41,8 @@ auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
 template <typename T>
 void multiplyFirstToSecond(
     const impl::buffer_type<T> &window, impl::buffer_type<T> &inputBuffer) {
-    std::transform(impl::begin(inputBuffer), impl::end(inputBuffer),
-        impl::begin(window), impl::begin(inputBuffer), std::multiplies<>{});
+    std::transform(begin(inputBuffer), end(inputBuffer), begin(window),
+        begin(inputBuffer), std::multiplies<>{});
 }
 
 template <typename T> class PhaseVocoder {
