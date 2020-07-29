@@ -51,7 +51,8 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
             return resampleMagnitude(a, b);
         });
     transform(begin(resampledMagnitude), end(resampledMagnitude),
-        begin(accumulatedPhase), begin(x), std::polar<T>);
+        begin(accumulatedPhase), begin(x),
+        [](T a, T b) { return std::polar<T>(a, b); });
     accumulatePhaseIfNeeded();
     numerator += P;
     updateHasNext();
