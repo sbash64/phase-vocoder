@@ -114,13 +114,6 @@ void copyFirstToSecond(const_buffer_iterator_type<T> sourceBegin,
 }
 
 template <typename T>
-void copyFirstToSecond(const_buffer_iterator_type<T> sourceBegin,
-    const_buffer_iterator_type<T> sourceEnd,
-    buffer_iterator_type<T> destination) {
-    std::copy(sourceBegin, sourceEnd, destination);
-}
-
-template <typename T>
 void copyFirstToSecond(
     const_signal_type<T> source, signal_type<T> destination) {
     copyFirstToSecond<T>(begin(source), end(source), begin(destination));
