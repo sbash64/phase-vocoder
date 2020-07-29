@@ -31,7 +31,10 @@ template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
     impl::copyFirstToSecond<complex_type<T>>(currentFrame, previousFrame);
     impl::copyFirstToSecond<complex_type<T>>(x, currentFrame);
-    transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
+    transformFrames(
+        phaseAdvance, [&](const complex_type<T> &a, const complex_type<T> &b) {
+            return phaseDifference(a, b);
+        });
     accumulatePhaseIfNeeded();
     hasNext_ = true;
     updateHasNext();
@@ -43,7 +46,10 @@ template <typename T> auto InterpolateFrames<T>::hasNext() -> bool {
 
 template <typename T>
 void InterpolateFrames<T>::next(complex_signal_type<T> x) {
-    transformFrames(resampledMagnitude, &InterpolateFrames::resampleMagnitude);
+    transformFrames(resampledMagnitude,
+        [&](const complex_type<T> &a, const complex_type<T> &b) {
+            return resampleMagnitude(a, b);
+        });
     transform(begin(resampledMagnitude), end(resampledMagnitude),
         begin(accumulatedPhase), begin(x), std::polar<T>);
     accumulatePhaseIfNeeded();
@@ -86,11 +92,9 @@ template <typename T> auto magnitude(const complex_type<T> &x) -> T {
 
 template <typename T>
 void InterpolateFrames<T>::transformFrames(impl::buffer_type<T> &out,
-    T (InterpolateFrames::*f)(
-        const complex_type<T> &, const complex_type<T> &)) {
-    std::function<T(const complex_type<T> &a, const complex_type<T> &b)> f_ =
-        [&](auto a, auto b) { return (this->*f)(a, b); };
-    impl::transform(previousFrame, currentFrame, out, f_);
+    const std::function<T(const complex_type<T> &a, const complex_type<T> &b)>
+        &f) {
+    impl::transform(previousFrame, currentFrame, out, f);
 }
 
 template <typename T>

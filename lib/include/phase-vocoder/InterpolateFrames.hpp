@@ -4,6 +4,7 @@
 #include "model.hpp"
 #include "utility.hpp"
 #include <vector>
+#include <functional>
 
 namespace phase_vocoder {
 template <typename T> class InterpolateFrames {
@@ -18,8 +19,8 @@ template <typename T> class InterpolateFrames {
     void updateHasNext();
     auto phaseDifference(const complex_type<T> &, const complex_type<T> &) -> T;
     void transformFrames(impl::buffer_type<T> &,
-        T (InterpolateFrames::*)(
-            const complex_type<T> &, const complex_type<T> &));
+        const std::function<T(
+            const complex_type<T> &a, const complex_type<T> &b)> &);
     auto resampleMagnitude(const complex_type<T> &, const complex_type<T> &)
         -> T;
 
