@@ -29,12 +29,12 @@ template <typename T> auto size(const const_signal_type<T> &x) -> index_type {
 
 template <typename T>
 auto element(const signal_type<T> &x, index_type i) -> T & {
-    return gsl::at(x, i);
+    return at(x, i);
 }
 
 template <typename T>
 auto element(const const_signal_type<T> &x, index_type i) -> const T & {
-    return gsl::at(x, i);
+    return at(x, i);
 }
 
 template <typename T> void zero(signal_type<T> x) {
@@ -44,18 +44,18 @@ template <typename T> void zero(signal_type<T> x) {
 template <typename T>
 void zero(
     signal_reverse_iterator_type<T> b, signal_reverse_iterator_type<T> e) {
-    std::fill(b, e, T{0});
+    fill(b, e, T{0});
 }
 
 template <typename T>
 void zero(buffer_iterator_type<T> b, buffer_iterator_type<T> e) {
-    std::fill(b, e, T{0});
+    fill(b, e, T{0});
 }
 
 template <typename T>
 void zero(
     buffer_reverse_iterator_type<T> b, buffer_reverse_iterator_type<T> e) {
-    std::fill(b, e, T{0});
+    fill(b, e, T{0});
 }
 
 template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
@@ -66,7 +66,7 @@ template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
 
 template <typename T>
 void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
-    std::transform(begin(y), end(y), begin(x), begin(y), std::plus<>{});
+    transform(begin(y), end(y), begin(x), begin(y), std::plus<>{});
 }
 
 template <typename T>
@@ -92,7 +92,7 @@ template <typename T>
 void transform(const complex_buffer_type<T> &first,
     const complex_buffer_type<T> &second, buffer_type<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
-    std::transform(begin(first), end(first), begin(second), begin(out), f);
+    transform(begin(first), end(first), begin(second), begin(out), f);
 }
 }
 }
