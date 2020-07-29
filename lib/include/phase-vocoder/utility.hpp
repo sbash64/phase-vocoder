@@ -25,10 +25,6 @@ using complex_buffer_iterator_type = typename complex_buffer_type<T>::iterator;
 template <typename T>
 using const_buffer_iterator_type = typename buffer_type<T>::const_iterator;
 
-template <typename T> auto size(const buffer_type<T> &x) -> index_type {
-    return x.size();
-}
-
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
 }

@@ -16,7 +16,7 @@ template <typename T> void resize(impl::buffer_type<T> &x, index_type n) {
 }
 
 template <typename T> auto N(const impl::buffer_type<T> &b) -> index_type {
-    return nearestGreaterPowerTwo(impl::size(b));
+    return nearestGreaterPowerTwo(impl::size<T>(b));
 }
 
 template <typename T>
@@ -35,7 +35,7 @@ OverlapAddFilter<T>::OverlapAddFilter(const impl::buffer_type<T> &b,
     typename FourierTransformer<T>::Factory &factory)
     : overlap{N(b)}, complexBuffer(dftBufferLength(b)), H(dftBufferLength(b)),
       realBuffer(N(b)), transformer{factory.make(N(b))}, L{N(b) -
-                                                             impl::size(b) +
+                                                             impl::size<T>(b) +
                                                              1} {
     impl::copyFirstToSecond<T>(b, realBuffer);
     dft(realBuffer, H);
