@@ -56,14 +56,13 @@ auto element(const buffer_type<T> &x, index_type i) -> const T & {
     return x.at(i);
 }
 
-template <typename T>
-void zero(
-    signal_reverse_iterator_type<T> b, signal_reverse_iterator_type<T> e) {
-    std::fill(b, e, T{0});
+template <typename T> void zero(signal_type<T> x) {
+    std::fill(begin(x), end(x), T{0});
 }
 
 template <typename T>
-void zero(signal_iterator_type<T> b, signal_iterator_type<T> e) {
+void zero(
+    signal_reverse_iterator_type<T> b, signal_reverse_iterator_type<T> e) {
     std::fill(b, e, T{0});
 }
 
