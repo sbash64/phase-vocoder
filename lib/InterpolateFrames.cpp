@@ -81,8 +81,7 @@ auto InterpolateFrames<T>::phase(const complex_type<T> &x) -> T {
     return std::arg(x);
 }
 
-template <typename T>
-auto InterpolateFrames<T>::magnitude(const complex_type<T> &x) -> T {
+template <typename T> auto magnitude(const complex_type<T> &x) -> T {
     return std::abs(x);
 }
 
@@ -96,10 +95,15 @@ void InterpolateFrames<T>::transformFrames(impl::buffer_type<T> &out,
 }
 
 template <typename T>
+auto scaledMagnitude(const complex_type<T> &a, T scale) -> T {
+    return magnitude(a) * scale;
+}
+
+template <typename T>
 auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     const auto ratio{gsl::narrow_cast<T>(numerator) / gsl::narrow_cast<T>(Q)};
-    return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
+    return scaledMagnitude(a, 1 - ratio) + magnitude(b) * ratio;
 }
 
 template <typename T> void InterpolateFrames<T>::resampleMagnitude() {

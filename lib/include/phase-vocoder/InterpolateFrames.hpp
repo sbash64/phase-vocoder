@@ -20,7 +20,6 @@ template <typename T> class InterpolateFrames {
     auto phaseDifference(const complex_type<T> &a, const complex_type<T> &b)
         -> T;
     auto phase(const complex_type<T> &x) -> T;
-    auto magnitude(const complex_type<T> &x) -> T;
     void transformFrames(impl::buffer_type<T> &out,
         T (InterpolateFrames::*f)(
             const complex_type<T> &, const complex_type<T> &));
