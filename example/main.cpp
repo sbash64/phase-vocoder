@@ -4,6 +4,8 @@
 #include <pa_linux_alsa.h>
 #include <gsl/gsl>
 #include <algorithm>
+#include <iostream>
+#include <cstdio>
 
 static void zero(gsl::span<float> x) { std::fill(begin(x), end(x), 0.F); }
 
@@ -30,39 +32,26 @@ int main() {
     phase_vocoder::FftwTransformer<float>::FftwFactory factory;
     phase_vocoder::PhaseVocoder<float> vocoder{3, 2, 1024, factory};
 
-    if (Pa_Initialize() != paNoError)
-        return -1;
+    Pa_Initialize();
 
     PaStreamParameters inputParameters{};
     inputParameters.device = Pa_GetDefaultInputDevice();
-    if (inputParameters.device == paNoDevice) {
-        fprintf(stderr, "Error: No default input device.\n");
-        return -1;
-    }
     inputParameters.channelCount = 1;
     inputParameters.sampleFormat = paFloat32;
 
     PaStreamParameters outputParameters{};
     outputParameters.device = Pa_GetDefaultOutputDevice();
-    if (outputParameters.device == paNoDevice) {
-        fprintf(stderr, "Error: No default output device.\n");
-        return -1;
-    }
     outputParameters.channelCount = 1;
     outputParameters.sampleFormat = paFloat32;
+
     PaStream *stream{};
 
-    if (Pa_OpenStream(&stream, &inputParameters, &outputParameters, 48000, 1024,
-            paNoFlag, vocode, &vocoder) != paNoError)
-        return -1;
+    Pa_OpenStream(&stream, &inputParameters, &outputParameters, 48000, 1024,
+        paNoFlag, vocode, &vocoder);
     PaAlsa_EnableRealtimeScheduling(stream, 1);
-    if (Pa_StartStream(stream) != paNoError)
-        return -1;
-
-    printf("Hit ENTER to stop program.\n");
-    getchar();
-    if (Pa_CloseStream(stream) != paNoError)
-        return -1;
-
+    Pa_StartStream(stream);
+    std::cout << "Press ENTER to exit: ";
+    std::getchar();
+    Pa_CloseStream(stream);
     Pa_Terminate();
 }

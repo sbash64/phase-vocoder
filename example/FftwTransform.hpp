@@ -7,6 +7,8 @@
 #include <vector>
 
 namespace phase_vocoder {
+template <typename T> auto data(std::vector<T> &x) { return x.data(); }
+
 inline auto to_fftw_complex(std::vector<complex_type<float>> &x) -> auto * {
     return reinterpret_cast<fftwf_complex *>(x.data());
 }
