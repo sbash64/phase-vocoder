@@ -53,7 +53,7 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
 
 template <typename T> void InterpolateFrames<T>::accumulatePhaseIfNeeded() {
     if (phaseSequence.at(phaseSequenceHead))
-        accumulatePhase();
+        impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
     if (++phaseSequenceHead == phaseSequence.size()) {
         if (!preliminaryPhaseSequenceComplete) {
             preliminaryPhaseSequenceComplete = true;
@@ -103,10 +103,6 @@ auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     const auto ratio{gsl::narrow_cast<T>(numerator) / gsl::narrow_cast<T>(Q)};
     return scaledMagnitude(a, 1 - ratio) + scaledMagnitude(b, ratio);
-}
-
-template <typename T> void InterpolateFrames<T>::accumulatePhase() {
-    impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
 }
 
 template class InterpolateFrames<double>;
