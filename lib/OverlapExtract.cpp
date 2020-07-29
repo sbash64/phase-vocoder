@@ -1,5 +1,4 @@
 #include "OverlapExtract.hpp"
-#include <gsl/gsl>
 #include <algorithm>
 
 namespace phase_vocoder {
