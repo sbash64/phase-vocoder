@@ -37,7 +37,7 @@ OverlapAddFilter<T>::OverlapAddFilter(const impl::buffer_type<T> &b,
       realBuffer(N(b)), transformer{factory.make(N(b))}, L{N(b) -
                                                              impl::size(b) +
                                                              1} {
-    impl::copyFirstToSecond(b, realBuffer);
+    impl::copyFirstToSecond<T>(b, realBuffer);
     dft(realBuffer, H);
 }
 

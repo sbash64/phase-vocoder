@@ -29,8 +29,8 @@ InterpolateFrames<T>::InterpolateFrames(
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
-    impl::copyFirstToSecond(currentFrame, previousFrame);
-    impl::copyFirstToSecond(x, currentFrame);
+    impl::copyFirstToSecond<complex_type<T>>(currentFrame, previousFrame);
+    impl::copyFirstToSecond<complex_type<T>>(x, currentFrame);
     transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
     accumulatePhaseIfNeeded();
     hasNext_ = true;

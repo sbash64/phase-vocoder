@@ -141,18 +141,6 @@ void copyFirstToSecond(
 
 template <typename T>
 void copyFirstToSecond(
-    const buffer_type<T> &source, buffer_type<T> &destination) {
-    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
-}
-
-template <typename T>
-void copyFirstToSecond(
-    const_complex_signal_type<T> source, complex_buffer_type<T> &destination) {
-    copyFirstToSecond<T>(begin(source), end(source), begin(destination));
-}
-
-template <typename T>
-void copyFirstToSecond(
     const_signal_type<T> source, signal_type<T> destination, index_type n) {
     copyFirstToSecond<T>(begin(source), begin(source) + n, begin(destination));
 }
