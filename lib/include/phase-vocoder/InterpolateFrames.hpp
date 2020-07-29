@@ -14,15 +14,13 @@ template <typename T> class InterpolateFrames {
     void next(complex_signal_type<T> x);
 
   private:
-    void updatePhaseAccumulationSkip();
     void accumulatePhaseIfNeeded();
     void updateHasNext();
-    auto phaseDifference(const complex_type<T> &a, const complex_type<T> &b)
-        -> T;
-    void transformFrames(impl::buffer_type<T> &out,
-        T (InterpolateFrames::*f)(
+    auto phaseDifference(const complex_type<T> &, const complex_type<T> &) -> T;
+    void transformFrames(impl::buffer_type<T> &,
+        T (InterpolateFrames::*)(
             const complex_type<T> &, const complex_type<T> &));
-    auto resampleMagnitude(const complex_type<T> &a, const complex_type<T> &b)
+    auto resampleMagnitude(const complex_type<T> &, const complex_type<T> &)
         -> T;
 
     using frame_type = impl::complex_buffer_type<T>;
