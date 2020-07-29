@@ -78,8 +78,8 @@ void zero(
     std::fill(b, e, T{0});
 }
 
-template <typename T> void shiftLeft(buffer_type<T> &x, index_type n) {
-    for (index_type i{0}; i < gsl::narrow<index_type>(size(x)) - n; ++i)
+template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
+    for (index_type i{0}; i < size(x) - n; ++i)
         element(x, i) = element(x, i + n);
     zero<T>(rbegin(x), rbegin(x) + n);
 }

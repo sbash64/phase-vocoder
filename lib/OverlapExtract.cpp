@@ -26,7 +26,7 @@ template <typename T> auto OverlapExtract<T>::hasNext() -> bool {
 
 template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
     impl::copyFirstToSecond<T>(buffer, out);
-    impl::shiftLeft(buffer, hop);
+    impl::shiftLeft<T>(buffer, hop);
     head = N - hop;
     phase_vocoder::add(onDeck, N, head, buffer, onDeck);
 }
