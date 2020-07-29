@@ -70,15 +70,14 @@ template <typename T> void InterpolateFrames<T>::updateHasNext() {
     }
 }
 
+template <typename T> auto phase(const complex_type<T> &x) -> T {
+    return std::arg(x);
+}
+
 template <typename T>
 auto InterpolateFrames<T>::phaseDifference(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     return phase(b) - phase(a);
-}
-
-template <typename T>
-auto InterpolateFrames<T>::phase(const complex_type<T> &x) -> T {
-    return std::arg(x);
 }
 
 template <typename T> auto magnitude(const complex_type<T> &x) -> T {
