@@ -19,12 +19,6 @@ using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
 
 template <typename T> using complex_buffer_type = buffer_type<complex_type<T>>;
 
-template <typename T>
-using complex_buffer_iterator_type = typename complex_buffer_type<T>::iterator;
-
-template <typename T>
-using const_buffer_iterator_type = typename buffer_type<T>::const_iterator;
-
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
 }
@@ -41,10 +35,6 @@ auto element(const signal_type<T> &x, index_type i) -> T & {
 template <typename T>
 auto element(const const_signal_type<T> &x, index_type i) -> const T & {
     return gsl::at(x, i);
-}
-
-template <typename T> auto element(buffer_type<T> &x, index_type i) -> T & {
-    return x.at(i);
 }
 
 template <typename T> void zero(signal_type<T> x) {
