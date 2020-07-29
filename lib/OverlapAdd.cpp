@@ -4,7 +4,7 @@ namespace phase_vocoder {
 template <typename T> OverlapAdd<T>::OverlapAdd(index_type N) : buffer(N) {}
 
 template <typename T> void OverlapAdd<T>::add(const_signal_type<T> x) {
-    impl::addFirstToSecond(x, buffer);
+    impl::addFirstToSecond<T>(x, buffer);
 }
 
 template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {

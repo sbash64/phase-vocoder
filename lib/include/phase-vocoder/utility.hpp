@@ -90,16 +90,6 @@ void addFirstToSecond(const_signal_type<T> x, signal_type<T> y) {
 }
 
 template <typename T>
-void addFirstToSecond(const_signal_type<T> x, buffer_type<T> &y) {
-    std::transform(begin(y), end(y), begin(x), begin(y), std::plus<>{});
-}
-
-template <typename T>
-void addFirstToSecond(const buffer_type<T> &x, buffer_type<T> &y) {
-    std::transform(begin(y), end(y), begin(x), begin(y), std::plus<>{});
-}
-
-template <typename T>
 void copyFirstToSecond(const_signal_iterator_type<T> sourceBegin,
     const_signal_iterator_type<T> sourceEnd,
     signal_iterator_type<T> destination) {
