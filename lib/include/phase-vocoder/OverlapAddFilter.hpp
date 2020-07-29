@@ -29,7 +29,6 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     void filter(signal_type<T> x) override;
 
   private:
-    void dft(signal_type<T> x, complex_signal_type<T> X);
     void filter_(signal_type<T> x);
 
     OverlapAdd<T> overlap;

@@ -1,5 +1,4 @@
 #include "OverlapExtract.hpp"
-#include <gsl/gsl>
 #include <algorithm>
 
 namespace phase_vocoder {
@@ -25,8 +24,8 @@ template <typename T> auto OverlapExtract<T>::hasNext() -> bool {
 }
 
 template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
-    impl::copyFirstToSecond(buffer, out);
-    impl::shiftLeft(buffer, hop);
+    impl::copyFirstToSecond<T>(buffer, out);
+    impl::shiftLeft<T>(buffer, hop);
     head = N - hop;
     phase_vocoder::add(onDeck, N, head, buffer, onDeck);
 }

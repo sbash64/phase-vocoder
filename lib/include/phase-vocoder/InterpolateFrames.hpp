@@ -4,6 +4,7 @@
 #include "model.hpp"
 #include "utility.hpp"
 #include <vector>
+#include <functional>
 
 namespace phase_vocoder {
 template <typename T> class InterpolateFrames {
@@ -14,20 +15,14 @@ template <typename T> class InterpolateFrames {
     void next(complex_signal_type<T> x);
 
   private:
-    void updatePhaseAccumulationSkip();
     void accumulatePhaseIfNeeded();
     void updateHasNext();
-    auto phaseDifference(const complex_type<T> &a, const complex_type<T> &b)
+    auto phaseDifference(const complex_type<T> &, const complex_type<T> &) -> T;
+    void transformFrames(impl::buffer_type<T> &,
+        const std::function<T(
+            const complex_type<T> &a, const complex_type<T> &b)> &);
+    auto resampleMagnitude(const complex_type<T> &, const complex_type<T> &)
         -> T;
-    auto phase(const complex_type<T> &x) -> T;
-    auto magnitude(const complex_type<T> &x) -> T;
-    void transformFrames(impl::buffer_type<T> &out,
-        T (InterpolateFrames::*f)(
-            const complex_type<T> &, const complex_type<T> &));
-    auto resampleMagnitude(const complex_type<T> &a, const complex_type<T> &b)
-        -> T;
-    void resampleMagnitude();
-    void accumulatePhase();
 
     using frame_type = impl::complex_buffer_type<T>;
     frame_type previousFrame;

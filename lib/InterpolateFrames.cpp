@@ -29,9 +29,12 @@ InterpolateFrames<T>::InterpolateFrames(
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
-    impl::copyFirstToSecond(currentFrame, previousFrame);
-    impl::copyFirstToSecond(x, currentFrame);
-    transformFrames(phaseAdvance, &InterpolateFrames::phaseDifference);
+    impl::copyFirstToSecond<complex_type<T>>(currentFrame, previousFrame);
+    impl::copyFirstToSecond<complex_type<T>>(x, currentFrame);
+    transformFrames(
+        phaseAdvance, [&](const complex_type<T> &a, const complex_type<T> &b) {
+            return phaseDifference(a, b);
+        });
     accumulatePhaseIfNeeded();
     hasNext_ = true;
     updateHasNext();
@@ -43,9 +46,13 @@ template <typename T> auto InterpolateFrames<T>::hasNext() -> bool {
 
 template <typename T>
 void InterpolateFrames<T>::next(complex_signal_type<T> x) {
-    resampleMagnitude();
-    std::transform(begin(resampledMagnitude), end(resampledMagnitude),
-        begin(accumulatedPhase), begin(x), std::polar<T>);
+    transformFrames(resampledMagnitude,
+        [&](const complex_type<T> &a, const complex_type<T> &b) {
+            return resampleMagnitude(a, b);
+        });
+    transform(begin(resampledMagnitude), end(resampledMagnitude),
+        begin(accumulatedPhase), begin(x),
+        [](T a, T b) { return std::polar<T>(a, b); });
     accumulatePhaseIfNeeded();
     numerator += P;
     updateHasNext();
@@ -53,7 +60,7 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
 
 template <typename T> void InterpolateFrames<T>::accumulatePhaseIfNeeded() {
     if (phaseSequence.at(phaseSequenceHead))
-        accumulatePhase();
+        impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
     if (++phaseSequenceHead == phaseSequence.size()) {
         if (!preliminaryPhaseSequenceComplete) {
             preliminaryPhaseSequenceComplete = true;
@@ -70,44 +77,37 @@ template <typename T> void InterpolateFrames<T>::updateHasNext() {
     }
 }
 
+template <typename T> auto phase(const complex_type<T> &x) -> T {
+    return std::arg(x);
+}
+
 template <typename T>
 auto InterpolateFrames<T>::phaseDifference(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     return phase(b) - phase(a);
 }
 
-template <typename T>
-auto InterpolateFrames<T>::phase(const complex_type<T> &x) -> T {
-    return std::arg(x);
-}
-
-template <typename T>
-auto InterpolateFrames<T>::magnitude(const complex_type<T> &x) -> T {
+template <typename T> auto magnitude(const complex_type<T> &x) -> T {
     return std::abs(x);
 }
 
 template <typename T>
 void InterpolateFrames<T>::transformFrames(impl::buffer_type<T> &out,
-    T (InterpolateFrames::*f)(
-        const complex_type<T> &, const complex_type<T> &)) {
-    std::function<T(const complex_type<T> &a, const complex_type<T> &b)> f_ =
-        [&](auto a, auto b) { return (this->*f)(a, b); };
-    impl::transform(previousFrame, currentFrame, out, f_);
+    const std::function<T(const complex_type<T> &a, const complex_type<T> &b)>
+        &f) {
+    impl::transform(previousFrame, currentFrame, out, f);
+}
+
+template <typename T>
+auto scaledMagnitude(const complex_type<T> &a, T scale) -> T {
+    return magnitude(a) * scale;
 }
 
 template <typename T>
 auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     const auto ratio{gsl::narrow_cast<T>(numerator) / gsl::narrow_cast<T>(Q)};
-    return magnitude(a) * (1 - ratio) + magnitude(b) * ratio;
-}
-
-template <typename T> void InterpolateFrames<T>::resampleMagnitude() {
-    transformFrames(resampledMagnitude, &InterpolateFrames::resampleMagnitude);
-}
-
-template <typename T> void InterpolateFrames<T>::accumulatePhase() {
-    impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
+    return scaledMagnitude(a, 1 - ratio) + scaledMagnitude(b, ratio);
 }
 
 template class InterpolateFrames<double>;
