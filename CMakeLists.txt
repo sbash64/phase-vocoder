@@ -29,3 +29,8 @@ if(${ENABLE_TESTS})
 
   add_subdirectory(tests)
 endif()
+
+option(PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
+if(${PHASE_VOCODER_ENABLE_EXAMPLE})
+  add_subdirectory(example)
+endif()
