@@ -103,7 +103,7 @@ template <typename T>
 auto InterpolateFrames<T>::resampleMagnitude(
     const complex_type<T> &a, const complex_type<T> &b) -> T {
     const auto ratio{gsl::narrow_cast<T>(numerator) / gsl::narrow_cast<T>(Q)};
-    return scaledMagnitude(a, 1 - ratio) + magnitude(b) * ratio;
+    return scaledMagnitude(a, 1 - ratio) + scaledMagnitude(b, ratio);
 }
 
 template <typename T> void InterpolateFrames<T>::resampleMagnitude() {
