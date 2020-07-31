@@ -32,5 +32,18 @@ endif()
 
 option(PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
 if(${PHASE_VOCODER_ENABLE_EXAMPLE})
+  FetchContent_Declare(
+    fftw3
+    URL http://fftw.org/fftw-3.3.8.tar.gz
+    URL_MD5 8aac833c943d8e90d51b697b27d4384d)
+  FetchContent_MakeAvailable(fftw3)
+
+  enable_language(C)
+  FetchContent_Declare(
+    portaudio
+    GIT_REPOSITORY https://git.assembla.com/portaudio.git
+    GIT_TAG pa_stable_v190600_20161030)
+  FetchContent_MakeAvailable(portaudio)
+
   add_subdirectory(example)
 endif()

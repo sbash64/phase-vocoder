@@ -1,8 +1,4 @@
-name: ctest
-
-on:
-  pull_request:
-    branches: [master]
+on: workflow_dispatch
 
 jobs:
   test:
@@ -14,10 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -DENABLE_TESTS=1 -DCMAKE_BUILD_TYPE=Release
+        run: cmake -S . -B build -DPHASE_VOCODER_ENABLE_EXAMPLE=1 -DCMAKE_BUILD_TYPE=Release
       - name: build
         run: cmake --build build --config Release
-      - name: test
-        run: |
-          cd build 
-          ctest -C Release
