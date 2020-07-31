@@ -1,5 +1,3 @@
-name: ctest
-
 on:
   pull_request:
     branches: [master]
