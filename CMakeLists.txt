@@ -32,11 +32,14 @@ endif()
 
 option(PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
 if(${PHASE_VOCODER_ENABLE_EXAMPLE})
+  set(ENABLE_FLOAT
+      ON
+      CACHE BOOL "" FORCE)
   FetchContent_Declare(
-    fftw3
+    fftw
     URL http://fftw.org/fftw-3.3.8.tar.gz
     URL_MD5 8aac833c943d8e90d51b697b27d4384d)
-  FetchContent_MakeAvailable(fftw3)
+  FetchContent_MakeAvailable(fftw)
 
   enable_language(C)
   FetchContent_Declare(
