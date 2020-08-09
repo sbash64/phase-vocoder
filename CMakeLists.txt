@@ -14,8 +14,8 @@ FetchContent_MakeAvailable(GSL)
 
 add_subdirectory(lib)
 
-option(ENABLE_TESTS "Enable tests" OFF)
-if(${ENABLE_TESTS})
+option(PHASE_VOCODER_ENABLE_TESTS "Enable tests" OFF)
+if(${PHASE_VOCODER_ENABLE_TESTS})
   enable_testing()
 
   set(gtest_force_shared_crt
