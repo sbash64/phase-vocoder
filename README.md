@@ -11,5 +11,5 @@ cmake --build .
 ## Running the example
 From the build directory
 ```
-./example/[Release/|Debug/]phase-vocoder-example[.exe]
+./example/[ Release/ | Debug/ ]phase-vocoder-example[.exe]
 ```
