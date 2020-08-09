@@ -12,5 +12,5 @@ class EnablesRealtimeSchedulingForAlsa : public PortAudioStreamModifier {
 
 int main() {
     EnablesRealtimeSchedulingForAlsa streamModifier;
-    return mainMonoPhaseVocoding(streamModifier);
+    vocodeLiveUsingDefaultAudioDevices(streamModifier);
 }

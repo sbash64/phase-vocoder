@@ -9,6 +9,6 @@ class PortAudioStreamModifier {
     virtual void modify(PaStream *) = 0;
 };
 
-int mainMonoPhaseVocoding(PortAudioStreamModifier &);
+void vocodeLiveUsingDefaultAudioDevices(PortAudioStreamModifier &);
 
 #endif

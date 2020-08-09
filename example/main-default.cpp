@@ -9,5 +9,5 @@ class PortAudioStreamModifierStub : public PortAudioStreamModifier {
 
 int main() {
     PortAudioStreamModifierStub streamModifier;
-    return mainMonoPhaseVocoding(streamModifier);
+    vocodeLiveUsingDefaultAudioDevices(streamModifier);
 }
