@@ -1,7 +1,7 @@
+#include "mono-live-vocoding.hpp"
 #include "FftwTransform.hpp"
 #include <phase-vocoder/PhaseVocoder.hpp>
 #include <portaudio.h>
-#include <pa_linux_alsa.h>
 #include <gsl/gsl>
 #include <algorithm>
 #include <iostream>
@@ -28,7 +28,7 @@ static auto vocode(const void *inputBuffer, void *outputBuffer,
     return paContinue;
 }
 
-int main() {
+int mainMonoPhaseVocoding(PortAudioStreamModifier &streamModifier) {
     phase_vocoder::FftwTransformer<float>::FftwFactory factory;
     phase_vocoder::PhaseVocoder<float> vocoder{3, 2, 1024, factory};
 
@@ -48,7 +48,7 @@ int main() {
 
     Pa_OpenStream(&stream, &inputParameters, &outputParameters, 48000, 1024,
         paNoFlag, vocode, &vocoder);
-    PaAlsa_EnableRealtimeScheduling(stream, 1);
+    streamModifier.modify(stream);
     Pa_StartStream(stream);
     std::cout << "Press ENTER to exit: ";
     std::getchar();
