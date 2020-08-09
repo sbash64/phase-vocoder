@@ -1,6 +1,6 @@
 #include "mono-live-vocoding.hpp"
 #include "FftwTransform.hpp"
-#include <phase-vocoder/PhaseVocoder.hpp>
+#include <sbash64/phase-vocoder/PhaseVocoder.hpp>
 #include <portaudio.h>
 #include <gsl/gsl>
 #include <algorithm>

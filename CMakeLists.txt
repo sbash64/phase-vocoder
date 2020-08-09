@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 project(
-  PhaseVocoder
+  sbash64-phase-vocoder
   VERSION 1.0.1
   LANGUAGES CXX)
 
@@ -14,8 +14,8 @@ FetchContent_MakeAvailable(GSL)
 
 add_subdirectory(lib)
 
-option(PHASE_VOCODER_ENABLE_TESTS "Enable tests" OFF)
-if(${PHASE_VOCODER_ENABLE_TESTS})
+option(SBASH64_PHASE_VOCODER_ENABLE_TESTS "Enable tests" OFF)
+if(${SBASH64_PHASE_VOCODER_ENABLE_TESTS})
   enable_testing()
 
   set(gtest_force_shared_crt
@@ -30,8 +30,8 @@ if(${PHASE_VOCODER_ENABLE_TESTS})
   add_subdirectory(tests)
 endif()
 
-option(PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
-if(${PHASE_VOCODER_ENABLE_EXAMPLE})
+option(SBASH64_PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
+if(${SBASH64_PHASE_VOCODER_ENABLE_EXAMPLE})
   set(ENABLE_FLOAT
       ON
       CACHE BOOL "" FORCE)

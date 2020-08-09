@@ -1,8 +1,8 @@
 #ifndef FFTWTRANSFORM_HPP_
 #define FFTWTRANSFORM_HPP_
 
-#include <phase-vocoder/utility.hpp>
-#include <phase-vocoder/OverlapAddFilter.hpp>
+#include <sbash64/phase-vocoder/utility.hpp>
+#include <sbash64/phase-vocoder/OverlapAddFilter.hpp>
 #include <fftw3.h>
 #include <vector>
 

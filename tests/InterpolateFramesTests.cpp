@@ -1,6 +1,6 @@
 #include "assert-utility.h"
-#include "phase-vocoder/model.hpp"
-#include <phase-vocoder/InterpolateFrames.hpp>
+#include <sbash64/phase-vocoder/model.hpp>
+#include <sbash64/phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
 namespace phase_vocoder {

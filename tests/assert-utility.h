@@ -1,7 +1,7 @@
 #ifndef PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
 #define PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
 
-#include <phase-vocoder/model.hpp>
+#include <sbash64/phase-vocoder/model.hpp>
 #include <gtest/gtest.h>
 #include <complex>
 #include <vector>
