@@ -1,4 +1,4 @@
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <sbash64/phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 

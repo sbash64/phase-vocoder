@@ -1,4 +1,4 @@
-#include "assert-utility.h"
+#include "assert-utility.hpp"
 #include <sbash64/phase-vocoder/model.hpp>
 #include <sbash64/phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
