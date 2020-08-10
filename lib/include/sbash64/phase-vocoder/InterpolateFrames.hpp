@@ -6,6 +6,7 @@
 #include <vector>
 #include <functional>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> class InterpolateFrames {
   public:
@@ -42,6 +43,7 @@ template <typename T> class InterpolateFrames {
 
 extern template class InterpolateFrames<float>;
 extern template class InterpolateFrames<double>;
+}
 }
 
 #endif

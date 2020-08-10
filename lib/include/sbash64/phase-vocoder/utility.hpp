@@ -6,6 +6,7 @@
 #include <functional>
 #include <vector>
 
+namespace sbash64 {
 namespace phase_vocoder {
 namespace impl {
 template <typename T> using buffer_type = std::vector<T>;
@@ -97,6 +98,7 @@ void transform(const complex_buffer_type<T> &first,
     const complex_buffer_type<T> &second, buffer_type<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
     transform(begin(first), end(first), begin(second), begin(out), f);
+}
 }
 }
 }

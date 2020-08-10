@@ -1,5 +1,6 @@
 #include "OverlapAdd.hpp"
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> OverlapAdd<T>::OverlapAdd(index_type N) : buffer(N) {}
 
@@ -14,4 +15,5 @@ template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {
 
 template class OverlapAdd<double>;
 template class OverlapAdd<float>;
+}
 }

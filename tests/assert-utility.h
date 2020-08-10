@@ -6,6 +6,7 @@
 #include <complex>
 #include <vector>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> void assertEqual(T expected, T actual) {
     EXPECT_EQ(expected, actual);
@@ -73,6 +74,7 @@ void assertEqual(const std::vector<T> &expected, signal_type<T> actual) {
     assertEqual(size(expected), size(actual));
     for (index_type i{0}; i < size(expected); ++i)
         assertEqual(at(expected, i), at(actual, i));
+}
 }
 }
 

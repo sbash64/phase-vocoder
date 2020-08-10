@@ -4,6 +4,7 @@
 #include "model.hpp"
 #include "utility.hpp"
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> class OverlapAdd {
   public:
@@ -17,6 +18,7 @@ template <typename T> class OverlapAdd {
 
 extern template class OverlapAdd<float>;
 extern template class OverlapAdd<double>;
+}
 }
 
 #endif

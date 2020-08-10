@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <string>
 
+namespace sbash64 {
 namespace phase_vocoder {
 namespace {
 void append(std::string &s, const std::string &what) { s += what; }
@@ -152,5 +153,6 @@ SAMPLE_RATE_CONVERTER_TEST(convertPassesBufferOfSizeHopTimesPToDecimate) {
 
 // clang-format on
 
+}
 }
 }

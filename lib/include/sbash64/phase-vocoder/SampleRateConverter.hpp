@@ -5,6 +5,7 @@
 #include "utility.hpp"
 #include <memory>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> class SignalConverter {
   public:
@@ -42,6 +43,7 @@ template <typename T> class SampleRateConverter {
     std::shared_ptr<Filter<T>> filter;
     SignalConverter<T> &converter;
 };
+}
 }
 
 #endif

@@ -4,6 +4,7 @@
 #include <vector>
 #include <cmath>
 
+namespace sbash64 {
 namespace phase_vocoder {
 namespace {
 auto sixSamples(double a, double b, double c, double d, double e, double f)
@@ -59,5 +60,6 @@ HANN_WINDOW_TEST(odd) {
 }
 
 // clang-format on
+}
 }
 }

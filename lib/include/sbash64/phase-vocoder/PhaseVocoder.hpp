@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <vector>
 
+namespace sbash64 {
 namespace phase_vocoder {
 constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
@@ -100,6 +101,7 @@ template <typename T> class PhaseVocoder {
         }
     }
 };
+}
 }
 
 #endif

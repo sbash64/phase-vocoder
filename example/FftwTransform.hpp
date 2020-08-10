@@ -6,6 +6,7 @@
 #include <fftw3.h>
 #include <vector>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> auto data(std::vector<T> &x) { return x.data(); }
 
@@ -74,6 +75,7 @@ template <typename T> class FftwTransformer : public FourierTransformer<T> {
         }
     };
 };
+}
 }
 
 #endif

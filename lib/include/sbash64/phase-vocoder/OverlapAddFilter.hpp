@@ -7,6 +7,7 @@
 #include "SampleRateConverter.hpp"
 #include <memory>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> class FourierTransformer {
   public:
@@ -41,6 +42,7 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
 
 extern template class OverlapAddFilter<float>;
 extern template class OverlapAddFilter<double>;
+}
 }
 
 #endif

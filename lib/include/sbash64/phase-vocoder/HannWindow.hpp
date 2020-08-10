@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> auto pi() -> T { return std::acos(T{-1}); }
 
@@ -15,6 +16,7 @@ template <typename T> auto hannWindow(index_type N) -> std::vector<T> {
         return T{0.5} * (1 - std::cos(2 * pi<T>() * n++ / N));
     });
     return window;
+}
 }
 }
 

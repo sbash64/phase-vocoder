@@ -26,7 +26,7 @@ static auto vocode(const void *opaqueInput, void *opaqueOutput,
         zero<T>({output, framesPerBuffer});
     else
         copy<T>({input, framesPerBuffer}, {output, framesPerBuffer});
-    static_cast<phase_vocoder::PhaseVocoder<T> *>(vocoder)->vocode(
+    static_cast<sbash64::phase_vocoder::PhaseVocoder<T> *>(vocoder)->vocode(
         {output, framesPerBuffer});
 
     return paContinue;
@@ -35,8 +35,9 @@ static auto vocode(const void *opaqueInput, void *opaqueOutput,
 void vocodeLiveUsingDefaultAudioDevices(
     PortAudioStreamModifier &streamModifier) {
     constexpr auto framesPerBuffer{1024};
-    phase_vocoder::FftwTransformer<float>::FftwFactory factory;
-    phase_vocoder::PhaseVocoder<float> vocoder{3, 2, framesPerBuffer, factory};
+    sbash64::phase_vocoder::FftwTransformer<float>::FftwFactory factory;
+    sbash64::phase_vocoder::PhaseVocoder<float> vocoder{
+        3, 2, framesPerBuffer, factory};
 
     Pa_Initialize();
 

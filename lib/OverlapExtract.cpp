@@ -1,6 +1,7 @@
 #include "OverlapExtract.hpp"
 #include <algorithm>
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T>
 OverlapExtract<T>::OverlapExtract(index_type N, index_type hop)
@@ -33,4 +34,5 @@ template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
 template class OverlapExtract<index_type>;
 template class OverlapExtract<float>;
 template class OverlapExtract<double>;
+}
 }

@@ -3,6 +3,7 @@
 #include <sbash64/phase-vocoder/InterpolateFrames.hpp>
 #include <gtest/gtest.h>
 
+namespace sbash64 {
 namespace phase_vocoder {
 namespace {
 using std::complex_literals::operator""i;
@@ -689,5 +690,6 @@ TEST_F(
 }
 
 // clang-format on
+}
 }
 }

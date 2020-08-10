@@ -2,6 +2,7 @@
 #include <sbash64/phase-vocoder/OverlapExtract.hpp>
 #include <gtest/gtest.h>
 
+namespace sbash64 {
 namespace phase_vocoder {
 namespace {
 constexpr auto N = 5;
@@ -85,5 +86,6 @@ OVERLAP_EXTRACT_TEST(addsToExisting) {
 
 // clang-format on
 
+}
 }
 }

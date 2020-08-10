@@ -4,6 +4,7 @@
 #include "model.hpp"
 #include "SampleRateConverter.hpp"
 
+namespace sbash64 {
 namespace phase_vocoder {
 template <typename T> class SignalConverterImpl : public SignalConverter<T> {
   public:
@@ -13,6 +14,7 @@ template <typename T> class SignalConverterImpl : public SignalConverter<T> {
 
 extern template class SignalConverterImpl<double>;
 extern template class SignalConverterImpl<float>;
+}
 }
 
 #endif
