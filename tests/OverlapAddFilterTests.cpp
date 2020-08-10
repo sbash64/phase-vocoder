@@ -2,8 +2,7 @@
 #include <sbash64/phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());
@@ -217,6 +216,5 @@ OVERLAP_ADD_FILTER_TEST(filterOverlapAddsInverseTransform5) {
     assertXEquals({ 6+8+9, 7+10, 8+11+9 });
 }
 // clang-format on
-}
 }
 }

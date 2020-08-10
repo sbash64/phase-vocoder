@@ -2,8 +2,7 @@
 #include <sbash64/phase-vocoder/SignalConverter.hpp>
 #include <gtest/gtest.h>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 class SignalConverterTests : public ::testing::Test {
   protected:
@@ -53,6 +52,5 @@ TEST_F(SignalConverterTests, insertsNoZerosWhenPIsOne) {
 
 // clang-format on
 
-}
 }
 }
