@@ -1,12 +1,11 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_SAMPLERATECONVERTER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_SAMPLERATECONVERTER_HPP_
+#ifndef SBASH64_PHASEVOCODER_SAMPLERATECONVERTER_HPP_
+#define SBASH64_PHASEVOCODER_SAMPLERATECONVERTER_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
 #include <memory>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class SignalConverter {
   public:
     virtual ~SignalConverter() = default;
@@ -43,7 +42,6 @@ template <typename T> class SampleRateConverter {
     std::shared_ptr<Filter<T>> filter;
     SignalConverter<T> &converter;
 };
-}
 }
 
 #endif

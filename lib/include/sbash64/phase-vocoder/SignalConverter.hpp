@@ -1,11 +1,10 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_SIGNALCONVERTER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_SIGNALCONVERTER_HPP_
+#ifndef SBASH64_PHASEVOCODER_SIGNALCONVERTER_HPP_
+#define SBASH64_PHASEVOCODER_SIGNALCONVERTER_HPP_
 
 #include "model.hpp"
 #include "SampleRateConverter.hpp"
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class SignalConverterImpl : public SignalConverter<T> {
   public:
     void expand(const_signal_type<T> x, signal_type<T> y) override;
@@ -14,7 +13,6 @@ template <typename T> class SignalConverterImpl : public SignalConverter<T> {
 
 extern template class SignalConverterImpl<double>;
 extern template class SignalConverterImpl<float>;
-}
 }
 
 #endif

@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <functional>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T>
 InterpolateFrames<T>::InterpolateFrames(
     index_type P, index_type Q, index_type N)
@@ -113,5 +112,4 @@ auto InterpolateFrames<T>::resampleMagnitude(
 
 template class InterpolateFrames<double>;
 template class InterpolateFrames<float>;
-}
 }

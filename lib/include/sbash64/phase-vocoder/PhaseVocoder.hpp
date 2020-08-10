@@ -1,5 +1,5 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_HPP_
+#ifndef SBASH64_PHASEVOCODER_PHASEVOCODER_HPP_
+#define SBASH64_PHASEVOCODER_PHASEVOCODER_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
@@ -15,8 +15,7 @@
 #include <algorithm>
 #include <vector>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
 template <typename T>
@@ -101,7 +100,6 @@ template <typename T> class PhaseVocoder {
         }
     }
 };
-}
 }
 
 #endif

@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <functional>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 constexpr auto nearestGreaterPowerTwo(index_type n) -> index_type {
     int power{1};
     while ((n >>= 1) != 0U)
@@ -61,5 +60,4 @@ template <typename T> void OverlapAddFilter<T>::filter_(signal_type<T> x) {
 
 template class OverlapAddFilter<double>;
 template class OverlapAddFilter<float>;
-}
 }

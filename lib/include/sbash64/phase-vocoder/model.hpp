@@ -1,11 +1,10 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_MODEL_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_MODEL_HPP_
+#ifndef SBASH64_PHASEVOCODER_MODEL_HPP_
+#define SBASH64_PHASEVOCODER_MODEL_HPP_
 
 #include <gsl/gsl>
 #include <complex>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 using index_type = typename gsl::index;
 
 template <typename T> using signal_type = gsl::span<T>;
@@ -27,7 +26,6 @@ template <typename T> using complex_signal_type = signal_type<complex_type<T>>;
 
 template <typename T>
 using const_complex_signal_type = const_signal_type<complex_type<T>>;
-}
 }
 
 #endif

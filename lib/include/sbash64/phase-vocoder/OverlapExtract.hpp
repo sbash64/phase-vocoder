@@ -1,11 +1,10 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPEXTRACT_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPEXTRACT_HPP_
+#ifndef SBASH64_PHASEVOCODER_OVERLAPEXTRACT_HPP_
+#define SBASH64_PHASEVOCODER_OVERLAPEXTRACT_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class OverlapExtract {
   public:
     OverlapExtract(index_type N, index_type hop);
@@ -24,7 +23,6 @@ template <typename T> class OverlapExtract {
 extern template class OverlapExtract<index_type>;
 extern template class OverlapExtract<float>;
 extern template class OverlapExtract<double>;
-}
 }
 
 #endif

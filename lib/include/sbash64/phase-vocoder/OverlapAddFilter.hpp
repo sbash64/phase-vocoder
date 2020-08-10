@@ -1,5 +1,5 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
+#ifndef SBASH64_PHASEVOCODER_OVERLAPADDFILTER_HPP_
+#define SBASH64_PHASEVOCODER_OVERLAPADDFILTER_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
@@ -7,8 +7,7 @@
 #include "SampleRateConverter.hpp"
 #include <memory>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class FourierTransformer {
   public:
     virtual ~FourierTransformer() = default;
@@ -42,7 +41,6 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
 
 extern template class OverlapAddFilter<float>;
 extern template class OverlapAddFilter<double>;
-}
 }
 
 #endif

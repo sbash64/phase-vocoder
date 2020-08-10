@@ -1,13 +1,12 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
+#ifndef SBASH64_PHASEVOCODER_INTERPOLATEFRAMES_HPP_
+#define SBASH64_PHASEVOCODER_INTERPOLATEFRAMES_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
 #include <vector>
 #include <functional>
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class InterpolateFrames {
   public:
     InterpolateFrames(index_type P, index_type Q, index_type N);
@@ -43,7 +42,6 @@ template <typename T> class InterpolateFrames {
 
 extern template class InterpolateFrames<float>;
 extern template class InterpolateFrames<double>;
-}
 }
 
 #endif

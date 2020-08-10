@@ -1,11 +1,10 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADD_HPP_
+#ifndef SBASH64_PHASEVOCODER_OVERLAPADD_HPP_
+#define SBASH64_PHASEVOCODER_OVERLAPADD_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
 
-namespace sbash64 {
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class OverlapAdd {
   public:
     explicit OverlapAdd(index_type N);
@@ -18,7 +17,6 @@ template <typename T> class OverlapAdd {
 
 extern template class OverlapAdd<float>;
 extern template class OverlapAdd<double>;
-}
 }
 
 #endif
