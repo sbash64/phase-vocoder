@@ -21,6 +21,12 @@ if(${PHASE_VOCODER_ENABLE_TESTS})
   set(gtest_force_shared_crt
       ON
       CACHE BOOL "" FORCE)
+  set(BUILD_GMOCK
+      OFF
+      CACHE BOOL "" FORCE)
+  set(INSTALL_GTEST
+      OFF
+      CACHE BOOL "" FORCE)
   FetchContent_Declare(
     googletest
     GIT_REPOSITORY https://github.com/google/googletest
@@ -34,6 +40,9 @@ option(PHASE_VOCODER_ENABLE_EXAMPLE "Enable example" OFF)
 if(${PHASE_VOCODER_ENABLE_EXAMPLE})
   set(ENABLE_FLOAT
       ON
+      CACHE BOOL "" FORCE)
+  set(BUILD_TESTS
+      OFF
       CACHE BOOL "" FORCE)
   FetchContent_Declare(
     fftw
