@@ -12,3 +12,17 @@ target_include_directories(phase-vocoder-example PRIVATE ${fftw_SOURCE_DIR}/api)
 target_link_libraries(phase-vocoder-example fftw3f portaudio phase-vocoder)
 target_compile_options(phase-vocoder-example PRIVATE ${PHASE_VOCODER_WARNINGS})
 set_target_properties(phase-vocoder-example PROPERTIES CXX_EXTENSIONS OFF)
+
+# See Craig Scott's CppCon 2019 talk, "Deep CMake for Library Authors".
+# https://github.com/CppCon/CppCon2019/blob/master/Presentations/deep_cmake_for_library_authors/deep_cmake_for_library_authors__craig_scott__cppcon_2019.pdf
+
+# "Installing Libraries With CMake"
+include(GNUInstallDirs)
+install(
+  TARGETS phase-vocoder-example
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT PhaseVocoder_RunTime
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          COMPONENT PhaseVocoder_RunTime
+          NAMELINK_COMPONENT PhaseVocoder_Development
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          COMPONENT PhaseVocoder_Development)
