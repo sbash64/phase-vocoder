@@ -59,3 +59,11 @@ if(${PHASE_VOCODER_ENABLE_EXAMPLE})
 
   add_subdirectory(example)
 endif()
+
+# See Craig Scott's CppCon 2019 talk, "Deep CMake for Library Authors".
+# https://github.com/CppCon/CppCon2019/blob/master/Presentations/deep_cmake_for_library_authors/deep_cmake_for_library_authors__craig_scott__cppcon_2019.pdf
+
+# "Setting Install RPATH Details"
+if(NOT APPLE)
+  set(CMAKE_INSTALL_RPATH $ORIGIN/../${CMAKE_INSTALL_LIBDIR})
+endif()
