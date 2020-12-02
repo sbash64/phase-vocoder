@@ -58,9 +58,8 @@ void zero(
 }
 
 template <typename T> void shiftLeft(signal_type<T> x, index_type n) {
-    for (index_type i{0}; i < size(x) - n; ++i)
-        element(x, i) = element(x, i + n);
-    zero<T>(rbegin(x), rbegin(x) + n);
+    zero<T>(x.first(n));
+    std::rotate(begin(x), begin(x) + n, end(x));
 }
 
 template <typename T>
