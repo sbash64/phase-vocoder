@@ -7,9 +7,9 @@ namespace sbash64::phase_vocoder {
 template <typename T> class OverlapExtract {
   public:
     OverlapExtract(index_type N, index_type hop);
-    void add(const_signal_type<T> x);
+    void add(const_signal_type<T>);
     auto hasNext() -> bool;
-    void next(signal_type<T> out);
+    void next(signal_type<T>);
 
   private:
     buffer_type<T> buffer;

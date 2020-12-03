@@ -23,12 +23,12 @@ template <typename T> class FourierTransformer {
 
 template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
-    OverlapAddFilter(const buffer_type<T> &b,
-        typename FourierTransformer<T>::Factory &factory);
-    void filter(signal_type<T> x) override;
+    OverlapAddFilter(
+        const buffer_type<T> &b, typename FourierTransformer<T>::Factory &);
+    void filter(signal_type<T>) override;
 
   private:
-    void filter_(signal_type<T> x);
+    void filter_(signal_type<T>);
 
     OverlapAdd<T> overlap;
     complex_buffer_type<T> complexBuffer;
