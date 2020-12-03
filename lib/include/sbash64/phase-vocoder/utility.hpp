@@ -1,23 +1,12 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_UTILITY_HPP_
+#ifndef SBASH64_PHASEVOCODER_UTILITY_HPP_
+#define SBASH64_PHASEVOCODER_UTILITY_HPP_
 
 #include "model.hpp"
 #include <algorithm>
 #include <functional>
 #include <vector>
 
-namespace phase_vocoder {
-namespace impl {
-template <typename T> using buffer_type = std::vector<T>;
-
-template <typename T>
-using buffer_iterator_type = typename buffer_type<T>::iterator;
-
-template <typename T>
-using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
-
-template <typename T> using complex_buffer_type = buffer_type<complex_type<T>>;
-
+namespace sbash64::phase_vocoder {
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
 }
@@ -97,7 +86,6 @@ void transform(const complex_buffer_type<T> &first,
     const complex_buffer_type<T> &second, buffer_type<T> &out,
     std::function<T(const complex_type<T> &, const complex_type<T> &)> f) {
     transform(begin(first), end(first), begin(second), begin(out), f);
-}
 }
 }
 

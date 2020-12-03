@@ -1,8 +1,8 @@
-#include "assert-utility.h"
-#include <phase-vocoder/OverlapAddFilter.hpp>
+#include "assert-utility.hpp"
+#include <sbash64/phase-vocoder/OverlapAddFilter.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 template <typename T> void copy(const_signal_type<T> x, signal_type<T> y) {
     std::copy(x.begin(), x.end(), y.begin());

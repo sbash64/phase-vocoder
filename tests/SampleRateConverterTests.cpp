@@ -1,9 +1,9 @@
-#include "assert-utility.h"
-#include <phase-vocoder/SampleRateConverter.hpp>
+#include "assert-utility.hpp"
+#include <sbash64/phase-vocoder/SampleRateConverter.hpp>
 #include <gtest/gtest.h>
 #include <string>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 void append(std::string &s, const std::string &what) { s += what; }
 
@@ -112,10 +112,10 @@ class SampleRateConverterTests : public ::testing::Test {
     assertEqual(output(), decimateOutput())
 
 #define ASSERT_EXPAND_OUTPUT_SIZE(a)\
-    assertEqual(a, size(expandOutput()));
+    assertEqual(a, size(expandOutput()))
 
 #define ASSERT_FILTER_INPUT_SIZE(a)\
-    assertEqual(a, size(filterInput()));
+    assertEqual(a, size(filterInput()))
 
 #define SAMPLE_RATE_CONVERTER_TEST(a)\
     TEST_F(SampleRateConverterTests, a)

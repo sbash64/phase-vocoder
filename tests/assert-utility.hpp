@@ -1,12 +1,12 @@
-#ifndef PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
-#define PHASE_VOCODER_TESTS_ASSERT_UTILITY_H_
+#ifndef SBASH64_PHASEVOCODER_TESTS_ASSERT_UTILITY_HPP_
+#define SBASH64_PHASEVOCODER_TESTS_ASSERT_UTILITY_HPP_
 
-#include <phase-vocoder/model.hpp>
+#include <sbash64/phase-vocoder/model.hpp>
 #include <gtest/gtest.h>
 #include <complex>
 #include <vector>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> void assertEqual(T expected, T actual) {
     EXPECT_EQ(expected, actual);
 }

@@ -1,13 +1,12 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_OVERLAPADDFILTER_HPP_
+#ifndef SBASH64_PHASEVOCODER_OVERLAPADDFILTER_HPP_
+#define SBASH64_PHASEVOCODER_OVERLAPADDFILTER_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 #include "OverlapAdd.hpp"
 #include "SampleRateConverter.hpp"
 #include <memory>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class FourierTransformer {
   public:
     virtual ~FourierTransformer() = default;
@@ -24,17 +23,17 @@ template <typename T> class FourierTransformer {
 
 template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
-    OverlapAddFilter(const impl::buffer_type<T> &b,
-        typename FourierTransformer<T>::Factory &factory);
-    void filter(signal_type<T> x) override;
+    OverlapAddFilter(
+        const buffer_type<T> &b, typename FourierTransformer<T>::Factory &);
+    void filter(signal_type<T>) override;
 
   private:
-    void filter_(signal_type<T> x);
+    void filter_(signal_type<T>);
 
     OverlapAdd<T> overlap;
-    impl::complex_buffer_type<T> complexBuffer;
-    impl::complex_buffer_type<T> H;
-    impl::buffer_type<T> realBuffer;
+    complex_buffer_type<T> complexBuffer;
+    complex_buffer_type<T> H;
+    buffer_type<T> realBuffer;
     std::shared_ptr<FourierTransformer<T>> transformer;
     index_type L;
 };

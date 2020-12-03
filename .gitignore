@@ -1,5 +1,6 @@
-.vscode
-.clang-tidy
-.clangd
-build
-compile_commands.json
+/.vscode/
+/.clang-tidy
+/.clangd/
+/build/
+/compile_commands.json
+/.cache/

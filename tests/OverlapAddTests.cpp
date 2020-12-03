@@ -1,8 +1,8 @@
-#include "assert-utility.h"
-#include <phase-vocoder/OverlapAdd.hpp>
+#include "assert-utility.hpp"
+#include <sbash64/phase-vocoder/OverlapAdd.hpp>
 #include <gtest/gtest.h>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 constexpr auto N = 5;
 constexpr auto hop = 2;

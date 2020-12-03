@@ -1,10 +1,10 @@
-#include "assert-utility.h"
-#include <phase-vocoder/HannWindow.hpp>
+#include "assert-utility.hpp"
+#include <sbash64/phase-vocoder/HannWindow.hpp>
 #include <gtest/gtest.h>
 #include <vector>
 #include <cmath>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 namespace {
 auto sixSamples(double a, double b, double c, double d, double e, double f)
     -> std::vector<double> {

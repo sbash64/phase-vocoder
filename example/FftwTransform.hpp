@@ -1,12 +1,12 @@
-#ifndef FFTWTRANSFORM_HPP_
-#define FFTWTRANSFORM_HPP_
+#ifndef SBASH64_PHASEVOCODER_FFTWTRANSFORM_HPP_
+#define SBASH64_PHASEVOCODER_FFTWTRANSFORM_HPP_
 
-#include <phase-vocoder/utility.hpp>
-#include <phase-vocoder/OverlapAddFilter.hpp>
+#include <sbash64/phase-vocoder/utility.hpp>
+#include <sbash64/phase-vocoder/OverlapAddFilter.hpp>
 #include <fftw3.h>
 #include <vector>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> auto data(std::vector<T> &x) { return x.data(); }
 
 inline auto to_fftw_complex(std::vector<complex_type<float>> &x) -> auto * {

@@ -1,21 +1,21 @@
 #include "SignalConverter.hpp"
 #include "utility.hpp"
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T>
 void SignalConverterImpl<T>::expand(const_signal_type<T> x, signal_type<T> y) {
-    const auto P{impl::size(y) / impl::size(x)};
-    impl::zero(y);
-    for (index_type i{0}; i < impl::size(x); ++i)
-        impl::element(y, i * P) = impl::element(x, i);
+    const auto P{size(y) / size(x)};
+    zero(y);
+    for (index_type i{0}; i < size(x); ++i)
+        element(y, i * P) = element(x, i);
 }
 
 template <typename T>
 void SignalConverterImpl<T>::decimate(
     const_signal_type<T> x, signal_type<T> y) {
-    const auto Q{impl::size(x) / impl::size(y)};
-    for (index_type i{0}; i < impl::size(y); ++i)
-        impl::element(y, i) = impl::element(x, i * Q);
+    const auto Q{size(x) / size(y)};
+    for (index_type i{0}; i < size(y); ++i)
+        element(y, i) = element(x, i * Q);
 }
 
 template class SignalConverterImpl<double>;

@@ -4,12 +4,12 @@
 ```
 mkdir build
 cd build
-cmake -DPHASE_VOCODER_ENABLE_EXAMPLE=1 ..
+cmake -DSBASH64_PHASE_VOCODER_ENABLE_EXAMPLE=1 ..
 cmake --build .
 ```
 
 ## Running the example
 From the build directory
 ```
-./example/[ Release/ | Debug/ ]phase-vocoder-example[.exe]
+./example/[ Release/ | Debug/ ]sbash64-phase-vocoder-example[.exe]
 ```
