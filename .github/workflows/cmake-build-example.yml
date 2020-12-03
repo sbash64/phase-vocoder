@@ -1,8 +1,7 @@
 on: workflow_dispatch
 
 jobs:
-  test:
-    name: ${{ matrix.os }}
+  only:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -10,6 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: generate build system
-        run: cmake -S . -B build -DPHASE_VOCODER_ENABLE_EXAMPLE=1 -DCMAKE_BUILD_TYPE=Release
-      - name: build
-        run: cmake --build build --config Release
+        run: |
+          cmake -S . -B build -DSBASH64_PHASE_VOCODER_ENABLE_EXAMPLE=1 -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --config Release

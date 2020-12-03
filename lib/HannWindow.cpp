@@ -1,12 +1,10 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_HANNWINDOW_HPP_
-
+#include "HannWindow.hpp"
 #include "utility.hpp"
 #include <algorithm>
 #include <vector>
 #include <cmath>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> auto pi() -> T { return std::acos(T{-1}); }
 
 template <typename T> auto hannWindow(index_type N) -> std::vector<T> {
@@ -16,6 +14,7 @@ template <typename T> auto hannWindow(index_type N) -> std::vector<T> {
     });
     return window;
 }
-}
 
-#endif
+template auto hannWindow<double>(index_type N) -> std::vector<double>;
+template auto hannWindow<float>(index_type N) -> std::vector<float>;
+}

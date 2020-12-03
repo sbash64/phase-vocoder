@@ -1,5 +1,5 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_PHASEVOCODER_HPP_
+#ifndef SBASH64_PHASEVOCODER_PHASEVOCODER_HPP_
+#define SBASH64_PHASEVOCODER_PHASEVOCODER_HPP_
 
 #include "model.hpp"
 #include "utility.hpp"
@@ -15,12 +15,12 @@
 #include <algorithm>
 #include <vector>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 constexpr auto hop(index_type N) -> index_type { return N / 4; }
 
 template <typename T>
-auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
-    impl::buffer_type<T> coefficients(taps);
+auto lowPassFilter(T cutoff, index_type taps) -> buffer_type<T> {
+    buffer_type<T> coefficients(taps);
     std::generate(begin(coefficients), end(coefficients), [=, n = 0]() mutable {
         const auto something{pi<T>() * (n++ - (taps - 1) / 2)};
         return something == 0 ? T{1}
@@ -28,7 +28,7 @@ auto lowPassFilter(T cutoff, index_type taps) -> impl::buffer_type<T> {
     });
 
     const auto window{hannWindow<T>(taps)};
-    impl::multiplyFirstToSecond<T>(window, coefficients);
+    multiplyFirstToSecond<T>(window, coefficients);
     const auto sum{
         std::accumulate(begin(coefficients), end(coefficients), T{0})};
     for (auto &x : coefficients)
@@ -42,14 +42,14 @@ template <typename T> class PhaseVocoder {
     OverlapAddFilter<T> filter;
     OverlapAdd<T> overlappedOutput;
     SignalConverterImpl<T> signalConverter;
-    impl::complex_buffer_type<T> nextFrame;
-    impl::buffer_type<T> expanded;
-    impl::buffer_type<T> decimatedBuffer;
-    impl::buffer_type<T> inputBuffer;
-    impl::buffer_type<T> outputBuffer;
-    impl::buffer_type<T> window;
+    complex_buffer_type<T> nextFrame;
+    buffer_type<T> expanded;
+    buffer_type<T> decimatedBuffer;
+    buffer_type<T> inputBuffer;
+    buffer_type<T> outputBuffer;
+    buffer_type<T> window;
     std::shared_ptr<FourierTransformer<T>> transform;
-    impl::buffer_iterator_type<T> decimatedHead;
+    buffer_iterator_type<T> decimatedHead;
     index_type P;
     index_type Q;
     index_type N;
@@ -63,7 +63,7 @@ template <typename T> class PhaseVocoder {
           decimatedBuffer(hop(N) * P), inputBuffer(N), outputBuffer(hop(N)),
           window{hannWindow<T>(N)}, transform{factory.make(N)},
           decimatedHead{decimatedBuffer.begin()}, P{P}, Q{Q}, N{N} {
-        impl::buffer_type<T> delayedStart(N - hop(N), T{0});
+        buffer_type<T> delayedStart(N - hop(N), T{0});
         overlapExtract.add(delayedStart);
     }
 
@@ -72,13 +72,13 @@ template <typename T> class PhaseVocoder {
         auto head{x.begin()};
         while (overlapExtract.hasNext()) {
             overlapExtract.next(inputBuffer);
-            impl::multiplyFirstToSecond<T>(window, inputBuffer);
+            multiplyFirstToSecond<T>(window, inputBuffer);
             transform->dft(inputBuffer, nextFrame);
             interpolateFrames.add(nextFrame);
             while (interpolateFrames.hasNext()) {
                 interpolateFrames.next(nextFrame);
                 transform->idft(nextFrame, inputBuffer);
-                impl::multiplyFirstToSecond<T>(window, inputBuffer);
+                multiplyFirstToSecond<T>(window, inputBuffer);
                 overlappedOutput.add(inputBuffer);
                 overlappedOutput.next(outputBuffer);
                 signalConverter.expand(outputBuffer, expanded);
@@ -93,7 +93,7 @@ template <typename T> class PhaseVocoder {
                     std::distance(begin(decimatedBuffer), decimatedHead))};
                 std::copy(begin(decimatedBuffer),
                     begin(decimatedBuffer) + toCopy, head);
-                impl::shiftLeft<T>(decimatedBuffer, toCopy);
+                shiftLeft<T>(decimatedBuffer, toCopy);
                 head += toCopy;
                 decimatedHead -= toCopy;
             }

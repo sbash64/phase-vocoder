@@ -1,5 +1,5 @@
 add_executable(
-  tests
+  sbash64-phase-vocoder-tests
   OverlapExtractTests.cpp
   InterpolateFramesTests.cpp
   OverlapAddFilterTests.cpp
@@ -7,8 +7,10 @@ add_executable(
   SignalConverterTests.cpp
   SampleRateConverterTests.cpp
   HannWindowTests.cpp)
-target_compile_features(tests PRIVATE cxx_std_17)
-target_compile_options(tests PRIVATE ${PHASE_VOCODER_WARNINGS})
-set_target_properties(tests PROPERTIES CXX_EXTENSIONS OFF)
-target_link_libraries(tests phase-vocoder gtest_main GSL)
-add_test(NAME tests COMMAND tests)
+target_compile_features(sbash64-phase-vocoder-tests PRIVATE cxx_std_17)
+target_compile_options(sbash64-phase-vocoder-tests
+                       PRIVATE ${SBASH64_PHASE_VOCODER_WARNINGS})
+set_target_properties(sbash64-phase-vocoder-tests PROPERTIES CXX_EXTENSIONS OFF)
+target_link_libraries(sbash64-phase-vocoder-tests sbash64-phase-vocoder
+                      gtest_main GSL)
+add_test(NAME sbash64-phase-vocoder-tests COMMAND sbash64-phase-vocoder-tests)

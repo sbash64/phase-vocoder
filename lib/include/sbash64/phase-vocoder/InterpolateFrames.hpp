@@ -1,12 +1,11 @@
-#ifndef PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
-#define PHASE_VOCODER_INCLUDE_PHASE_VOCODER_INTERPOLATEFRAMES_HPP_
+#ifndef SBASH64_PHASEVOCODER_INTERPOLATEFRAMES_HPP_
+#define SBASH64_PHASEVOCODER_INTERPOLATEFRAMES_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 #include <vector>
 #include <functional>
 
-namespace phase_vocoder {
+namespace sbash64::phase_vocoder {
 template <typename T> class InterpolateFrames {
   public:
     InterpolateFrames(index_type P, index_type Q, index_type N);
@@ -18,18 +17,18 @@ template <typename T> class InterpolateFrames {
     void accumulatePhaseIfNeeded();
     void updateHasNext();
     auto phaseDifference(const complex_type<T> &, const complex_type<T> &) -> T;
-    void transformFrames(impl::buffer_type<T> &,
+    void transformFrames(buffer_type<T> &,
         const std::function<T(
             const complex_type<T> &a, const complex_type<T> &b)> &);
     auto resampleMagnitude(const complex_type<T> &, const complex_type<T> &)
         -> T;
 
-    using frame_type = impl::complex_buffer_type<T>;
+    using frame_type = complex_buffer_type<T>;
     frame_type previousFrame;
     frame_type currentFrame;
-    impl::buffer_type<T> accumulatedPhase;
-    impl::buffer_type<T> phaseAdvance;
-    impl::buffer_type<T> resampledMagnitude;
+    buffer_type<T> accumulatedPhase;
+    buffer_type<T> phaseAdvance;
+    buffer_type<T> resampledMagnitude;
     std::vector<bool> patternPhaseSequence;
     std::vector<bool> phaseSequence;
     index_type phaseSequenceHead{0};
