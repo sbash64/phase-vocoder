@@ -2,7 +2,6 @@
 #define SBASH64_PHASEVOCODER_OVERLAPEXTRACT_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 
 namespace sbash64::phase_vocoder {
 template <typename T> class OverlapExtract {
@@ -13,7 +12,7 @@ template <typename T> class OverlapExtract {
     void next(signal_type<T> out);
 
   private:
-    impl::buffer_type<T> buffer;
+    buffer_type<T> buffer;
     const_signal_type<T> onDeck;
     index_type head;
     index_type hop;

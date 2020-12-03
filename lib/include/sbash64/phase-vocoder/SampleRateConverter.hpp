@@ -2,7 +2,6 @@
 #define SBASH64_PHASEVOCODER_SAMPLERATECONVERTER_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 #include <memory>
 
 namespace sbash64::phase_vocoder {
@@ -38,7 +37,7 @@ template <typename T> class SampleRateConverter {
     }
 
   private:
-    impl::buffer_type<T> buffer;
+    buffer_type<T> buffer;
     std::shared_ptr<Filter<T>> filter;
     SignalConverter<T> &converter;
 };

@@ -1,15 +1,16 @@
 #include "OverlapAdd.hpp"
+#include "utility.hpp"
 
 namespace sbash64::phase_vocoder {
 template <typename T> OverlapAdd<T>::OverlapAdd(index_type N) : buffer(N) {}
 
 template <typename T> void OverlapAdd<T>::add(const_signal_type<T> x) {
-    impl::addFirstToSecond<T>(x, buffer);
+    addFirstToSecond<T>(x, buffer);
 }
 
 template <typename T> void OverlapAdd<T>::next(signal_type<T> y) {
-    impl::copyFirstToSecond<T>(buffer, y, impl::size(y));
-    impl::shiftLeft<T>(buffer, impl::size(y));
+    copyFirstToSecond<T>(buffer, y, size(y));
+    shiftLeft<T>(buffer, size(y));
 }
 
 template class OverlapAdd<double>;

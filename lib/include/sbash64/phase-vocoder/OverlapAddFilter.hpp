@@ -2,7 +2,6 @@
 #define SBASH64_PHASEVOCODER_OVERLAPADDFILTER_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 #include "OverlapAdd.hpp"
 #include "SampleRateConverter.hpp"
 #include <memory>
@@ -24,7 +23,7 @@ template <typename T> class FourierTransformer {
 
 template <typename T> class OverlapAddFilter : public Filter<T> {
   public:
-    OverlapAddFilter(const impl::buffer_type<T> &b,
+    OverlapAddFilter(const buffer_type<T> &b,
         typename FourierTransformer<T>::Factory &factory);
     void filter(signal_type<T> x) override;
 
@@ -32,9 +31,9 @@ template <typename T> class OverlapAddFilter : public Filter<T> {
     void filter_(signal_type<T> x);
 
     OverlapAdd<T> overlap;
-    impl::complex_buffer_type<T> complexBuffer;
-    impl::complex_buffer_type<T> H;
-    impl::buffer_type<T> realBuffer;
+    complex_buffer_type<T> complexBuffer;
+    complex_buffer_type<T> H;
+    buffer_type<T> realBuffer;
     std::shared_ptr<FourierTransformer<T>> transformer;
     index_type L;
 };

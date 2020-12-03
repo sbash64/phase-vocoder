@@ -6,17 +6,7 @@
 #include <functional>
 #include <vector>
 
-namespace sbash64::phase_vocoder::impl {
-template <typename T> using buffer_type = std::vector<T>;
-
-template <typename T>
-using buffer_iterator_type = typename buffer_type<T>::iterator;
-
-template <typename T>
-using buffer_reverse_iterator_type = typename buffer_type<T>::reverse_iterator;
-
-template <typename T> using complex_buffer_type = buffer_type<complex_type<T>>;
-
+namespace sbash64::phase_vocoder {
 template <typename T> auto size(const signal_type<T> &x) -> index_type {
     return x.size();
 }

@@ -1,4 +1,5 @@
 #include "OverlapExtract.hpp"
+#include "utility.hpp"
 #include <algorithm>
 
 namespace sbash64::phase_vocoder {
@@ -8,10 +9,10 @@ OverlapExtract<T>::OverlapExtract(index_type N, index_type hop)
 
 template <typename T>
 void add(const_signal_type<T> x, index_type N, index_type &head,
-    impl::buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
-    const auto toFill{std::min(N - head, impl::size(x))};
+    buffer_type<T> &buffer, const_signal_type<T> &onDeck) {
+    const auto toFill{std::min(N - head, size(x))};
     std::copy(begin(x), begin(x) + toFill, begin(buffer) + head);
-    onDeck = x.last(impl::size(x) - toFill);
+    onDeck = x.last(size(x) - toFill);
     head += toFill;
 }
 
@@ -24,8 +25,8 @@ template <typename T> auto OverlapExtract<T>::hasNext() -> bool {
 }
 
 template <typename T> void OverlapExtract<T>::next(signal_type<T> out) {
-    impl::copyFirstToSecond<T>(buffer, out);
-    impl::shiftLeft<T>(buffer, hop);
+    copyFirstToSecond<T>(buffer, out);
+    shiftLeft<T>(buffer, hop);
     head = N - hop;
     phase_vocoder::add(onDeck, N, head, buffer, onDeck);
 }

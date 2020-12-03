@@ -2,7 +2,6 @@
 #define SBASH64_PHASEVOCODER_OVERLAPADD_HPP_
 
 #include "model.hpp"
-#include "utility.hpp"
 
 namespace sbash64::phase_vocoder {
 template <typename T> class OverlapAdd {
@@ -12,7 +11,7 @@ template <typename T> class OverlapAdd {
     void next(signal_type<T> y);
 
   private:
-    impl::buffer_type<T> buffer;
+    buffer_type<T> buffer;
 };
 
 extern template class OverlapAdd<float>;

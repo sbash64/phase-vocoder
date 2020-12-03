@@ -1,4 +1,5 @@
 #include "InterpolateFrames.hpp"
+#include "utility.hpp"
 #include <gsl/gsl>
 #include <algorithm>
 #include <functional>
@@ -29,8 +30,8 @@ InterpolateFrames<T>::InterpolateFrames(
 
 template <typename T>
 void InterpolateFrames<T>::add(const_complex_signal_type<T> x) {
-    impl::copyFirstToSecond<complex_type<T>>(currentFrame, previousFrame);
-    impl::copyFirstToSecond<complex_type<T>>(x, currentFrame);
+    copyFirstToSecond<complex_type<T>>(currentFrame, previousFrame);
+    copyFirstToSecond<complex_type<T>>(x, currentFrame);
     transformFrames(
         phaseAdvance, [&](const complex_type<T> &a, const complex_type<T> &b) {
             return phaseDifference(a, b);
@@ -60,7 +61,7 @@ void InterpolateFrames<T>::next(complex_signal_type<T> x) {
 
 template <typename T> void InterpolateFrames<T>::accumulatePhaseIfNeeded() {
     if (phaseSequence.at(phaseSequenceHead))
-        impl::addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
+        addFirstToSecond<T>(phaseAdvance, accumulatedPhase);
     if (++phaseSequenceHead == phaseSequence.size()) {
         if (!preliminaryPhaseSequenceComplete) {
             preliminaryPhaseSequenceComplete = true;
@@ -92,10 +93,10 @@ template <typename T> auto magnitude(const complex_type<T> &x) -> T {
 }
 
 template <typename T>
-void InterpolateFrames<T>::transformFrames(impl::buffer_type<T> &out,
+void InterpolateFrames<T>::transformFrames(buffer_type<T> &out,
     const std::function<T(const complex_type<T> &a, const complex_type<T> &b)>
         &f) {
-    impl::transform(previousFrame, currentFrame, out, f);
+    transform(previousFrame, currentFrame, out, f);
 }
 
 template <typename T>

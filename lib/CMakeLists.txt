@@ -1,6 +1,7 @@
 add_library(
-  sbash64-phase-vocoder OverlapAdd.cpp OverlapAddFilter.cpp OverlapExtract.cpp
-                        InterpolateFrames.cpp SignalConverter.cpp)
+  sbash64-phase-vocoder
+  OverlapAdd.cpp OverlapAddFilter.cpp OverlapExtract.cpp InterpolateFrames.cpp
+  SignalConverter.cpp HannWindow.cpp)
 set(SBASH64_PHASE_VOCODER_INCLUDE_RELATIVE_PATH include/phase-vocoder)
 set_target_properties(
   sbash64-phase-vocoder
